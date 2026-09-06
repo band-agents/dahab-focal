@@ -1,0 +1,88 @@
+import { randomUUID } from 'node:crypto';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+
+import type { Role, Session } from '@dahab/api-contract';
+import type { Locale } from '@dahab/i18n';
+
+import { logger as rootLogger, type Logger } from './logger';
+import { localeFrom, verifyAccessToken } from './auth/tokens';
+
+/**
+ * The per-request context.
+ *
+ * Every request has a request id whether or not the caller supplied one, and
+ * it is on every log line and in every error envelope — so a screenshot of a
+ * failure is enough to find what happened.
+ */
+
+export interface Context {
+  readonly requestId: string;
+  readonly logger: Logger;
+  readonly session: Session | null;
+  readonly locale: Locale;
+  readonly now: Date;
+}
+
+function headerValue(request: IncomingMessage, name: string): string | undefined {
+  const raw = request.headers[name];
+  return Array.isArray(raw) ? raw[0] : raw;
+}
+
+export function createContext(options: {
+  req: IncomingMessage;
+  res: ServerResponse;
+  now?: Date;
+}): Context {
+  const { req, res } = options;
+  const requestId = headerValue(req, 'x-request-id') ?? randomUUID();
+  res.setHeader('x-request-id', requestId);
+
+  const locale = localeFrom(headerValue(req, 'accept-language'));
+  const logger = rootLogger.child({ requestId });
+
+  const authorization = headerValue(req, 'authorization');
+  const session = authorization === undefined ? null : sessionFrom(authorization, logger);
+
+  return {
+    requestId,
+    logger,
+    session,
+    locale: session === null ? locale : (session as { locale?: Locale }).locale ?? locale,
+    now: options.now ?? new Date(),
+  };
+}
+
+function sessionFrom(authorization: string, logger: Logger): Session | null {
+  const [scheme, token] = authorization.split(' ');
+  if (scheme?.toLowerCase() !== 'bearer' || token === undefined) return null;
+
+  const result = verifyAccessToken(token);
+  if (!result.ok) {
+    // An expired token is ordinary and must not be logged as an error; the
+    // client is expected to refresh and retry.
+    logger.debug('rejected access token', { reason: result.reason });
+    return null;
+  }
+
+  const { payload } = result;
+  return {
+    id: payload.sessionId,
+    userId: payload.userId as Session['userId'],
+    roles: payload.roles as [Role, ...Role[]],
+    vendorId: payload.vendorId as Session['vendorId'],
+    isGuest: payload.isGuest,
+    expiresAt: new Date(payload.exp * 1000),
+  };
+}
+
+/** For tests and for the vendor-side simulator: a context with no HTTP. */
+export function createTestContext(overrides: Partial<Context> = {}): Context {
+  return {
+    requestId: randomUUID(),
+    logger: rootLogger.child({ test: true }),
+    session: null,
+    locale: 'en-GB',
+    now: new Date('2026-03-19T06:00:00Z'),
+    ...overrides,
+  };
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@dahab/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --experimental-strip-types src/index.ts",
+    "start": "node --experimental-strip-types src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@dahab/api-contract": "workspace:*",
+    "@dahab/db": "workspace:*",
+    "@dahab/i18n": "workspace:*",
+    "@trpc/server": "^11.0.0-rc.660",
+    "bullmq": "^5.34.5",
+    "ioredis": "^5.4.2",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@dahab/config": "workspace:*",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
