@@ -1,0 +1,40 @@
+# The local stack. `pnpm db:up` starts it; `pnpm db:migrate && pnpm db:seed`
+# fills it. Postgres 16 with PostGIS 3.4, and Redis for BullMQ.
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: dahab-postgres
+    environment:
+      POSTGRES_USER: dahab
+      POSTGRES_PASSWORD: dahab
+      POSTGRES_DB: dahab_focal
+      # Everything is stored UTC; Africa/Cairo is a rendering concern.
+      TZ: UTC
+      PGTZ: UTC
+    ports:
+      - '5432:5432'
+    volumes:
+      - dahab-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U dahab -d dahab_focal']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: dahab-redis
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - '6379:6379'
+    volumes:
+      - dahab-redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  dahab-postgres-data:
+  dahab-redis-data:
