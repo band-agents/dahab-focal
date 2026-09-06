@@ -1,0 +1,21 @@
+{
+  "name": "@dahab/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./eslint": "./eslint/index.mjs",
+    "./eslint/rtl": "./eslint/rtl-plugin.mjs",
+    "./prettier": "./prettier/index.mjs",
+    "./tailwind": "./tailwind/base.js",
+    "./tsconfig/base.json": "./tsconfig/base.json",
+    "./tsconfig/react-native.json": "./tsconfig/react-native.json",
+    "./tsconfig/next.json": "./tsconfig/next.json",
+    "./tsconfig/node.json": "./tsconfig/node.json"
+  },
+  "devDependencies": {
+    "eslint": "^9.17.0",
+    "typescript-eslint": "^8.18.1",
+    "prettier": "^3.4.2"
+  }
+}

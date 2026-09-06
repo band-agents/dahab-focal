@@ -1,0 +1,30 @@
+{
+  "name": "dahab-focal",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.15.9",
+  "engines": { "node": ">=20.11" },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:tokens": "pnpm --filter @dahab/tokens test",
+    "test:i18n": "pnpm --filter @dahab/i18n test",
+    "lint:hardcoded": "node scripts/lint-hardcoded.mjs",
+    "tokens:build": "pnpm --filter @dahab/tokens build",
+    "db:generate": "pnpm --filter @dahab/db generate",
+    "db:migrate": "pnpm --filter @dahab/db migrate",
+    "db:seed": "pnpm --filter @dahab/db seed",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "verify": "pnpm typecheck && pnpm lint:hardcoded && pnpm test:tokens && pnpm test:i18n && pnpm test"
+  },
+  "devDependencies": {
+    "@dahab/config": "workspace:*",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2",
+    "prettier": "^3.4.2",
+    "vitest": "^2.1.8"
+  }
+}

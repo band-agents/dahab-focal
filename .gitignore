@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+.turbo/
+.next/
+.expo/
+coverage/
+*.tsbuildinfo
+.env
+.env.local
+.DS_Store
+Thumbs.db
+apps/gallery/screenshots/*.tmp.png
+packages/tokens/src/generated/
