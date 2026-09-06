@@ -1,5 +1,5 @@
 {
-  "name": "@dahab/i18n",
+  "name": "@dahab/api-contract",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -7,18 +7,15 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./messages/*": "./messages/*"
+    "./pricing": "./src/pricing/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "check-locales": "node scripts/check-locales.mjs",
-    "test": "vitest run && node scripts/check-locales.mjs"
+    "test": "vitest run"
   },
   "dependencies": {
-    "i18next": "^24.2.0",
-    "i18next-icu": "^2.3.0",
-    "intl-messageformat": "^10.7.10",
-    "react-i18next": "^15.2.0"
+    "@dahab/i18n": "workspace:*",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@dahab/config": "workspace:*",
