@@ -1,0 +1,148 @@
+{
+  "$meta": {
+    "locale": "en-GB",
+    "source": true,
+    "needsTranslation": []
+  },
+  "app": {
+    "name": "Dahab Focal",
+    "tagline": "Find your people in Dahab."
+  },
+  "action": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "retry": "Try again",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "apply": "Apply",
+    "done": "Done",
+    "edit": "Edit",
+    "remove": "Remove",
+    "confirm": "Confirm",
+    "share": "Share",
+    "seeMore": "See more",
+    "seeLess": "See less"
+  },
+  "state": {
+    "loading": "Loading",
+    "emptyTitle": "Nothing here yet",
+    "emptyBody": "When there is something to show, it will appear here.",
+    "errorTitle": "That did not load",
+    "errorBody": "Something went wrong at our end. Your booking is unaffected.",
+    "offlineTitle": "You are offline",
+    "offlineBody": "Signal is patchy in Dahab. We are showing what we saved last time you were connected.",
+    "notFoundTitle": "We could not find that",
+    "notFoundBody": "The link may be old, or the listing may have been taken down."
+  },
+  "status": {
+    "draft": "Draft",
+    "underReview": "Under review",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "cancelled": "Cancelled",
+    "completed": "Completed",
+    "expired": "Expired",
+    "verified": "Verified",
+    "rejected": "Rejected"
+  },
+  "a11y": {
+    "required": "Required",
+    "optional": "Optional",
+    "selected": "Selected",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "closeDialog": "Close dialogue",
+    "openMenu": "Open menu",
+    "loading": "Loading, please wait",
+    "increase": "Increase",
+    "decrease": "Decrease",
+    "externalLink": "Opens in a new window",
+    "skipToContent": "Skip to content",
+    "sortAscending": "Sorted ascending",
+    "sortDescending": "Sorted descending"
+  },
+  "form": {
+    "required": "This is required.",
+    "invalidEmail": "That does not look like an email address.",
+    "invalidPhone": "Enter a phone number we can reach you on.",
+    "tooShort": "Use at least {min, plural, one {# character} other {# characters}}.",
+    "tooLong": "Use no more than {max, plural, one {# character} other {# characters}}.",
+    "outOfRange": "Enter a number between {min, number} and {max, number}."
+  },
+  "field": {
+    "phoneLabel": "Mobile number",
+    "phoneHint": "Egyptian numbers start +20. We send a one-time code, never a marketing message.",
+    "otpLabel": "Six-digit code",
+    "otpResendIn": "Resend in {seconds, number} s",
+    "emailLabel": "Email address"
+  },
+  "settings": {
+    "language": "Language",
+    "theme": "Appearance",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "Match device",
+    "currency": "Currency",
+    "numerals": "Numerals",
+    "numeralsLatn": "Western digits (0 1 2 3)",
+    "numeralsArab": "Arabic-Indic digits (٠ ١ ٢ ٣)",
+    "direction": "Text direction",
+    "switchingLanguage": "Switching to {language}…",
+    "restartNotice": "The app needs to restart to change text direction. Nothing is lost."
+  },
+  "count": {
+    "divers": "{count, plural, one {# diver} other {# divers}}",
+    "reviews": "{count, plural, =0 {No reviews yet} one {# review} other {# reviews}}",
+    "spotsLeft": "{count, plural, =0 {Fully booked} one {# spot left} other {# spots left}}",
+    "nights": "{count, plural, one {# night} other {# nights}}",
+    "dives": "{count, plural, one {# dive} other {# dives}}",
+    "guests": "{count, plural, one {# guest} other {# guests}}"
+  },
+  "cert": {
+    "expiresInDays": "{days, plural, =0 {Expires today} one {Expires in # day} other {Expires in # days}}",
+    "expiredAgo": "{days, plural, one {Expired # day ago} other {Expired # days ago}}"
+  },
+  "price": {
+    "from": "from {price}",
+    "perPerson": "{price} per person",
+    "perGroup": "{price} per group",
+    "total": "Total {price}",
+    "free": "Free"
+  },
+  "safety": {
+    "noFlySingle": "Leave {hours, number} hours between a single dive and your flight.",
+    "noFlyMulti": "Leave {hours, number} hours between multi-day diving and your flight.",
+    "chamber": "Dahab has a hyperbaric chamber. In an emergency, call {phone}.",
+    "certificationRequired": "This activity needs a {certification} certification.",
+    "technicalOnly": "Technical divers only."
+  },
+  "bidi": {
+    "sampleWithSite": "Diving at {site} starts at {time}.",
+    "sampleWithOperator": "{operator} confirmed your booking for {date}."
+  },
+  "gallery": {
+    "title": "Component gallery",
+    "subtitle": "Every component, every variant, every state.",
+    "sectionFoundations": "Foundations",
+    "sectionComponents": "Components",
+    "toggleTheme": "Theme",
+    "toggleDirection": "Direction",
+    "toggleLocale": "Locale",
+    "toggleNumerals": "Numerals",
+    "stateDefault": "Default",
+    "stateHover": "Hover",
+    "stateFocus": "Focus",
+    "stateActive": "Active",
+    "stateDisabled": "Disabled",
+    "stateLoading": "Loading",
+    "stateError": "Error",
+    "stateEmpty": "Empty",
+    "stateSkeleton": "Skeleton",
+    "noComponentsYet": "No components are registered in this section yet."
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "$meta": {
+    "locale": "es-ES",
+    "source": false,
+    "needsTranslation": [],
+    "identicalToSource": ["app.name", "action.ok", "price.total", "gallery.stateError"]
+  },
+  "app": {
+    "name": "Dahab Focal",
+    "tagline": "Encuentra a tu gente en Dahab."
+  },
+  "action": {
+    "ok": "OK",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "retry": "Reintentar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "clear": "Borrar",
+    "apply": "Aplicar",
+    "done": "Hecho",
+    "edit": "Editar",
+    "remove": "Quitar",
+    "confirm": "Confirmar",
+    "share": "Compartir",
+    "seeMore": "Ver más",
+    "seeLess": "Ver menos"
+  },
+  "state": {
+    "loading": "Cargando",
+    "emptyTitle": "Aquí todavía no hay nada",
+    "emptyBody": "Cuando haya algo que mostrar, aparecerá aquí.",
+    "errorTitle": "No se ha podido cargar",
+    "errorBody": "Algo ha fallado por nuestra parte. Tu reserva no se ve afectada.",
+    "offlineTitle": "Estás sin conexión",
+    "offlineBody": "La cobertura en Dahab es irregular. Mostramos lo que guardamos la última vez que tuviste conexión.",
+    "notFoundTitle": "No hemos encontrado eso",
+    "notFoundBody": "Puede que el enlace sea antiguo o que se haya retirado el anuncio."
+  },
+  "status": {
+    "draft": "Borrador",
+    "underReview": "En revisión",
+    "pending": "Pendiente",
+    "confirmed": "Confirmada",
+    "cancelled": "Cancelada",
+    "completed": "Completada",
+    "expired": "Caducada",
+    "verified": "Verificada",
+    "rejected": "Rechazada"
+  },
+  "a11y": {
+    "required": "Obligatorio",
+    "optional": "Opcional",
+    "selected": "Seleccionado",
+    "expand": "Desplegar",
+    "collapse": "Plegar",
+    "closeDialog": "Cerrar el diálogo",
+    "openMenu": "Abrir el menú",
+    "loading": "Cargando, espera",
+    "increase": "Aumentar",
+    "decrease": "Disminuir",
+    "externalLink": "Se abre en una ventana nueva",
+    "skipToContent": "Ir al contenido",
+    "sortAscending": "Orden ascendente",
+    "sortDescending": "Orden descendente"
+  },
+  "form": {
+    "required": "Este campo es obligatorio.",
+    "invalidEmail": "Esto no parece una dirección de correo electrónico.",
+    "invalidPhone": "Indica un teléfono en el que podamos localizarte.",
+    "tooShort": "Usa al menos {min, plural, one {# carácter} other {# caracteres}}.",
+    "tooLong": "Usa como máximo {max, plural, one {# carácter} other {# caracteres}}.",
+    "outOfRange": "Introduce un número entre {min, number} y {max, number}."
+  },
+  "field": {
+    "phoneLabel": "Número de móvil",
+    "phoneHint": "Los números egipcios empiezan por +20. Enviamos un código de un solo uso, nunca publicidad.",
+    "otpLabel": "Código de seis dígitos",
+    "otpResendIn": "Reenviar en {seconds, number} s",
+    "emailLabel": "Correo electrónico"
+  },
+  "settings": {
+    "language": "Idioma",
+    "theme": "Apariencia",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeSystem": "Como el dispositivo",
+    "currency": "Moneda",
+    "numerals": "Dígitos",
+    "numeralsLatn": "Dígitos occidentales (0 1 2 3)",
+    "numeralsArab": "Dígitos arábigo-índicos (٠ ١ ٢ ٣)",
+    "direction": "Dirección del texto",
+    "switchingLanguage": "Cambiando a {language}…",
+    "restartNotice": "La aplicación debe reiniciarse para cambiar la dirección del texto. No se pierde nada."
+  },
+  "count": {
+    "divers": "{count, plural, one {# buceador} other {# buceadores}}",
+    "reviews": "{count, plural, =0 {Aún no hay reseñas} one {# reseña} other {# reseñas}}",
+    "spotsLeft": "{count, plural, =0 {Completo} one {queda # plaza} other {quedan # plazas}}",
+    "nights": "{count, plural, one {# noche} other {# noches}}",
+    "dives": "{count, plural, one {# inmersión} other {# inmersiones}}",
+    "guests": "{count, plural, one {# persona} other {# personas}}"
+  },
+  "cert": {
+    "expiresInDays": "{days, plural, =0 {Caduca hoy} one {Caduca en # día} other {Caduca en # días}}",
+    "expiredAgo": "{days, plural, one {Caducó hace # día} other {Caducó hace # días}}"
+  },
+  "price": {
+    "from": "desde {price}",
+    "perPerson": "{price} por persona",
+    "perGroup": "{price} por grupo",
+    "total": "Total {price}",
+    "free": "Gratis"
+  },
+  "safety": {
+    "noFlySingle": "Deja {hours, number} horas entre una inmersión suelta y tu vuelo.",
+    "noFlyMulti": "Deja {hours, number} horas entre varios días de buceo y tu vuelo.",
+    "chamber": "Dahab tiene cámara hiperbárica. En caso de emergencia, llama al {phone}.",
+    "certificationRequired": "Esta actividad requiere una titulación {certification}.",
+    "technicalOnly": "Solo para buceadores técnicos."
+  },
+  "bidi": {
+    "sampleWithSite": "El buceo en {site} empieza a las {time}.",
+    "sampleWithOperator": "{operator} ha confirmado tu reserva del {date}."
+  },
+  "gallery": {
+    "title": "Galería de componentes",
+    "subtitle": "Cada componente, cada variante, cada estado.",
+    "sectionFoundations": "Fundamentos",
+    "sectionComponents": "Componentes",
+    "toggleTheme": "Tema",
+    "toggleDirection": "Dirección",
+    "toggleLocale": "Idioma",
+    "toggleNumerals": "Dígitos",
+    "stateDefault": "Predeterminado",
+    "stateHover": "Al pasar el ratón",
+    "stateFocus": "Foco",
+    "stateActive": "Activo",
+    "stateDisabled": "Deshabilitado",
+    "stateLoading": "Cargando",
+    "stateError": "Error",
+    "stateEmpty": "Vacío",
+    "stateSkeleton": "Esqueleto",
+    "noComponentsYet": "Aún no hay componentes registrados en esta sección."
+  }
+}

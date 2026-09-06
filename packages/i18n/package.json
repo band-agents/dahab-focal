@@ -1,0 +1,28 @@
+{
+  "name": "@dahab/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./messages/*": "./messages/*"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check-locales": "node scripts/check-locales.mjs",
+    "test": "vitest run && node scripts/check-locales.mjs"
+  },
+  "dependencies": {
+    "i18next": "^24.2.0",
+    "i18next-icu": "^2.3.0",
+    "intl-messageformat": "^10.7.10",
+    "react-i18next": "^15.2.0"
+  },
+  "devDependencies": {
+    "@dahab/config": "workspace:*",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

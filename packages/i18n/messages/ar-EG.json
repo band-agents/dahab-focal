@@ -1,0 +1,149 @@
+{
+  "$meta": {
+    "locale": "ar-EG",
+    "source": false,
+    "needsTranslation": [],
+    "identicalToSource": ["app.name"]
+  },
+  "app": {
+    "name": "Dahab Focal",
+    "tagline": "لاقي ناسك في دهب."
+  },
+  "action": {
+    "ok": "حسنًا",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "retry": "حاول مرة أخرى",
+    "search": "بحث",
+    "filter": "تصفية",
+    "clear": "مسح",
+    "apply": "تطبيق",
+    "done": "تم",
+    "edit": "تعديل",
+    "remove": "إزالة",
+    "confirm": "تأكيد",
+    "share": "مشاركة",
+    "seeMore": "عرض المزيد",
+    "seeLess": "عرض أقل"
+  },
+  "state": {
+    "loading": "جارٍ التحميل",
+    "emptyTitle": "لا يوجد شيء هنا بعد",
+    "emptyBody": "عندما يتوفر ما نعرضه، سيظهر هنا.",
+    "errorTitle": "تعذّر التحميل",
+    "errorBody": "حدث خطأ لدينا. حجزك لم يتأثر.",
+    "offlineTitle": "أنت غير متصل",
+    "offlineBody": "الشبكة ضعيفة في دهب. نعرض لك ما حفظناه آخر مرة كنت متصلًا فيها.",
+    "notFoundTitle": "لم نجد ذلك",
+    "notFoundBody": "قد يكون الرابط قديمًا، أو أن الإعلان أُزيل."
+  },
+  "status": {
+    "draft": "مسودة",
+    "underReview": "قيد المراجعة",
+    "pending": "قيد الانتظار",
+    "confirmed": "مؤكد",
+    "cancelled": "ملغى",
+    "completed": "مكتمل",
+    "expired": "منتهي الصلاحية",
+    "verified": "موثّق",
+    "rejected": "مرفوض"
+  },
+  "a11y": {
+    "required": "مطلوب",
+    "optional": "اختياري",
+    "selected": "محدَّد",
+    "expand": "توسيع",
+    "collapse": "طي",
+    "closeDialog": "إغلاق مربع الحوار",
+    "openMenu": "فتح القائمة",
+    "loading": "جارٍ التحميل، يرجى الانتظار",
+    "increase": "زيادة",
+    "decrease": "إنقاص",
+    "externalLink": "يفتح في نافذة جديدة",
+    "skipToContent": "تخطٍ إلى المحتوى",
+    "sortAscending": "مرتَّب تصاعديًا",
+    "sortDescending": "مرتَّب تنازليًا"
+  },
+  "form": {
+    "required": "هذا الحقل مطلوب.",
+    "invalidEmail": "هذا لا يبدو بريدًا إلكترونيًا صحيحًا.",
+    "invalidPhone": "أدخل رقم هاتف يمكننا الوصول إليك عليه.",
+    "tooShort": "استخدم {min, plural, zero {# حرف} one {حرفًا واحدًا} two {حرفين} few {# أحرف} many {# حرفًا} other {# حرف}} على الأقل.",
+    "tooLong": "استخدم {max, plural, zero {# حرف} one {حرفًا واحدًا} two {حرفين} few {# أحرف} many {# حرفًا} other {# حرف}} كحد أقصى.",
+    "outOfRange": "أدخل رقمًا بين {min, number} و{max, number}."
+  },
+  "field": {
+    "phoneLabel": "رقم الموبايل",
+    "phoneHint": "الأرقام المصرية تبدأ بـ +20. نرسل رمزًا لمرة واحدة، ولا نرسل رسائل تسويقية.",
+    "otpLabel": "رمز من ستة أرقام",
+    "otpResendIn": "إعادة الإرسال خلال {seconds, number} ث",
+    "emailLabel": "البريد الإلكتروني"
+  },
+  "settings": {
+    "language": "اللغة",
+    "theme": "المظهر",
+    "themeLight": "فاتح",
+    "themeDark": "داكن",
+    "themeSystem": "حسب الجهاز",
+    "currency": "العملة",
+    "numerals": "الأرقام",
+    "numeralsLatn": "أرقام غربية (0 1 2 3)",
+    "numeralsArab": "أرقام عربية (٠ ١ ٢ ٣)",
+    "direction": "اتجاه النص",
+    "switchingLanguage": "جارٍ التبديل إلى {language}…",
+    "restartNotice": "يحتاج التطبيق إلى إعادة التشغيل لتغيير اتجاه النص. لن يضيع شيء."
+  },
+  "count": {
+    "divers": "{count, plural, zero {لا يوجد غطاسون} one {غطاس واحد} two {غطاسان} few {# غطاسين} many {# غطاسًا} other {# غطاس}}",
+    "reviews": "{count, plural, =0 {لا توجد تقييمات بعد} zero {لا توجد تقييمات} one {تقييم واحد} two {تقييمان} few {# تقييمات} many {# تقييمًا} other {# تقييم}}",
+    "spotsLeft": "{count, plural, =0 {مكتمل الحجز} zero {لا أماكن متبقية} one {مكان واحد متبقٍ} two {مكانان متبقيان} few {# أماكن متبقية} many {# مكانًا متبقيًا} other {# مكان متبقٍ}}",
+    "nights": "{count, plural, zero {لا ليالي} one {ليلة واحدة} two {ليلتان} few {# ليالٍ} many {# ليلة} other {# ليلة}}",
+    "dives": "{count, plural, zero {لا غطسات} one {غطسة واحدة} two {غطستان} few {# غطسات} many {# غطسة} other {# غطسة}}",
+    "guests": "{count, plural, zero {لا ضيوف} one {ضيف واحد} two {ضيفان} few {# ضيوف} many {# ضيفًا} other {# ضيف}}"
+  },
+  "cert": {
+    "expiresInDays": "{days, plural, =0 {تنتهي اليوم} zero {تنتهي خلال # يوم} one {تنتهي خلال يوم واحد} two {تنتهي خلال يومين} few {تنتهي خلال # أيام} many {تنتهي خلال # يومًا} other {تنتهي خلال # يوم}}",
+    "expiredAgo": "{days, plural, zero {انتهت اليوم} one {انتهت منذ يوم واحد} two {انتهت منذ يومين} few {انتهت منذ # أيام} many {انتهت منذ # يومًا} other {انتهت منذ # يوم}}"
+  },
+  "price": {
+    "from": "ابتداءً من {price}",
+    "perPerson": "{price} للفرد",
+    "perGroup": "{price} للمجموعة",
+    "total": "الإجمالي {price}",
+    "free": "مجانًا"
+  },
+  "safety": {
+    "noFlySingle": "اترك {hours, number} ساعة بين الغطسة الواحدة وموعد رحلتك.",
+    "noFlyMulti": "اترك {hours, number} ساعة بين الغطس لعدة أيام وموعد رحلتك.",
+    "chamber": "في دهب غرفة ضغط. في حالة الطوارئ اتصل بـ {phone}.",
+    "certificationRequired": "هذا النشاط يتطلب شهادة {certification}.",
+    "technicalOnly": "للغطاسين التقنيين فقط."
+  },
+  "bidi": {
+    "sampleWithSite": "الغطس في {site} يبدأ الساعة {time}.",
+    "sampleWithOperator": "أكّد {operator} حجزك بتاريخ {date}."
+  },
+  "gallery": {
+    "title": "معرض المكوّنات",
+    "subtitle": "كل مكوّن، وكل صيغة، وكل حالة.",
+    "sectionFoundations": "الأساسيات",
+    "sectionComponents": "المكوّنات",
+    "toggleTheme": "المظهر",
+    "toggleDirection": "الاتجاه",
+    "toggleLocale": "اللغة",
+    "toggleNumerals": "الأرقام",
+    "stateDefault": "افتراضي",
+    "stateHover": "تحويم",
+    "stateFocus": "تركيز",
+    "stateActive": "نشط",
+    "stateDisabled": "معطّل",
+    "stateLoading": "جارٍ التحميل",
+    "stateError": "خطأ",
+    "stateEmpty": "فارغ",
+    "stateSkeleton": "هيكل",
+    "noComponentsYet": "لا توجد مكوّنات مسجّلة في هذا القسم بعد."
+  }
+}

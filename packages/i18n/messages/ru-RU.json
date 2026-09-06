@@ -1,0 +1,149 @@
+{
+  "$meta": {
+    "locale": "ru-RU",
+    "source": false,
+    "needsTranslation": [],
+    "identicalToSource": ["app.name"]
+  },
+  "app": {
+    "name": "Dahab Focal",
+    "tagline": "Найдите своих в Дахабе."
+  },
+  "action": {
+    "ok": "ОК",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "close": "Закрыть",
+    "back": "Назад",
+    "next": "Далее",
+    "retry": "Повторить",
+    "search": "Поиск",
+    "filter": "Фильтр",
+    "clear": "Очистить",
+    "apply": "Применить",
+    "done": "Готово",
+    "edit": "Изменить",
+    "remove": "Удалить",
+    "confirm": "Подтвердить",
+    "share": "Поделиться",
+    "seeMore": "Показать ещё",
+    "seeLess": "Показать меньше"
+  },
+  "state": {
+    "loading": "Загрузка",
+    "emptyTitle": "Здесь пока пусто",
+    "emptyBody": "Когда появится что показать, оно будет здесь.",
+    "errorTitle": "Не удалось загрузить",
+    "errorBody": "Что-то пошло не так на нашей стороне. На вашу бронь это не влияет.",
+    "offlineTitle": "Нет соединения",
+    "offlineBody": "В Дахабе связь неустойчивая. Показываем то, что сохранили в прошлый раз.",
+    "notFoundTitle": "Мы это не нашли",
+    "notFoundBody": "Возможно, ссылка устарела или объявление сняли."
+  },
+  "status": {
+    "draft": "Черновик",
+    "underReview": "На проверке",
+    "pending": "Ожидает",
+    "confirmed": "Подтверждено",
+    "cancelled": "Отменено",
+    "completed": "Завершено",
+    "expired": "Истекло",
+    "verified": "Проверено",
+    "rejected": "Отклонено"
+  },
+  "a11y": {
+    "required": "Обязательно",
+    "optional": "Необязательно",
+    "selected": "Выбрано",
+    "expand": "Развернуть",
+    "collapse": "Свернуть",
+    "closeDialog": "Закрыть диалог",
+    "openMenu": "Открыть меню",
+    "loading": "Загрузка, подождите",
+    "increase": "Увеличить",
+    "decrease": "Уменьшить",
+    "externalLink": "Откроется в новом окне",
+    "skipToContent": "Перейти к содержимому",
+    "sortAscending": "Сортировка по возрастанию",
+    "sortDescending": "Сортировка по убыванию"
+  },
+  "form": {
+    "required": "Это поле обязательно.",
+    "invalidEmail": "Это не похоже на адрес электронной почты.",
+    "invalidPhone": "Укажите номер, по которому с вами можно связаться.",
+    "tooShort": "Минимальная длина — {min, plural, one {# символ} few {# символа} many {# символов} other {# символа}}.",
+    "tooLong": "Максимальная длина — {max, plural, one {# символ} few {# символа} many {# символов} other {# символа}}.",
+    "outOfRange": "Введите число от {min, number} до {max, number}."
+  },
+  "field": {
+    "phoneLabel": "Номер телефона",
+    "phoneHint": "Египетские номера начинаются с +20. Мы отправим одноразовый код, без рекламы.",
+    "otpLabel": "Код из шести цифр",
+    "otpResendIn": "Отправить снова через {seconds, number} с",
+    "emailLabel": "Электронная почта"
+  },
+  "settings": {
+    "language": "Язык",
+    "theme": "Оформление",
+    "themeLight": "Светлое",
+    "themeDark": "Тёмное",
+    "themeSystem": "Как на устройстве",
+    "currency": "Валюта",
+    "numerals": "Цифры",
+    "numeralsLatn": "Западные цифры (0 1 2 3)",
+    "numeralsArab": "Арабо-индийские цифры (٠ ١ ٢ ٣)",
+    "direction": "Направление текста",
+    "switchingLanguage": "Переключаем на {language}…",
+    "restartNotice": "Для смены направления текста приложение перезапустится. Ничего не потеряется."
+  },
+  "count": {
+    "divers": "{count, plural, one {# дайвер} few {# дайвера} many {# дайверов} other {# дайвера}}",
+    "reviews": "{count, plural, =0 {Отзывов пока нет} one {# отзыв} few {# отзыва} many {# отзывов} other {# отзыва}}",
+    "spotsLeft": "{count, plural, =0 {Мест нет} one {осталось # место} few {осталось # места} many {осталось # мест} other {осталось # места}}",
+    "nights": "{count, plural, one {# ночь} few {# ночи} many {# ночей} other {# ночи}}",
+    "dives": "{count, plural, one {# погружение} few {# погружения} many {# погружений} other {# погружения}}",
+    "guests": "{count, plural, one {# гость} few {# гостя} many {# гостей} other {# гостя}}"
+  },
+  "cert": {
+    "expiresInDays": "{days, plural, =0 {Истекает сегодня} one {Истекает через # день} few {Истекает через # дня} many {Истекает через # дней} other {Истекает через # дня}}",
+    "expiredAgo": "{days, plural, one {Истекло # день назад} few {Истекло # дня назад} many {Истекло # дней назад} other {Истекло # дня назад}}"
+  },
+  "price": {
+    "from": "от {price}",
+    "perPerson": "{price} с человека",
+    "perGroup": "{price} за группу",
+    "total": "Итого {price}",
+    "free": "Бесплатно"
+  },
+  "safety": {
+    "noFlySingle": "Между одиночным погружением и вылетом должно пройти {hours, number} часов.",
+    "noFlyMulti": "Между многодневным дайвингом и вылетом должно пройти {hours, number} часов.",
+    "chamber": "В Дахабе есть барокамера. В экстренном случае звоните {phone}.",
+    "certificationRequired": "Для этого занятия нужен сертификат {certification}.",
+    "technicalOnly": "Только для технических дайверов."
+  },
+  "bidi": {
+    "sampleWithSite": "Погружение на {site} начинается в {time}.",
+    "sampleWithOperator": "{operator} подтвердил вашу бронь на {date}."
+  },
+  "gallery": {
+    "title": "Галерея компонентов",
+    "subtitle": "Каждый компонент, каждый вариант, каждое состояние.",
+    "sectionFoundations": "Основы",
+    "sectionComponents": "Компоненты",
+    "toggleTheme": "Тема",
+    "toggleDirection": "Направление",
+    "toggleLocale": "Локаль",
+    "toggleNumerals": "Цифры",
+    "stateDefault": "Обычное",
+    "stateHover": "Наведение",
+    "stateFocus": "Фокус",
+    "stateActive": "Нажатие",
+    "stateDisabled": "Отключено",
+    "stateLoading": "Загрузка",
+    "stateError": "Ошибка",
+    "stateEmpty": "Пусто",
+    "stateSkeleton": "Скелетон",
+    "noComponentsYet": "В этом разделе пока нет зарегистрированных компонентов."
+  }
+}
