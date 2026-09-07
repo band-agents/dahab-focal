@@ -1,11 +1,22 @@
 import {
   createContext,
   useContext,
+  useEffect,
+  useLayoutEffect,
   useMemo,
   type PropsWithChildren,
   type ReactElement,
 } from 'react';
 import { I18nManager, Platform } from 'react-native';
+
+/**
+ * On the web a layout effect runs before the browser paints, so the document
+ * is stamped with no flash of the wrong theme. During static prerender there
+ * is no document and no paint, so the plain effect is used and React does not
+ * warn. On native both are no-ops for this purpose.
+ */
+const useDocumentEffect =
+  Platform.OS === 'web' && typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 /**
  * Theme and direction, provided once at the root of every surface.
@@ -48,13 +59,23 @@ export function ThemeProvider({
     [theme, resolvedDirection],
   );
 
-  if (Platform.OS === 'web' && typeof document !== 'undefined') {
+  // Mutating the document during render is a side effect in the render phase:
+  // it runs twice under StrictMode and can be discarded entirely by a
+  // concurrent render that React throws away. It belongs in an effect.
+  useDocumentEffect(() => {
+    if (typeof document === 'undefined') return;
     const root = document.documentElement;
+    // The generated tokens.css swaps every --color-* under [data-theme='dark'],
+    // so this attribute is what actually repaints the palette.
     root.setAttribute('data-theme', theme);
+    // `dir` is what makes the CSS logical properties behind ms-/me-/ps-/pe-
+    // resolve to the other edge. RTL on web needs nothing else.
     root.setAttribute('dir', resolvedDirection);
-    // NativeWind's dark: variant keys off this class on web.
+    // NativeWind's dark: variant keys off this class on web. Colours do not
+    // need it — they come from the custom properties above — but a component
+    // that reaches for `dark:` should still work.
     root.classList.toggle('dark', theme === 'dark');
-  }
+  }, [theme, resolvedDirection]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

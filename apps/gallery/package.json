@@ -7,7 +7,9 @@
     "dev": "expo start --web",
     "build": "expo export --platform web --output-dir dist",
     "typecheck": "tsc --noEmit",
-    "test": "echo \"gallery: no unit tests, verified by screenshot\" && exit 0"
+    "test": "echo \"gallery: no unit tests, verified by screenshot\" && exit 0",
+    "shoot": "node scripts/shoot.mjs",
+    "shoot:build": "pnpm build && node scripts/shoot.mjs"
   },
   "dependencies": {
     "@dahab/i18n": "workspace:*",

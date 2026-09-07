@@ -91,6 +91,7 @@ export {
   DEFAULT_NAMESPACE,
   buildResources,
   createI18n,
+  createI18nSync,
   i18next,
   setLocale,
   type CreateI18nOptions,

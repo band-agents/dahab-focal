@@ -119,7 +119,19 @@ function makeParseErrorHandler(debug: boolean) {
   };
 }
 
-export async function createI18n(options: CreateI18nOptions = {}): Promise<I18nInstance> {
+/**
+ * The synchronous form.
+ *
+ * With the catalogues compiled in and no async backend, i18next's `init` runs
+ * to completion before it returns; the promise it hands back is already
+ * settled. So an app that knows its locale at module load can have a fully
+ * initialised instance on the very first render — no loading state, and no
+ * first paint in the wrong language that a screenshot would then capture.
+ *
+ * {@link createI18n} is the same call awaited, kept for callers that would
+ * rather not rely on that.
+ */
+export function createI18nSync(options: CreateI18nOptions = {}): I18nInstance {
   const locale = resolveLocale(options.locale);
   const instance = options.isolated === true ? i18next.createInstance() : i18next;
   const debug = options.debug ?? false;
@@ -129,7 +141,7 @@ export async function createI18n(options: CreateI18nOptions = {}): Promise<I18nI
   };
   preferences.set(instance, preference);
 
-  await instance
+  void instance
     .use(
       new ICU({
         parseLngForICU: (lng: string) => `${lng}-u-nu-${preference.current}`,
@@ -156,7 +168,18 @@ export async function createI18n(options: CreateI18nOptions = {}): Promise<I18nI
       react: { useSuspense: false },
     });
 
+  if (!instance.isInitialized) {
+    throw new Error(
+      'i18next did not initialise synchronously. That means an async backend or ' +
+        'loader was registered; use createI18n() and await it instead.',
+    );
+  }
+
   return instance;
+}
+
+export async function createI18n(options: CreateI18nOptions = {}): Promise<I18nInstance> {
+  return createI18nSync(options);
 }
 
 /**

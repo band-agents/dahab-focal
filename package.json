@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "packageManager": "pnpm@9.15.9",
-  "engines": { "node": ">=20.11" },
+  "engines": {
+    "node": ">=20.11"
+  },
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
@@ -18,7 +20,8 @@
     "db:seed": "pnpm --filter @dahab/db seed",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
-    "verify": "pnpm typecheck && pnpm lint:hardcoded && pnpm test:tokens && pnpm test:i18n && pnpm test"
+    "verify": "pnpm typecheck && pnpm lint:hardcoded && pnpm test:tokens && pnpm test:i18n && pnpm test",
+    "shoot": "pnpm --filter @dahab/gallery shoot:build"
   },
   "devDependencies": {
     "@dahab/config": "workspace:*",
