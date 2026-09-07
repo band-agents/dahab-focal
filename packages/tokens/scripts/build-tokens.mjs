@@ -92,6 +92,8 @@ const shadows = flattenScale(tokens.shadow);
 const gradients = flattenScale(tokens.gradient);
 const curves = flattenScale(tokens.motion?.curve);
 const durations = flattenScale(tokens.motion?.duration);
+const a11y = flattenScale(tokens.a11y);
+const texture = flattenScale(tokens.texture);
 
 /** Token names as they are written in code: `coral-500`, not `light.coral-500`. */
 function bareName(qualified) {
@@ -156,6 +158,11 @@ export const motion = {
   durations: ${JSON.stringify(mapValues(durations), null, 2)},
 } as const;
 
+/** Touch target, focus ring and the two texture opacities. Numbers, not CSS. */
+export const a11y = ${JSON.stringify(mapValues(a11y), null, 2)} as const;
+
+export const texture = ${JSON.stringify(mapValues(texture), null, 2)} as const;
+
 /**
  * Tokens still carrying the provisional sentinel. The gallery renders these
  * with a warning stripe so an unimported value cannot ship unnoticed.
@@ -200,6 +207,8 @@ function generateTokensCss() {
     scaleDeclarations('font', families),
     scaleDeclarations('ease', curves),
     scaleDeclarations('duration', durations),
+    scaleDeclarations('a11y', a11y),
+    scaleDeclarations('texture', texture),
   ].filter((section) => section.length > 0);
 
   return `/* GENERATED FILE — do not edit. Source: packages/tokens/tokens.json */
@@ -315,6 +324,12 @@ ${union(Object.keys(curves).sort())};
 
 export type MotionDuration =
 ${union(Object.keys(durations).sort())};
+
+export type A11yToken =
+${union(Object.keys(a11y).sort())};
+
+export type TextureToken =
+${union(Object.keys(texture).sort())};
 `;
 }
 

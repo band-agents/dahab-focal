@@ -1,0 +1,13 @@
+/* The token custom properties (light + Night Dive), generated from tokens.json. */
+@import '../../packages/tokens/src/generated/tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* The page ground the viewer paints behind the app. */
+html,
+body,
+#root {
+  background-color: var(--color-bg);
+}

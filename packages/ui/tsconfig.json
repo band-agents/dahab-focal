@@ -1,0 +1,9 @@
+{
+  "extends": "@dahab/config/tsconfig/react-native.json",
+  "compilerOptions": {
+    "types": ["react", "node"],
+    "jsx": "react-jsx"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
