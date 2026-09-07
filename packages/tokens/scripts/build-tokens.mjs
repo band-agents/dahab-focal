@@ -223,13 +223,13 @@ ${declarations(darkNames, 'dark')}
 }
 
 function generateTailwindPreset() {
+  // Colours resolve to the CSS custom properties emitted in tokens.css, so a
+  // single utility class (`bg-surface`) follows the active theme instead of
+  // baking in the light hex. The literal values live in theme.ts for the RN
+  // StyleSheet path and in tokens.css for the web. Spacing, radii, type and
+  // shadows are not themed and stay literal.
   const colorEntries = colorNames
-    .map((name) => {
-      const light = colors[`light.${name}`];
-      const dark = colors[`dark.${name}`];
-      const value = (light ?? dark).value;
-      return `      ${quote(name)}: ${quote(value)},`;
-    })
+    .map((name) => `      ${quote(name)}: ${quote(`var(--color-${name})`)},`)
     .join('\n');
 
   const fontSizeEntries = Object.entries(roles)

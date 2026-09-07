@@ -1,13 +1,148 @@
 # Foundation
 
-What this session built, what it deliberately did not, and every place a
-judgment call was made that you should overrule if I got it wrong.
+What each session built, what it deliberately did not, and every place a
+judgment call was made that you should overrule if it was wrong.
 
-Session date: 2026-09-06. Six commits, 160 tests.
+- **Session 1** — 2026-09-06. Six commits, 160 tests. Everything visual blocked
+  on an unreadable design. Recorded below from "Session 1 record" onward;
+  superseded wherever Session 2 contradicts it.
+- **Session 2** — 2026-09-07. The design import was unblocked (`/design-login`
+  had been run interactively). This section.
 
 ---
 
-## The headline: the design was never read
+## Session 2 — the design, imported
+
+### What the import actually contained
+
+Project `3faba25b-…`, "Travel booking design system refresh", owner dannzz. Ten
+files. The design of record is **`Design System.dc.html`** (revision v3, 8
+sections) with its two exports **`dahab-focal.tokens.json` (`$version 3.0.0`,
+`$generated 2026-09-06`)** and **`dahab-focal.tokens.css`**. `Design System
+v1.dc.html` and `v2.dc.html` are kept for history and were ignored. `support.js`
+is the Claude Design canvas runtime, not design content. Two `uploads/*.png` are
+reference images. Only the traveler design system exists — no traveler product
+artboards yet, and no vendor or admin design.
+
+**The v3 design is a wholesale rework of the direction the pre-design brief in
+CLAUDE.md described.** The brief's "Non-negotiables" named a `coral-500` fill
+button with an `abyss-900` label, a sand/abyss palette, and Fraunces + Cairo +
+JetBrains Mono. None of that survived three design passes. The owner confirmed on
+2026-09-07 that **v3 wins**, and CLAUDE.md's "Non-negotiables" section was
+rewritten to match it in the same series of commits as this token fill.
+
+What v3 carries, now in `packages/tokens/tokens.json`:
+
+- **Palette.** Five light families — `cream` (page/surfaces, no pure white),
+  `mint` (water), `blush` (life/motion, incl. the CTA), `sand`/`clay` (land/
+  culture) — plus `ink`, a status set, 12 category surface/shape pairs, a
+  7-step ordered viz palette, and a full semantic layer (`bg`, `surface`,
+  `text`, `text-muted`, `text-link`, `text-brand`, `line`, `focus-ring`,
+  `cta-*`). 71 colour tokens total.
+- **Night Dive** dark theme: the three pastels dimmed onto `#0A2422`; the mark
+  line inverts to cream.
+- **Type.** Baloo 2 (display/brand/price, 600), Rubik (all UI/body, 300/400/500,
+  all three scripts), Baloo Bhaijaan 2 (Arabic display). System `ui-monospace`
+  stack for the few mono read-outs. 11 roles from `displayXL` (36/48) to
+  `overline` (11/16). Positive display tracking.
+- **Radii** 13 steps incl. the three `arch*` doorway masks and `pill`. **Space**
+  a 12-step 4pt scale. **Shadows** three warm-tinted lifts. **Gradients** seven
+  named washes + `photo-scrim`. **Motion** three curves (`buoyant`/`silk`/
+  `tide`), five durations, six named signatures, a `prefers-reduced-motion`
+  collapse. **37 marks** + `spark`/`tick` + a 6-piece illustration set.
+
+### Corrections made in code, NOT yet made in the canvas
+
+Push these back into Claude Design so the two stop drifting.
+
+| Token | Canvas (v3) | In code now | Why |
+| --- | --- | --- | --- |
+| `clay-700` / `text-muted` | `#8A7B68` | **`#7D6D5E`** | Canvas labels it "muted TEXT · 4.9 ✓ AA". Recomputed it is **3.95:1** on `cream-50` — fails AA for normal text, and this token carries `small`, `caption` and `overline`, which includes the FX and legal disclosure. `#7D6D5E` computes **4.78:1**. On `cream-100` (raised panels) it is 4.39:1 — see the flag below. |
+| `danger-text` (`status.dangerText` / css `--df-danger-600`) | `#C13333` | **`#B82D2D`** | `#C13333` on `danger-surface #F5DCDC` is **4.26:1** — sub-AA as text. Error text must clear AA on its own, independent of the icon and label beside it. `#B82D2D` is the nearest darker value in the same hue (R≫G=B, hue 0°) that clears it: **4.68:1**. `#C13030` (4.33) and values between still fail. |
+
+### Orphaned CSS-only keys (JSON is the source of truth — not invented into JSON)
+
+`dahab-focal.tokens.css` defines these under `[data-theme="night-dive"]`;
+`dahab-focal.tokens.json`'s `color.night` block has no counterpart, so they are
+**not** in `tokens.json`. They need to be added to the canvas JSON (or removed
+from the CSS) and then imported here:
+
+| CSS key (night) | CSS value | Consequence of the gap |
+| --- | --- | --- |
+| `--df-text-link` | `#7FD8D0` | Night-mode links have no token; they would inherit the light `#0E7F80` (~1.6:1 on `#0A2422` — invisible). **Blocks dark mode for any linked text.** |
+| `--df-focus-ring` | `#7FD8D0` | Night-mode focus ring has no token; inherits `lagoon-focus #17A2A0` (~2.0:1 on night surface). **Blocks the a11y focus requirement in dark.** |
+| `--df-text-brand` | `#E8A99C` | Night-mode brand/coral text has no token (`#E8A99C` computes 8.2:1 on `#0A2422`, so the value is fine — it just isn't in the JSON). |
+| `--df-cta-edge` | `#E8A99C` | Night CTA 1px edge has no token. |
+| `--df-cta-fill-pressed` | `#E8A99C` | Night CTA pressed fill has no token. |
+
+Also minor, internal to the two exports: `dune-700` is annotated **5.4** in the
+JSON and **5.7** in the CSS comment (computed **5.37**); the JSON `night` block
+omits `raised`-vs-`surface-raised` naming that the CSS uses. JSON taken as
+authoritative throughout.
+
+### Every documented ratio, recomputed from the hexes
+
+`packages/tokens/scripts/contrast.mjs` (WCAG 2.2, sRGB threshold 0.04045),
+against the hex now in `tokens.json`. The canvas annotation is shown only where
+it differs by more than rounding. **The computed value is authoritative.**
+
+| Pair | Computed | Canvas said | AA (normal text) |
+| --- | --- | --- | --- |
+| `text` / `bg` (light) | **11.19** | 11.4 | pass (AAA) |
+| `line` / `bg` (light) | **8.93** | 9.0 | pass |
+| `cta-label` / `cta-fill` — the primary button | **8.20** | 9.4 | pass (AAA) |
+| `text` / `shape-water` (mint-200) | **8.09** | 8.3 | pass |
+| `text-brand` (coral-700) / `bg` | **5.14** | 5.2 | pass |
+| `dune-700` / `sand-50` | **5.37** | 5.4 json / 5.7 css | pass |
+| `warning-text` / `warning-surface` | **5.37** | — | pass |
+| `danger-text` / `danger-surface` (corrected `#B82D2D`) | **4.68** | — (was 4.26) | pass |
+| `text-muted` / `bg` (corrected `#7D6D5E`) | **4.78** | 4.9 (was 3.95) | pass |
+| `text-link` (lagoon-600) / `bg` | **4.62** | 4.7 | pass |
+| `success-text` / `success-surface` | **4.57** | — | pass |
+| `clay-500` / `bg` — brand accent, must FAIL | **2.40** | 2.4 | fail (intended) |
+| `cream-400` / `bg` — decoration, must FAIL | **2.14** | 2.2 | fail (intended) |
+| white / `cta-fill` — must FAIL | **1.42** | 1.5 | fail (intended) |
+| `text` / `bg` (Night Dive) | **14.32** | 12.6 | pass (AAA) |
+| `text-muted` / `bg` (Night Dive) | **7.51** | 6.2 | pass |
+| `cta-label` / `cta-fill` (Night Dive) | **5.76** | — | pass |
+
+Night Dive text is **14.32**, not the annotated 12.6: the 12.6 was measured
+against `surface #0F2E2E` (computes 12.72), then the page ground was darkened to
+`#0A2422` afterwards. Kept `#0A2422` — the darker ground is the better result;
+the number was corrected.
+
+### Failures found on recompute — flagged, NOT fixed
+
+Only `clay-700` and `danger-text` were authorised for an in-code fix. These
+others fail their WCAG bar and need a canvas decision:
+
+| Pair | Computed | Bar | Where it bites |
+| --- | --- | --- | --- |
+| `info-text` (`#0E7F80`) / `info-surface` (`#E6F5F3`) | **4.29** | 4.5 (text) | info callouts; the "Good today — 25m visibility" conditions strip on the listing card |
+| `lagoon-600` / `mint-50` | **4.29** | 4.5 (text) | the **secondary button** label (`mint-50` fill, `lagoon-600` text) |
+| `text-muted` corrected (`#7D6D5E`) / `surface` (`cream-100`) | **4.39** | 4.5 (text) | metadata / overline text that sits on a raised panel rather than the page. 4.78 on `bg`; 4.39 on `surface`. A darker `#786757`-ish would clear both but was not in scope. |
+| `focus-ring` (`lagoon-focus #17A2A0`) / `surface` (`cream-100`) | **2.76** | 3.0 (non-text, 1.4.11) | the focus ring against a raised surface. 3.01 on `bg` — a bare pass there. |
+| night `border-strong` (`#3A6E68`) / night `bg` | **2.80** | 3.0 (non-text, 1.4.11) | the board calls `#3A6E68` "minimum for the sole boundary of a control"; it isn't. 2.49 on night `surface`. |
+| night `border` (`#255450`) / night `bg` | **1.91** | — | dividers only, so 1.4.11 does not strictly apply, but noted. |
+
+### Open questions for the owner
+
+1. **The five orphaned night tokens** above — `text-link` and `focus-ring` in
+   particular block dark mode shipping. Add them to the canvas JSON.
+2. **The five sub-bar pairings** above — adjust on the canvas, or accept with a
+   documented rationale (e.g. secondary-button text always paired with an icon)?
+3. **The per-icon `noFlip` list.** CLAUDE.md's rule (physical objects and media
+   controls don't mirror; everything else does) is firm, but the board does not
+   publish the per-mark list. `tokens.json` carries a conservative first pass
+   (`icon.noFlip.names`) that needs design sign-off.
+4. **`clay-700` on `cream-100`.** If muted text on raised panels must clear AA
+   too, `text-muted` needs to go a step darker still than `#7D6D5E`.
+
+---
+
+## Session 1 record (2026-09-06) — superseded where Session 2 conflicts
+
+### The headline: the design was never read
 
 **`packages/tokens`, `packages/ui`, `packages/ui-web` and `apps/gallery` are
 blocked, and nothing visual was guessed.**

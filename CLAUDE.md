@@ -10,14 +10,52 @@ one design system, one token package, one i18n package and one API.
 
 ## Non-negotiables
 
+**The design canvas is the source of truth.** This file was written from a brief
+*before the design existed*. The Claude Design project then went through three
+deliberate passes; revision v3 (`Design System.dc.html` /
+`dahab-focal.tokens.json@3.0.0`, imported 2026-09-07) wins wherever it and an
+older instruction disagree. The palette, type and component rules below were
+rewritten to match v3. v1 and v2 are history.
+
 **Design tokens.** `packages/tokens/tokens.json` is the only place a visual value is
 defined. No hex color, no raw font size, no magic spacing number anywhere else in
-the repo. `pnpm lint:hardcoded` enforces this — do not disable it.
+the repo. `pnpm lint:hardcoded` enforces this — do not disable it. Every value in
+it is filled from v3; two hexes carry a documented in-code correction that is not
+yet reflected in the canvas (`clay-700` and `danger-text` — see
+`docs/FOUNDATION.md`).
 
-**The primary button is a coral-500 fill with an abyss-900 label.** White on coral
-fails contrast (2.80:1). Where a white label is required, the fill is coral-800.
-Coral text on light is always coral-700, never coral-500. Muted text is sand-500,
-never sand-400 (2.15:1, borders only).
+**One hand.** Every mark, illustration, the logo and the loading state are drawn
+the same way: a 3px soft-charcoal line (`ink-line` #3B4A48, never pure black) over
+a flat pastel silhouette, filled, offset +4/+4 down-right. Never fatten the line
+and reuse it as the shape. Purely abstract marks (sea, wind, weave, reef, depth,
+the coral fan) carry no silhouette. Six strokes or fewer.
+
+**Four families and one ink: cream, mint, blush, sand.** No pure white anywhere —
+the page is `cream-50` #FDFAF6. Primary text is `ink-900` #2E3B3A (11.2:1). If a
+screen carries more than three colours, something has gone wrong.
+
+**The primary button is a `blush-200` (#F9CFC8) fill with an `ink-900` label**
+(8.2:1). There is no white-on-fill button in this system — white on blush is
+1.4:1, and the API of the Button primitive must make it impossible to express, not
+merely discouraged. `blush-300` is the 1px edge and the pressed fill. Coral text
+on light is always `coral-700` #C13B2C (5.1:1), never a lighter coral. Muted text
+is `text-muted` / `clay-700` #7D6D5E (4.8:1), never `clay-500` (2.4:1, the word
+"focal" only) or `cream-400` (2.1:1, decoration and empty dots only).
+
+**The serif is gone.** Display and brand and every price are **Baloo 2** 600
+(round terminals that echo the line caps); never below 19px, never a UI label.
+All UI and body are **Rubik** (300/400/500, and 500 is the heaviest UI weight) —
+one family for Latin, Cyrillic and Arabic. Arabic display is **Baloo Bhaijaan 2**;
+Arabic body stays Rubik, +20% line-height, never below 15px. Monospace is the
+system stack (`ui-monospace, …`) — there is no bundled mono face. Display tracking
+is positive. Read sizes, line-heights and tracking from the type-scale role by
+name; never an ad-hoc `fontSize`.
+
+**Night Dive is the dark theme.** The same three pastels dimmed onto a warm
+green-black (`bg` #0A2422). The mark line inverts to cream; the offset shape stays
+pastel. The CTA fill becomes `#C98A7E` with a near-black label. Five night
+semantic tokens (`text-link`, `text-brand`, `focus-ring`, `cta-edge`,
+`cta-fill-pressed`) are not yet defined on the canvas — see `docs/FOUNDATION.md`.
 
 **RTL is not a feature, it is the layout model.** Never `marginLeft`, `marginRight`,
 `paddingLeft`, `paddingRight`, `left:`, `right:`. Always the logical equivalents
@@ -47,9 +85,13 @@ else, you are creating a refund ticket.
 builder form, and the traveler comparison engine. Never add a hardcoded column to
 `services` for something a category might want to compare.
 
-**Accessibility is a build gate.** WCAG 2.2 AA. Touch targets >=44pt. Focus ring 2px
-lagoon-500 at 2px offset. Status is never color alone — always color plus icon plus
-word. Every animation respects `prefers-reduced-motion`.
+**Accessibility is a build gate.** WCAG 2.2 AA. Touch targets >=44pt, >=8px apart;
+the primitive enforces it via `hitSlop` where the visual is smaller. Focus ring
+2px `focus-ring` (`lagoon-focus` #17A2A0) at 2px offset, drawn as the brand's
+camera-focus ring. Status is never color alone — always color plus mark plus word.
+Every animation respects `prefers-reduced-motion`; every signature collapses to a
+120ms opacity fade. Contrast ratios are recomputed from the hexes in `tokens.json`
+by `pnpm test:tokens`, never trusted from an annotation.
 
 ## Domain rules that are real, not decorative
 
