@@ -1,5 +1,5 @@
 import { LOCALES, SOURCE_LOCALE, directionOf, isLocale, type Locale } from '@dahab/i18n';
-import type { Direction, ThemeName } from '@dahab/ui';
+import type { Direction, Script, ThemeName } from '@dahab/ui';
 
 /**
  * The gallery's render configuration, read once from the URL.
@@ -18,6 +18,8 @@ export interface GalleryConfig {
   readonly theme: ThemeName;
   readonly direction: Direction;
   readonly locale: Locale;
+  /** Arabic swaps the display face; every other locale of ours is Latin. */
+  readonly script: Script;
   /** True when the direction was forced rather than derived from the locale. */
   readonly directionForced: boolean;
 }
@@ -74,7 +76,9 @@ export function readConfig(): GalleryConfig {
     ? pick(params, 'dir', DIRECTIONS, directionOf(locale))
     : directionOf(locale);
 
-  return { theme, direction, locale, directionForced };
+  const script: Script = locale === 'ar-EG' ? 'arabic' : 'latin';
+
+  return { theme, direction, locale, script, directionForced };
 }
 
 function fallbackLocale(raw: string): Locale {

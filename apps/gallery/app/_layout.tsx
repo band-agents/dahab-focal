@@ -16,7 +16,7 @@ import { i18n } from '../src/i18n';
 export default function RootLayout() {
   return (
     <I18nextProvider i18n={i18n}>
-      <ThemeProvider theme={config.theme} direction={config.direction}>
+      <ThemeProvider theme={config.theme} direction={config.direction} script={config.script}>
         <Stack screenOptions={{ headerShown: false }} />
       </ThemeProvider>
     </I18nextProvider>

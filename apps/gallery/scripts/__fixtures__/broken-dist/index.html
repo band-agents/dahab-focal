@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Broken gallery fixture</title>
+    <!--
+      This is the state apps/gallery was actually in before the harness was
+      fixed, preserved so the gate can be tested against it:
+
+        - the ?theme=, ?dir= and ?locale= parameters are ignored entirely, so
+          every configuration renders identically
+        - no data-theme or dir is ever set on the document
+        - no @font-face is declared, so everything falls back to a system face
+
+      tests/shoot-gate.test.ts runs the shooter against this and asserts it
+      exits 1 naming all three failures. If someone weakens an assertion, this
+      fixture starts passing and the test goes red.
+
+      Deliberately hand-written and static: it must not depend on a Metro build,
+      so the test stays fast and cannot be broken by an unrelated app change.
+    -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #fdfaf6;
+      }
+      .page {
+        padding: 24px;
+        font: 400 17px/1.5 system-ui, sans-serif;
+        color: #2e3b3a;
+      }
+      h1 {
+        font: 600 36px/1.33 system-ui, sans-serif;
+        margin: 0 0 8px;
+      }
+      .cta {
+        display: inline-block;
+        margin-top: 16px;
+        padding: 12px 20px;
+        border-radius: 18px;
+        background: #f9cfc8;
+        color: #2e3b3a;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="page">
+        <h1>Component gallery</h1>
+        <p>
+          Every configuration renders exactly this, in a system face, with no
+          data-theme and no dir. Four identical images under four names.
+        </p>
+        <span class="cta">Confirm</span>
+      </div>
+    </div>
+  </body>
+</html>

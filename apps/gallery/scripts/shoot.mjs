@@ -16,38 +16,88 @@
  *
  * No dependency: Node has had a global WebSocket since 22.4.
  *
- * Three things are asserted before an image counts as evidence:
+ * Four things are asserted before an image counts as evidence:
  *   1. the page actually applied the requested theme and direction
- *   2. the capture is exactly viewport x deviceScaleFactor, so nothing is cropped
- *   3. the four images differ from one another
+ *   2. the bundled faces downloaded AND are being drawn with, measured rather
+ *      than asked — document.fonts.check() answers true for a family that will
+ *      fall back, which is how a whole set can render in system-ui and pass
+ *   3. the capture is exactly viewport x deviceScaleFactor, so nothing is cropped
+ *   4. the four images differ from one another
  *
- * That third check is the one this script was missing. The parameters used to
+ * That last check is the one this script was missing. The parameters used to
  * be passed to an app that read none of them, so all four files were the same
  * light-LTR-English render saved under four names, and the screenshot gate in
  * CLAUDE.md's working agreement could only ever pass.
+ *
+ * `--dist <dir>` and `--out <dir>` override the defaults. tests/shoot-gate.test.ts
+ * uses them to run the whole gate against a deliberately broken fixture and
+ * assert it fails — a verification gate nobody verifies is the same bug again.
  */
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, extname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
-const distDir = resolve(here, '..', 'dist');
-const outDir = resolve(here, '..', 'screenshots');
+
+/**
+ * `--dist <dir>` and `--out <dir>` override the defaults. tests/shoot-gate.test.ts
+ * points them at a deliberately broken fixture and asserts the gate fails — a
+ * verification gate nobody verifies is the same bug this script was written to
+ * remove.
+ */
+function flag(name, fallback) {
+  const index = process.argv.indexOf(`--${name}`);
+  const value = index === -1 ? undefined : process.argv[index + 1];
+  return value === undefined ? fallback : resolve(value);
+}
+
+const distDir = flag('dist', resolve(here, '..', 'dist'));
+const outDir = flag('out', resolve(here, '..', 'screenshots'));
 
 /** iPhone 15 Pro width; 2x so type is legible when a designer zooms in. */
 const VIEWPORT_WIDTH = 430;
 const DEVICE_SCALE_FACTOR = 2;
 
+/**
+ * `fonts` is the list of families that must have actually downloaded and be
+ * in use for that configuration — not merely declared. Rubik carries every
+ * script, so it is required everywhere; the display face changes with the
+ * script, which is the rule ThemeProvider applies.
+ */
 const SHOTS = [
-  { name: 'gallery-light-ltr-en', theme: 'light', dir: 'ltr', locale: 'en-GB' },
-  { name: 'gallery-dark-ltr-en', theme: 'dark', dir: 'ltr', locale: 'en-GB' },
-  { name: 'gallery-light-rtl-ar', theme: 'light', dir: 'rtl', locale: 'ar-EG' },
-  { name: 'gallery-light-ltr-de', theme: 'light', dir: 'ltr', locale: 'de-DE' },
+  {
+    name: 'gallery-light-ltr-en',
+    theme: 'light',
+    dir: 'ltr',
+    locale: 'en-GB',
+    fonts: ['Rubik', 'Baloo 2'],
+  },
+  {
+    name: 'gallery-dark-ltr-en',
+    theme: 'dark',
+    dir: 'ltr',
+    locale: 'en-GB',
+    fonts: ['Rubik', 'Baloo 2'],
+  },
+  {
+    name: 'gallery-light-rtl-ar',
+    theme: 'light',
+    dir: 'rtl',
+    locale: 'ar-EG',
+    fonts: ['Rubik', 'Baloo Bhaijaan 2'],
+  },
+  {
+    name: 'gallery-light-ltr-de',
+    theme: 'light',
+    dir: 'ltr',
+    locale: 'de-DE',
+    fonts: ['Rubik', 'Baloo 2'],
+  },
 ];
 
 const CHROME_CANDIDATES = [
@@ -112,6 +162,8 @@ const port = await new Promise((done) => {
 console.log(`serving dist/ on http://127.0.0.1:${port}`);
 
 // --- Chrome over CDP ------------------------------------------------------
+
+await mkdir(outDir, { recursive: true });
 
 const userDataDir = await mkdtemp(join(tmpdir(), 'dahab-shoot-'));
 
@@ -257,6 +309,62 @@ for (const shot of SHOTS) {
     problems.push(`${shot.name}: asked for dir=${shot.dir}, document has dir=${applied.dir}.`);
   }
 
+  // Assertion 4: the bundled faces actually downloaded and are actually being
+  // drawn with. `document.fonts.check()` is not enough — it answers true for a
+  // family that will fall back, which is how a whole set of screenshots can be
+  // rendered in system-ui and still look like a pass.
+  const fontReport = await evaluate(`(async () => {
+    await document.fonts.ready;
+    const faces = [...document.fonts];
+
+    // Draw the same string in the target family and in a sentinel that the
+    // family must not resemble. Identical widths mean the family fell back.
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    const measure = (family, sample) => {
+      context.font = '600 40px ' + family;
+      return context.measureText(sample).width;
+    };
+
+    return {
+      declared: document.fonts.size,
+      loaded: faces
+        .filter((face) => face.status === 'loaded')
+        .map((face) => face.family),
+      resolves: ${JSON.stringify(shot.fonts)}.map((family) => {
+        const sample = family === 'Baloo Bhaijaan 2' ? 'الغطس في دهب' : 'Dahab Focal 1450';
+        const target = measure('"' + family + '", monospace', sample);
+        const fallback = measure('monospace', sample);
+        return { family, target, fallback, differs: Math.abs(target - fallback) > 0.5 };
+      }),
+    };
+  })()`);
+
+  if (fontReport.declared === 0) {
+    problems.push(
+      `${shot.name}: no @font-face rules at all (document.fonts.size is 0). ` +
+        'The bundled woff2 files are not reaching the page — check that ' +
+        'scripts/copy-fonts.mjs ran and that global.css imports @dahab/tokens fonts.css.',
+    );
+  }
+  for (const family of shot.fonts) {
+    if (!fontReport.loaded.includes(family)) {
+      problems.push(
+        `${shot.name}: "${family}" never loaded (no FontFace reached status "loaded"). ` +
+          `Loaded families: ${[...new Set(fontReport.loaded)].join(', ') || 'none'}.`,
+      );
+    }
+  }
+  for (const entry of fontReport.resolves) {
+    if (!entry.differs) {
+      problems.push(
+        `${shot.name}: "${entry.family}" measures identically to the fallback ` +
+          `(${entry.target}px), so this screenshot is rendering in a system face, not the ` +
+          'bundled one.',
+      );
+    }
+  }
+
   // Capture the whole scrollable column rather than one screen of it.
   const contentHeight = await evaluate(
     `Math.min(6000, Math.ceil(Math.max(
@@ -291,7 +399,7 @@ for (const shot of SHOTS) {
 
   console.log(
     `  ${shot.name}.png — ${pngWidth}x${pngHeight}, ` +
-      `theme=${applied.theme} dir=${applied.dir} bg=${applied.background}`,
+      `theme=${applied.theme} dir=${applied.dir} fonts=${[...new Set(fontReport.loaded)].join('+') || 'NONE'}`,
   );
 }
 

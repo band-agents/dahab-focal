@@ -22,7 +22,8 @@ defined. No hex color, no raw font size, no magic spacing number anywhere else i
 the repo. `pnpm lint:hardcoded` enforces this — do not disable it. Every value in
 it is filled from v3; two hexes carry a documented in-code correction that is not
 yet reflected in the canvas (`clay-700` and `danger-text` — see
-`docs/FOUNDATION.md`).
+`docs/CANVAS-FIXES.md`, which is the single worklist for everything owed to the
+design board).
 
 **One hand.** Every mark, illustration, the logo and the loading state are drawn
 the same way: a 3px soft-charcoal line (`ink-line` #3B4A48, never pure black) over
@@ -55,7 +56,12 @@ name; never an ad-hoc `fontSize`.
 green-black (`bg` #0A2422). The mark line inverts to cream; the offset shape stays
 pastel. The CTA fill becomes `#C98A7E` with a near-black label. Five night
 semantic tokens (`text-link`, `text-brand`, `focus-ring`, `cta-edge`,
-`cta-fill-pressed`) are not yet defined on the canvas — see `docs/FOUNDATION.md`.
+`cta-fill-pressed`) exist in the canvas CSS but not in its DTCG JSON, which is
+what this repo imports — so they are missing here and fall back to their light
+values. `text-link` and `focus-ring` are unreadable in dark as a result. The
+status strips and category surfaces have no night value in either export. All
+of it is `docs/CANVAS-FIXES.md`; until it lands, dark mode is incomplete and
+`gallery-dark-ltr-en.png` shows exactly where.
 
 **RTL is not a feature, it is the layout model.** Never `marginLeft`, `marginRight`,
 `paddingLeft`, `paddingRight`, `left:`, `right:`. Always the logical equivalents
@@ -126,6 +132,13 @@ with a EUR equivalent.
   plausible guess.
 - Stop and ask before adding a dependency.
 - Commit in logical chunks with real messages.
-- Every session ends by running: `pnpm typecheck && pnpm lint:hardcoded &&
-  pnpm test:tokens && pnpm test:i18n && pnpm test`, and by screenshotting new UI in
-  light-LTR, dark-LTR, ar-RTL and de-LTR.
+- Every session ends by running `pnpm verify` (typecheck, lint:hardcoded,
+  test:tokens, test:i18n, test) and `pnpm shoot`.
+- `pnpm shoot` builds the gallery and screenshots it in light-LTR, dark-LTR,
+  ar-RTL and de-LTR. It is a gate, not a convenience: it fails if the requested
+  theme and direction did not reach the document, if a bundled face did not load
+  and the page is drawing in a system font, if the capture is cropped, or if any
+  two images are identical. Four identical screenshots is what this project
+  shipped before the gate existed. Do not weaken it —
+  `apps/gallery/tests/shoot-gate.test.ts` runs it against a deliberately broken
+  fixture and requires it to fail.

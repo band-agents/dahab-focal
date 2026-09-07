@@ -9,8 +9,12 @@ export {
   useTheme,
   useDirection,
   useIsRTL,
+  useScript,
+  useDisplayFontClass,
+  useBodyFontClass,
   type ThemeName,
   type Direction,
+  type Script,
   type ThemeProviderProps,
 } from './theme';
 

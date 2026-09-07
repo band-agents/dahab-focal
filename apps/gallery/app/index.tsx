@@ -7,7 +7,7 @@ import {
   useTranslation,
   type FormatContext,
 } from '@dahab/i18n';
-import { useDirection, useTheme } from '@dahab/ui';
+import { useDirection, useDisplayFontClass, useTheme } from '@dahab/ui';
 
 import { config } from '../src/config';
 
@@ -24,6 +24,8 @@ export default function GalleryIndex() {
   const { t } = useTranslation();
   const theme = useTheme();
   const direction = useDirection();
+  // Baloo 2 for Latin, Baloo Bhaijaan 2 for Arabic. Body stays Rubik either way.
+  const display = useDisplayFontClass();
 
   const format: FormatContext = { locale: config.locale };
   const price = formatDualCurrency(money(145_000, 'EGP'), money(2_700, 'EUR'), format, {
@@ -37,7 +39,7 @@ export default function GalleryIndex() {
         <Text className="text-overline font-ui text-text-muted uppercase">
           {theme} · {direction} · {config.locale}
         </Text>
-        <Text className="text-displayL font-display text-text">{t('gallery.title')}</Text>
+        <Text className={`text-displayL ${display} text-text`}>{t('gallery.title')}</Text>
         <Text className="text-body font-ui text-text-muted">{t('gallery.subtitle')}</Text>
       </View>
 
@@ -46,16 +48,16 @@ export default function GalleryIndex() {
         <Text className="text-overline font-ui text-text-muted uppercase">
           {t('gallery.sectionFoundations')}
         </Text>
-        <Text className="text-h2 font-display text-text">{t('app.tagline')}</Text>
+        <Text className={`text-h2 ${display} text-text`}>{t('app.tagline')}</Text>
         <Text className="text-body font-ui text-text">{t('state.offlineBody')}</Text>
       </View>
 
       {/* The primary CTA: blush fill, ink label. No white-on-fill exists. */}
       <View className="gap-3">
         <View className="rounded-input bg-cta-fill px-5 py-3 self-start">
-          <Text className="text-h3 font-display text-cta-label">{t('action.confirm')}</Text>
+          <Text className={`text-h3 ${display} text-cta-label`}>{t('action.confirm')}</Text>
         </View>
-        <Text className="text-bodyL font-display text-text">
+        <Text className={`text-bodyL ${display} text-text`}>
           {t('price.perPerson', { price })}
         </Text>
         <Text className="text-body font-ui text-text-muted">
@@ -86,7 +88,7 @@ export default function GalleryIndex() {
 
       {/* A raised panel: surface vs bg, and muted text on the raised ground. */}
       <View className="rounded-card bg-surface p-4 gap-2">
-        <Text className="text-h3 font-display text-text">{t('status.confirmed')}</Text>
+        <Text className={`text-h3 ${display} text-text`}>{t('status.confirmed')}</Text>
         <Text className="text-small font-ui text-text-muted">
           {t('count.reviews', { count: 128 })} · {formatNumber(4.8, format)}
         </Text>

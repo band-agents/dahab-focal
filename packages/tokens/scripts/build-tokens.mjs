@@ -24,6 +24,7 @@ import { fileURLToPath } from 'node:url';
 const packageRoot = fileURLToPath(new URL('..', import.meta.url));
 const tokensPath = join(packageRoot, 'tokens.json');
 const outputDir = join(packageRoot, 'src', 'generated');
+const fontsManifestPath = join(packageRoot, 'fonts', 'manifest.json');
 
 const checkOnly = process.argv.includes('--check');
 
@@ -335,11 +336,59 @@ ${union(Object.keys(texture).sort())};
 
 // --- write or check -------------------------------------------------------
 
+/**
+ * @font-face blocks, one per (family, script), from fonts/manifest.json.
+ *
+ * Each carries its own unicode-range, so the browser fetches only the scripts
+ * a page actually renders: a German reader never downloads Rubik's Arabic.
+ * `font-display: swap` because Dahab's signal is patchy and unstyled text
+ * beats no text.
+ *
+ * The urls are root-absolute. Any web surface that consumes these must serve
+ * packages/tokens/fonts at /fonts — the gallery copies them into public/ as a
+ * build step.
+ */
+function generateFontsCss() {
+  if (!existsSync(fontsManifestPath)) {
+    return (
+      '/* GENERATED FILE — do not edit. Source: packages/tokens/fonts/manifest.json */\n\n' +
+      '/* No font manifest. Run: pnpm --filter @dahab/tokens fonts */\n'
+    );
+  }
+
+  const manifest = JSON.parse(readFileSync(fontsManifestPath, 'utf8'));
+
+  const blocks = manifest.faces.map((face) => {
+    const [min, max] = face.weightRange;
+    const weight = min === max ? String(min) : `${min} ${max}`;
+    return `/* ${face.family} — ${face.subset} */
+@font-face {
+  font-family: '${face.family}';
+  font-style: ${face.style};
+  font-weight: ${weight};
+  font-display: swap;
+  src: url('/fonts/${face.file}') format('woff2');
+  unicode-range: ${face.unicodeRange};
+}`;
+  });
+
+  return `/* GENERATED FILE — do not edit. Source: packages/tokens/fonts/manifest.json */
+
+/*
+ * Self-hosted, per-script. Nothing here is a visual decision: the family names
+ * come from tokens.json's type.family, and the files from fetch-fonts.mjs.
+ */
+
+${blocks.join('\n\n')}
+`;
+}
+
 const artefacts = [
   { name: 'theme.ts', contents: generateThemeTs() },
   { name: 'tokens.css', contents: generateTokensCss() },
   { name: 'tailwind-preset.js', contents: generateTailwindPreset() },
   { name: 'tokens.d.ts', contents: generateTokensDts() },
+  { name: 'fonts.css', contents: generateFontsCss() },
 ];
 
 if (checkOnly) {

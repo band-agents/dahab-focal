@@ -51,34 +51,20 @@ What v3 carries, now in `packages/tokens/tokens.json`:
   `tide`), five durations, six named signatures, a `prefers-reduced-motion`
   collapse. **37 marks** + `spark`/`tick` + a 6-piece illustration set.
 
-### Corrections made in code, NOT yet made in the canvas
+### Everything outstanding against the canvas → `docs/CANVAS-FIXES.md`
 
-Push these back into Claude Design so the two stop drifting.
+Every canvas-side change — the two in-code corrections (`clay-700`,
+`danger-text`), the five night tokens the CSS has and the JSON does not, the
+stale ratio annotations, the night values that exist nowhere, and the pairings
+that fail their bar — now lives in one worklist: **[CANVAS-FIXES.md](./CANVAS-FIXES.md)**.
 
-| Token | Canvas (v3) | In code now | Why |
-| --- | --- | --- | --- |
-| `clay-700` / `text-muted` | `#8A7B68` | **`#7D6D5E`** | Canvas labels it "muted TEXT · 4.9 ✓ AA". Recomputed it is **3.95:1** on `cream-50` — fails AA for normal text, and this token carries `small`, `caption` and `overline`, which includes the FX and legal disclosure. `#7D6D5E` computes **4.78:1**. On `cream-100` (raised panels) it is 4.39:1 — see the flag below. |
-| `danger-text` (`status.dangerText` / css `--df-danger-600`) | `#C13333` | **`#B82D2D`** | `#C13333` on `danger-surface #F5DCDC` is **4.26:1** — sub-AA as text. Error text must clear AA on its own, independent of the icon and label beside it. `#B82D2D` is the nearest darker value in the same hue (R≫G=B, hue 0°) that clears it: **4.68:1**. `#C13030` (4.33) and values between still fail. |
+It is kept as a single ordered list so it can be worked through in one Claude
+Design pass, with a computed ratio and a reason against every row. It was
+consolidated there on 2026-09-07 specifically so this file and that one cannot
+drift; when they disagree, CANVAS-FIXES.md is the one being maintained.
 
-### Orphaned CSS-only keys (JSON is the source of truth — not invented into JSON)
-
-`dahab-focal.tokens.css` defines these under `[data-theme="night-dive"]`;
-`dahab-focal.tokens.json`'s `color.night` block has no counterpart, so they are
-**not** in `tokens.json`. They need to be added to the canvas JSON (or removed
-from the CSS) and then imported here:
-
-| CSS key (night) | CSS value | Consequence of the gap |
-| --- | --- | --- |
-| `--df-text-link` | `#7FD8D0` | Night-mode links have no token; they would inherit the light `#0E7F80` (~1.6:1 on `#0A2422` — invisible). **Blocks dark mode for any linked text.** |
-| `--df-focus-ring` | `#7FD8D0` | Night-mode focus ring has no token; inherits `lagoon-focus #17A2A0` (~2.0:1 on night surface). **Blocks the a11y focus requirement in dark.** |
-| `--df-text-brand` | `#E8A99C` | Night-mode brand/coral text has no token (`#E8A99C` computes 8.2:1 on `#0A2422`, so the value is fine — it just isn't in the JSON). |
-| `--df-cta-edge` | `#E8A99C` | Night CTA 1px edge has no token. |
-| `--df-cta-fill-pressed` | `#E8A99C` | Night CTA pressed fill has no token. |
-
-Also minor, internal to the two exports: `dune-700` is annotated **5.4** in the
-JSON and **5.7** in the CSS comment (computed **5.37**); the JSON `night` block
-omits `raised`-vs-`surface-raised` naming that the CSS uses. JSON taken as
-authoritative throughout.
+`packages/tokens/scripts/propose-night.mjs` regenerates the proposal tables
+from `tokens.json`, so they can be re-derived rather than trusted.
 
 ### Every documented ratio, recomputed from the hexes
 
@@ -113,17 +99,14 @@ the number was corrected.
 
 ### Failures found on recompute — flagged, NOT fixed
 
-Only `clay-700` and `danger-text` were authorised for an in-code fix. These
-others fail their WCAG bar and need a canvas decision:
+Only `clay-700` and `danger-text` were authorised for an in-code fix. Six other
+pairings fail their WCAG bar and need a canvas decision — `info-text` on its
+own surface, the secondary button label, corrected `text-muted` on a raised
+panel, the focus ring on a raised panel, and the two night borders.
 
-| Pair | Computed | Bar | Where it bites |
-| --- | --- | --- | --- |
-| `info-text` (`#0E7F80`) / `info-surface` (`#E6F5F3`) | **4.29** | 4.5 (text) | info callouts; the "Good today — 25m visibility" conditions strip on the listing card |
-| `lagoon-600` / `mint-50` | **4.29** | 4.5 (text) | the **secondary button** label (`mint-50` fill, `lagoon-600` text) |
-| `text-muted` corrected (`#7D6D5E`) / `surface` (`cream-100`) | **4.39** | 4.5 (text) | metadata / overline text that sits on a raised panel rather than the page. 4.78 on `bg`; 4.39 on `surface`. A darker `#786757`-ish would clear both but was not in scope. |
-| `focus-ring` (`lagoon-focus #17A2A0`) / `surface` (`cream-100`) | **2.76** | 3.0 (non-text, 1.4.11) | the focus ring against a raised surface. 3.01 on `bg` — a bare pass there. |
-| night `border-strong` (`#3A6E68`) / night `bg` | **2.80** | 3.0 (non-text, 1.4.11) | the board calls `#3A6E68` "minimum for the sole boundary of a control"; it isn't. 2.49 on night `surface`. |
-| night `border` (`#255450`) / night `bg` | **1.91** | — | dividers only, so 1.4.11 does not strictly apply, but noted. |
+They are listed with their computed ratios and the screens they bite in
+**[CANVAS-FIXES.md §5 and §6](./CANVAS-FIXES.md)**, alongside the rest of the
+canvas worklist, rather than being restated here.
 
 ### Open questions for the owner
 

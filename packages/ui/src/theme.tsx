@@ -30,33 +30,47 @@ const useDocumentEffect =
 export type ThemeName = 'light' | 'dark';
 export type Direction = 'ltr' | 'rtl';
 
+/**
+ * Which script the surface is currently setting.
+ *
+ * Not the same question as direction: both Arabic and Hebrew are RTL, but only
+ * Arabic swaps the display face. The app knows its locale and passes this;
+ * @dahab/ui deliberately does not depend on @dahab/i18n to work it out.
+ */
+export type Script = 'latin' | 'arabic';
+
 interface ThemeContextValue {
   theme: ThemeName;
   direction: Direction;
+  script: Script;
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
   theme: 'light',
   direction: 'ltr',
+  script: 'latin',
 });
 
 export interface ThemeProviderProps {
   theme?: ThemeName;
   /** Omit to follow `I18nManager.isRTL`; pass to force one direction (the gallery does). */
   direction?: Direction;
+  /** Arabic swaps the display face to Baloo Bhaijaan 2; body stays Rubik. */
+  script?: Script;
 }
 
 export function ThemeProvider({
   theme = 'light',
   direction,
+  script = 'latin',
   children,
 }: PropsWithChildren<ThemeProviderProps>): ReactElement {
   const resolvedDirection: Direction =
     direction ?? (I18nManager.isRTL ? 'rtl' : 'ltr');
 
   const value = useMemo<ThemeContextValue>(
-    () => ({ theme, direction: resolvedDirection }),
-    [theme, resolvedDirection],
+    () => ({ theme, direction: resolvedDirection, script }),
+    [theme, resolvedDirection, script],
   );
 
   // Mutating the document during render is a side effect in the render phase:
@@ -91,4 +105,25 @@ export function useDirection(): Direction {
 /** True when the layout mirrors. Never inferred from the locale at a call site. */
 export function useIsRTL(): boolean {
   return useContext(ThemeContext).direction === 'rtl';
+}
+
+export function useScript(): Script {
+  return useContext(ThemeContext).script;
+}
+
+/**
+ * The display face for the current script.
+ *
+ * CLAUDE.md: display and brand and every price are Baloo 2; Arabic display is
+ * Baloo Bhaijaan 2, and Arabic body stays Rubik. Returning the utility class
+ * rather than the family name keeps the decision in one place and keeps both
+ * names statically visible to Tailwind's content scan.
+ */
+export function useDisplayFontClass(): 'font-display' | 'font-arabicDisplay' {
+  return useScript() === 'arabic' ? 'font-arabicDisplay' : 'font-display';
+}
+
+/** Body is Rubik in every script, so this is constant — named for symmetry. */
+export function useBodyFontClass(): 'font-ui' {
+  return 'font-ui';
 }

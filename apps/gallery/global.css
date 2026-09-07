@@ -1,3 +1,7 @@
+/* Self-hosted Baloo 2, Rubik and Baloo Bhaijaan 2, one @font-face per script.
+   Served from public/fonts by scripts/copy-fonts.mjs. */
+@import '../../packages/tokens/src/generated/fonts.css';
+
 /* The token custom properties (light + Night Dive), generated from tokens.json. */
 @import '../../packages/tokens/src/generated/tokens.css';
 
