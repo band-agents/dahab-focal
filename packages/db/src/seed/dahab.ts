@@ -100,10 +100,14 @@ export const DIVE_SITES: readonly SeedDiveSite[] = [
     maxDepthMetres: 56,
     difficulty: 'technical',
     entryType: 'shore',
-    // The Arch is the reason certifications gate activities at all: it is a
-    // 56 m crossing on the far side of the Blue Hole's saddle, and it is
-    // where recreational divers get themselves killed.
-    requiresCertification: 'Trimix',
+    // The Arch is the reason certifications gate activities at all: a 56 m
+    // crossing on the far side of the Blue Hole's saddle, well below
+    // recreational limits, with a serious fatality record. The site demands a
+    // technical certification LEVEL; it does not dictate a gas mix. Which gas
+    // (trimix, a rebreather, …) is the operator's condition, recorded per
+    // service in the `required_gas` attribute, so a dive centre can state its
+    // own terms without a code change.
+    requiresCertification: 'technical',
     marineLife: ['gorgonian fans', 'pelagics on the outside wall'],
     hazards: ['56m crossing', 'narcosis', 'no direct ascent to the surface inside'],
     seasonalNotes: WATER_TEMPERATURE,

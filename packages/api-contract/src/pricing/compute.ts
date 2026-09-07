@@ -12,6 +12,7 @@ import {
 
 import type { IsoWeekday } from '../common';
 import {
+  PARTICIPANT_RULES,
   priceInputSchema,
   type ParsedPriceInput,
   type ParticipantKind,
@@ -37,25 +38,32 @@ import {
  * charge answerable.
  */
 
-/**
- * Infants ride free and do not occupy a paid seat. Instructors in the party
- * are the operator's own staff accompanying the group, so they are not
- * charged either — but both still count for capacity, which is why they stay
- * in the party rather than being filtered out upstream.
- */
-const NON_CHARGEABLE: readonly ParticipantKind[] = ['infant', 'instructor'];
+const PARTICIPANT_KINDS = Object.keys(PARTICIPANT_RULES) as ParticipantKind[];
 
-const PARTICIPANT_KINDS: readonly ParticipantKind[] = [
-  'adult',
-  'child',
-  'student',
-  'resident',
-  'infant',
-  'instructor',
-];
+/**
+ * Kinds that are not charged. Derived from PARTICIPANT_RULES so "not charged"
+ * and "does not take a seat" can never be collapsed into one flag: an infant
+ * and an accompanying instructor are `isChargeable: false` but
+ * `occupiesCapacity: true`.
+ */
+const NON_CHARGEABLE: readonly ParticipantKind[] = PARTICIPANT_KINDS.filter(
+  (kind) => !PARTICIPANT_RULES[kind].isChargeable,
+);
 
 export function chargeableHeadcount(party: Party): number {
-  return PARTICIPANT_KINDS.filter((kind) => !NON_CHARGEABLE.includes(kind)).reduce(
+  return PARTICIPANT_KINDS.filter((kind) => PARTICIPANT_RULES[kind].isChargeable).reduce(
+    (total, kind) => total + party[kind],
+    0,
+  );
+}
+
+/**
+ * Heads that occupy a seat and belong on the manifest. This is the number the
+ * availability check and a boat evacuation care about — distinct from
+ * `chargeableHeadcount`.
+ */
+export function capacityHeadcount(party: Party): number {
+  return PARTICIPANT_KINDS.filter((kind) => PARTICIPANT_RULES[kind].occupiesCapacity).reduce(
     (total, kind) => total + party[kind],
     0,
   );
@@ -143,15 +151,40 @@ function baseLines(input: ParsedPriceInput, headcount: number): PriceLine[] {
     }
 
     case 'perUnitPerDay': {
-      const amount = multiply(model.basePrice, headcount * units);
-      return [
-        {
-          kind: 'base',
-          labelKey: 'price.perPerson',
-          amount,
-          detail: `${headcount} x ${units} day${units === 1 ? '' : 's'}`,
-        },
-      ];
+      const days = `${units} day${units === 1 ? '' : 's'}`;
+      // unitBasis is required by the schema for this kind, so it is present.
+      switch (model.unitBasis) {
+        case 'perItem': {
+          const { itemCount } = input;
+          return [
+            {
+              kind: 'base',
+              labelKey: 'price.perItem',
+              amount: multiply(model.basePrice, itemCount * units),
+              detail: `${itemCount} item${itemCount === 1 ? '' : 's'} x ${days}`,
+            },
+          ];
+        }
+        case 'perGroup':
+          return [
+            {
+              kind: 'base',
+              labelKey: 'price.perGroup',
+              amount: multiply(model.basePrice, units),
+              detail: `1 x ${days}`,
+            },
+          ];
+        case 'perPerson':
+        default:
+          return [
+            {
+              kind: 'base',
+              labelKey: 'price.perPerson',
+              amount: multiply(model.basePrice, headcount * units),
+              detail: `${headcount} x ${days}`,
+            },
+          ];
+      }
     }
 
     case 'perPerson':
@@ -337,5 +370,6 @@ export function computePrice(rawInput: PriceInput): PriceBreakdown {
     lines,
     suppressedRuleIds,
     chargeableParty: headcount,
+    capacityParty: capacityHeadcount(input.party),
   };
 }

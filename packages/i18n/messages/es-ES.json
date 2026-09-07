@@ -112,6 +112,7 @@
     "from": "desde {price}",
     "perPerson": "{price} por persona",
     "perGroup": "{price} por grupo",
+    "perItem": "{price} por artículo",
     "total": "Total {price}",
     "free": "Gratis"
   },

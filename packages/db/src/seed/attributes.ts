@@ -167,6 +167,30 @@ export const DIVING_ATTRIBUTES: readonly SeedAttribute[] = [
     options: [],
   },
   {
+    // The gas a dive requires is the operator's call, not a hardcoded fact
+    // about the site. The Arch sits below recreational limits and has a real
+    // fatality record, so it is gated on a technical certification level — but
+    // one centre may run it on trimix, another on a rebreather, and that
+    // condition belongs here, on the service, where a dive centre can state
+    // it. Nothing about "the Arch = trimix" is written in code.
+    key: 'required_gas',
+    labelKey: 'attribute.diving.requiredGas',
+    dataType: 'multiEnum',
+    unit: null,
+    isRequired: false,
+    isComparable: true,
+    comparisonGroup: 'requirements',
+    comparisonOrder: 3,
+    normalizationRule: NONE,
+    options: [
+      { value: 'air', labelKey: 'gas.air', sortOrder: 1 },
+      { value: 'nitrox', labelKey: 'gas.nitrox', sortOrder: 2 },
+      { value: 'advanced_nitrox', labelKey: 'gas.advancedNitrox', sortOrder: 3 },
+      { value: 'trimix', labelKey: 'gas.trimix', sortOrder: 4 },
+      { value: 'ccr', labelKey: 'gas.ccr', sortOrder: 5 },
+    ],
+  },
+  {
     key: 'guide_ratio',
     labelKey: 'attribute.diving.guideRatio',
     dataType: 'measure',

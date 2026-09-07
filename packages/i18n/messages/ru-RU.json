@@ -112,6 +112,7 @@
     "from": "от {price}",
     "perPerson": "{price} с человека",
     "perGroup": "{price} за группу",
+    "perItem": "{price} за единицу",
     "total": "Итого {price}",
     "free": "Бесплатно"
   },

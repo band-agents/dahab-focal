@@ -138,6 +138,63 @@ others fail their WCAG bar and need a canvas decision:
 4. **`clay-700` on `cream-100`.** If muted text on raised panels must clear AA
    too, `text-muted` needs to go a step darker still than `#7D6D5E`.
 
+### Corrections to Session 1's judgment calls (from the owner's brief)
+
+Three of the five were changed:
+
+- **Chargeable and capacity are now independent booleans.** `PARTICIPANT_RULES`
+  in `packages/api-contract/src/pricing/types.ts` gives every participant kind
+  `{ isChargeable, occupiesCapacity }`. Infants and accompanying instructors are
+  `isChargeable: false, occupiesCapacity: true` — not billed, but they hold a
+  seat and appear on the manifest. `computePrice` now returns `capacityParty`
+  alongside `chargeableParty`; a test asserts `capacityParty > chargeableParty`
+  when the party has an infant and an instructor.
+- **Rental unit basis is explicit, never inferred.** `pricingModelSchema` grew a
+  `unitBasis` of `perPerson | perItem | perGroup`, **required** for
+  `perUnitPerDay` (an unset basis is a rejected input, not a silent
+  `perPerson`). `priceInputSchema` grew `itemCount`. A party of two renting one
+  scooter is `perItem`, `itemCount: 1` — one scooter, not two. `perItem` uses a
+  new `price.perItem` message, added to all seven locales this commit.
+- **The Arch no longer hardcodes Trimix.** The dive-site seed now records
+  `requiresCertification: 'technical'` — a certification *level*, not a gas. A
+  new `required_gas` multiEnum attribute (`air`, `nitrox`, `advanced_nitrox`,
+  `trimix`, `ccr`) on the diving category lets each operator state the gas
+  their run demands. Nothing in code says "the Arch = trimix".
+
+The other two stand, with the reinforcements the brief asked for:
+
+- **Compounding order** is already applied and itemised in priority order by
+  `computePrice` (`orderRules` → the `lines` array is in applied order). The
+  vendor simulator sets `priority`; making that order visible and reorderable in
+  the simulator UI, and itemising it in that order on the receipt, is a
+  UI-layer task for when those screens exist.
+- **Dive-site coordinates** stay flagged (seed header + Session 1 notes) as
+  "roughly 10 m, good for a pin and a spatial index, not for navigation".
+
+### The two logging bugs — regression tests added
+
+`apps/api/tests/logging-redaction.test.ts` (5 tests):
+
+- `errorCode` is not on the redaction list and reaches a `warn` line intact,
+  through both a direct logger call and a failing tRPC call (asserts the real
+  `UNAUTHORIZED`, never `[redacted]`). A real `otpCode`/`phone` is still
+  redacted.
+- A Zod failure with a phone-shaped rejected value (`deviceId: '+2010'`) logs
+  `deviceId` and `too_small` in `reason` and the typed value **nowhere** on the
+  line. The full detail with the value is `debug`-only and is not emitted at the
+  default `info` level.
+
+### Still pending in the i18n catalogue
+
+Attribute-option and taxonomy label keys referenced by the seed —
+`attribute.diving.*`, `certLevel.*`, `participant.*`, `diveSite.*`,
+`neighborhood.*`, `category.*`, and now `gas.*` and
+`attribute.diving.requiredGas` — are not yet in `packages/i18n/messages`. This
+was already true before this session (the catalogue holds 114 keys, mostly
+chrome and states); the taxonomy strings are a known separate effort. Only
+`price.perItem` was added now, because `price.*` is an already-maintained
+namespace.
+
 ---
 
 ## Session 1 record (2026-09-06) — superseded where Session 2 conflicts

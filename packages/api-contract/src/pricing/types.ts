@@ -24,7 +24,8 @@ import {
  * - `perPerson`     a fun dive, a yoga class: price x party size
  * - `perGroup`      a private boat, a chartered jeep: one price, any size
  * - `perPersonTiered` a course where price drops with group size
- * - `perUnitPerDay` gear rental: price x units x days
+ * - `perUnitPerDay` a rental: price x units x days. What a "unit" is — a head, a
+ *                   bike, the whole party — is `unitBasis`, stated, never inferred.
  * - `free`          a shore briefing, a meetup
  */
 export const pricingModelKindSchema = z.enum([
@@ -35,6 +36,17 @@ export const pricingModelKindSchema = z.enum([
   'free',
 ]);
 export type PricingModelKind = z.infer<typeof pricingModelKindSchema>;
+
+/**
+ * What one rental unit is billed against. Bikes, scooters, kites and cameras
+ * are `perItem` — a party of two sharing one scooter is one scooter, not two.
+ * A guided kit-and-guide day might be `perPerson`; a chartered set-up for the
+ * whole group is `perGroup`. Rentals are a designed category, so this is a
+ * real distinction, not a hypothetical one — and it is set explicitly on the
+ * model rather than guessed from the category.
+ */
+export const rentalUnitBasisSchema = z.enum(['perPerson', 'perItem', 'perGroup']);
+export type RentalUnitBasis = z.infer<typeof rentalUnitBasisSchema>;
 
 /** A per-person price that drops once the party reaches `minPartySize`. */
 export const partySizeTierSchema = z
@@ -48,14 +60,36 @@ export const pricingModelSchema = z
   .object({
     kind: pricingModelKindSchema,
     currency: currencySchema,
-    /** The headline price. Its meaning depends on `kind`. */
+    /** The headline price. Its meaning depends on `kind` and, for a rental, `unitBasis`. */
     basePrice: moneySchema,
     /** Only for `perPersonTiered`, sorted or not — computePrice sorts it. */
     tiers: z.array(partySizeTierSchema).default([]),
     /** Only for `perGroup`: a party larger than this is not bookable as one group. */
     maxGroupSize: z.number().int().min(1).optional(),
+    /**
+     * Required for `perUnitPerDay`, and only meaningful there. No default — an
+     * unset basis on a rental is a rejected input, not a silent `perPerson`.
+     */
+    unitBasis: rentalUnitBasisSchema.optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((model, ctx) => {
+    if (model.kind === 'perUnitPerDay' && model.unitBasis === undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['unitBasis'],
+        message:
+          "A perUnitPerDay model must state its unitBasis ('perPerson', 'perItem' or 'perGroup'). It is never inferred.",
+      });
+    }
+    if (model.kind !== 'perUnitPerDay' && model.unitBasis !== undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['unitBasis'],
+        message: 'unitBasis only applies to a perUnitPerDay model.',
+      });
+    }
+  });
 export type PricingModel = z.infer<typeof pricingModelSchema>;
 
 /**
@@ -72,6 +106,33 @@ export const participantKindSchema = z.enum([
   'instructor',
 ]);
 export type ParticipantKind = z.infer<typeof participantKindSchema>;
+
+/**
+ * Two independent facts about a participant kind, never the same flag.
+ *
+ * - `isChargeable`     — does this seat contribute to the price?
+ * - `occupiesCapacity` — does this seat take a place on the boat, and appear on
+ *                        the manifest the coastguard would ask for?
+ *
+ * An infant rides free and an accompanying instructor is the operator's own
+ * staff, so neither is charged — but both still take a seat and still have to
+ * be accounted for if the boat needs evacuating. A future "waitlist" or
+ * "no-show" kind could be chargeable without occupying capacity; the two must
+ * be able to move independently.
+ */
+export interface ParticipantRule {
+  readonly isChargeable: boolean;
+  readonly occupiesCapacity: boolean;
+}
+
+export const PARTICIPANT_RULES: Readonly<Record<ParticipantKind, ParticipantRule>> = {
+  adult: { isChargeable: true, occupiesCapacity: true },
+  child: { isChargeable: true, occupiesCapacity: true },
+  student: { isChargeable: true, occupiesCapacity: true },
+  resident: { isChargeable: true, occupiesCapacity: true },
+  infant: { isChargeable: false, occupiesCapacity: true },
+  instructor: { isChargeable: false, occupiesCapacity: true },
+};
 
 export const partySchema = z
   .object({
@@ -221,6 +282,12 @@ export const priceInputSchema = z
     bookedAt: z.coerce.date(),
     /** Rental days, or course days. 1 for a single session. */
     units: z.number().int().min(1).default(1),
+    /**
+     * How many items are being rented — bikes, scooters, kites, cameras. Only
+     * consulted by a `perUnitPerDay` model whose `unitBasis` is `perItem`; one
+     * party can rent three bikes, or one scooter between them.
+     */
+    itemCount: z.number().int().min(1).default(1),
     options: z.array(selectedOptionSchema).default([]),
     rules: z.array(pricingRuleSchema).default([]),
     /** The currency the traveler is being quoted in. */
@@ -254,8 +321,15 @@ export const priceBreakdownSchema = z
     lines: z.array(priceLineSchema),
     /** Rules that matched but were suppressed by an exclusion group. */
     suppressedRuleIds: z.array(pricingRuleIdSchema),
-    /** Chargeable heads. Infants are in the party but not in this number. */
+    /** Chargeable heads. Infants and accompanying instructors are not in this number. */
     chargeableParty: z.number().int(),
+    /**
+     * Heads that occupy a seat and belong on the manifest — every participant
+     * except a kind explicitly marked `occupiesCapacity: false`. Infants and
+     * instructors ARE in this number even though they are not in
+     * `chargeableParty`.
+     */
+    capacityParty: z.number().int(),
   })
   .strict();
 export type PriceBreakdown = z.infer<typeof priceBreakdownSchema>;

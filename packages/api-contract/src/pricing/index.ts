@@ -1,6 +1,7 @@
 export {
   PricingError,
   cairoIsoWeekday,
+  capacityHeadcount,
   chargeableHeadcount,
   computePrice,
   daysAhead,
@@ -9,6 +10,7 @@ export {
 } from './compute';
 
 export {
+  PARTICIPANT_RULES,
   adjustmentSchema,
   participantKindSchema,
   partySchema,
@@ -18,12 +20,14 @@ export {
   priceLineSchema,
   pricingModelKindSchema,
   pricingModelSchema,
-  pricingRuleSchema,
+  rentalUnitBasisSchema,
   ruleConditionSchema,
+  pricingRuleSchema,
   selectedOptionSchema,
   type Adjustment,
   type ParsedPriceInput,
   type ParticipantKind,
+  type ParticipantRule,
   type Party,
   type PriceBreakdown,
   type PriceInput,
@@ -32,6 +36,7 @@ export {
   type PricingModelKind,
   type PricingRule,
   type PricingRuleInput,
+  type RentalUnitBasis,
   type RuleCondition,
   type SelectedOption,
 } from './types';

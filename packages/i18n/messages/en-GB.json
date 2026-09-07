@@ -111,6 +111,7 @@
     "from": "from {price}",
     "perPerson": "{price} per person",
     "perGroup": "{price} per group",
+    "perItem": "{price} per item",
     "total": "Total {price}",
     "free": "Free"
   },

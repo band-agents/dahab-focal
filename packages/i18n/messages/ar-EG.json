@@ -112,6 +112,7 @@
     "from": "ابتداءً من {price}",
     "perPerson": "{price} للفرد",
     "perGroup": "{price} للمجموعة",
+    "perItem": "{price} للقطعة",
     "total": "الإجمالي {price}",
     "free": "مجانًا"
   },

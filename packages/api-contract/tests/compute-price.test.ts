@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   PricingError,
   cairoIsoWeekday,
+  capacityHeadcount,
   chargeableHeadcount,
   computePrice,
   daysAhead,
@@ -62,6 +63,17 @@ describe('the party', () => {
     expect(chargeableHeadcount({ adult: 2, child: 1, infant: 1, student: 0, resident: 0, instructor: 1 })).toBe(3);
     expect(result.chargeableParty).toBe(3);
     expect(result.total).toEqual(EGP(4200));
+  });
+
+  it('still counts the infant and the instructor towards capacity and the manifest', () => {
+    const party = { adult: 2, child: 1, infant: 1, student: 0, resident: 0, instructor: 1 };
+    const result = computePrice(baseInput({ party }));
+    // Not charged...
+    expect(result.chargeableParty).toBe(3);
+    expect(capacityHeadcount(party)).toBe(5);
+    // ...but they still take a seat on the boat.
+    expect(result.capacityParty).toBe(5);
+    expect(result.capacityParty).toBeGreaterThan(result.chargeableParty);
   });
 
   it('refuses an empty party rather than quoting zero', () => {
@@ -125,13 +137,83 @@ describe('pricing models', () => {
     expect(solo).toEqual(EGP(1400));
   });
 
-  it('perUnitPerDay multiplies by people and days', () => {
-    // A full kit rental at 350 EGP per person per day, two people, three days.
-    const input = baseInput({
-      model: { kind: 'perUnitPerDay', currency: 'EGP', basePrice: EGP(350), tiers: [] },
-      units: 3,
-    });
-    expect(computePrice(input).total).toEqual(EGP(2100));
+  it('perUnitPerDay bills per item, per person or per group as told — never inferred', () => {
+    // 350 EGP/day, a party of two, three days.
+    const perItem = computePrice(
+      baseInput({
+        model: {
+          kind: 'perUnitPerDay',
+          currency: 'EGP',
+          basePrice: EGP(350),
+          tiers: [],
+          unitBasis: 'perItem',
+        },
+        units: 3,
+        itemCount: 1, // one scooter between the two of them
+      }),
+    );
+    expect(perItem.total).toEqual(EGP(1050));
+    expect(perItem.lines[0]?.detail).toBe('1 item x 3 days');
+
+    // Two bikes for the same party.
+    expect(
+      computePrice(
+        baseInput({
+          model: {
+            kind: 'perUnitPerDay',
+            currency: 'EGP',
+            basePrice: EGP(350),
+            tiers: [],
+            unitBasis: 'perItem',
+          },
+          units: 3,
+          itemCount: 2,
+        }),
+      ).total,
+    ).toEqual(EGP(2100));
+
+    // A guided kit-per-head day: 350 x 2 heads x 3 days.
+    expect(
+      computePrice(
+        baseInput({
+          model: {
+            kind: 'perUnitPerDay',
+            currency: 'EGP',
+            basePrice: EGP(350),
+            tiers: [],
+            unitBasis: 'perPerson',
+          },
+          units: 3,
+        }),
+      ).total,
+    ).toEqual(EGP(2100));
+
+    // A group set-up: one price per day, party size irrelevant.
+    expect(
+      computePrice(
+        baseInput({
+          model: {
+            kind: 'perUnitPerDay',
+            currency: 'EGP',
+            basePrice: EGP(350),
+            tiers: [],
+            unitBasis: 'perGroup',
+          },
+          units: 3,
+        }),
+      ).total,
+    ).toEqual(EGP(1050));
+  });
+
+  it('rejects a perUnitPerDay model with no unitBasis rather than guessing', () => {
+    expect(() =>
+      computePrice(
+        baseInput({
+          model: { kind: 'perUnitPerDay', currency: 'EGP', basePrice: EGP(350), tiers: [] },
+          units: 3,
+        }),
+      ),
+    ).toThrow(/unitBasis/);
   });
 
   it('free is free', () => {

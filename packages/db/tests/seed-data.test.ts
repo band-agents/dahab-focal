@@ -79,6 +79,18 @@ describe('the diving attribute schema', () => {
     expect(values).toContain('technical');
     expect(values).toContain('trimix');
   });
+
+  it('carries required gas as an operator-set attribute, not a fact about a site', () => {
+    const diving = CATEGORY_ATTRIBUTES['scuba-diving'] ?? [];
+    const gas = diving.find((attribute) => attribute.key === 'required_gas');
+    expect(gas, 'required_gas attribute is missing').toBeDefined();
+    expect(gas?.dataType).toBe('multiEnum');
+    expect(gas?.comparisonGroup).toBe('requirements');
+    const values = gas?.options.map((option) => option.value) ?? [];
+    expect(values).toEqual(
+      expect.arrayContaining(['air', 'nitrox', 'trimix', 'ccr']),
+    );
+  });
 });
 
 describe('every attribute is a valid attribute definition', () => {
@@ -159,11 +171,13 @@ describe('dive sites', () => {
     }
   });
 
-  it('keeps the Arch technical-only, at the depth it actually crosses', () => {
+  it('keeps the Arch technical-only, gated on a cert level and not a hardcoded gas', () => {
     const arch = DIVE_SITES.find((site) => site.slug === 'the-arch');
     expect(arch?.difficulty).toBe('technical');
     expect(arch?.maxDepthMetres).toBeGreaterThanOrEqual(52);
-    expect(arch?.requiresCertification).not.toBeNull();
+    // The site demands a certification level, not a gas mix.
+    expect(arch?.requiresCertification).toBe('technical');
+    expect(arch?.requiresCertification).not.toMatch(/trimix|nitrox|ccr|air/i);
   });
 
   it('orders every depth range correctly and names real hazards', () => {
