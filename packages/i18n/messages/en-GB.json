@@ -273,6 +273,59 @@
       "staff": "Staff",
       "issuer": "Issued by",
       "band": "Due"
+    },
+    "catalog": {
+      "title": "Catalogue & taxonomy",
+      "subtitle": "What operators may publish, and what travellers may compare it on.",
+      "queue": "Waiting on review",
+      "queueSub": "What changed, and whether it can be compared once it is live.",
+      "attributes": "Comparable attributes · Diving",
+      "attributesSub": "These are rows in a table, not columns on a service. Retiring one removes a row from every comparison that uses it.",
+      "categories": "Categories",
+      "categoriesSub": "Each carries its own attribute set. None shares a column with another.",
+      "missing": "{count, plural, =0 {Ready to compare} one {# answer missing} other {# answers missing}}",
+      "notComparable": "Descriptive only",
+      "usage": "On {count, plural, one {# service} other {# services}}",
+      "dataAsData": "Comparable attributes live in attribute_definitions, never as a column on services. One table feeds the taxonomy manager, the vendor service builder and the traveller comparison engine.",
+      "serviceCount": "{count, plural, one {# service} other {# services}}"
+    },
+    "serviceStatus": {
+      "draft": "Draft",
+      "underReview": "Under review",
+      "published": "Published",
+      "paused": "Paused",
+      "archived": "Archived",
+      "rejected": "Rejected"
+    },
+    "dataType": {
+      "text": "Text",
+      "longText": "Long text",
+      "number": "Number",
+      "measure": "Measure",
+      "boolean": "Yes / no",
+      "enum": "One of",
+      "multiEnum": "Any of",
+      "duration": "Duration",
+      "date": "Date"
+    },
+    "group": {
+      "profile": "Profile",
+      "requirements": "Requirements",
+      "guiding": "Group and guiding",
+      "logistics": "Logistics",
+      "safety": "Safety",
+      "inclusions": "Inclusions"
+    },
+    "col3": {
+      "attribute": "Attribute",
+      "type": "Type",
+      "group": "Comparison group",
+      "normalisation": "Normalised by",
+      "usage": "In use",
+      "submitted": "Submitted",
+      "category": "Category",
+      "comparable": "Comparable",
+      "options": "Options"
     }
   }
 }

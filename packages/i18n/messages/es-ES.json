@@ -5,6 +5,7 @@
     "needsTranslation": [],
     "identicalToSource": [
       "action.ok",
+      "admin.col3.comparable",
       "admin.cond.wind",
       "admin.console",
       "app.name",
@@ -281,6 +282,59 @@
       "staff": "Equipo",
       "issuer": "Emitido por",
       "band": "Vence"
+    },
+    "catalog": {
+      "title": "Catálogo y taxonomía",
+      "subtitle": "Qué pueden publicar los operadores y con qué lo comparan los viajeros.",
+      "queue": "Esperando revisión",
+      "queueSub": "Qué ha cambiado y si podrá compararse una vez publicado.",
+      "attributes": "Atributos comparables · Buceo",
+      "attributesSub": "Son filas de una tabla, no columnas de un servicio. Retirar uno elimina una fila de cada comparación que lo usa.",
+      "categories": "Categorías",
+      "categoriesSub": "Cada una tiene su propio conjunto de atributos. Ninguna comparte columna con otra.",
+      "missing": "{count, plural, =0 {Listo para comparar} one {falta # respuesta} other {faltan # respuestas}}",
+      "notComparable": "Solo descriptivo",
+      "usage": "En {count, plural, one {# servicio} other {# servicios}}",
+      "dataAsData": "Los atributos comparables viven en attribute_definitions, nunca como columna en services. Una tabla alimenta la taxonomía, el constructor de servicios y el motor de comparación.",
+      "serviceCount": "{count, plural, one {# servicio} other {# servicios}}"
+    },
+    "serviceStatus": {
+      "draft": "Borrador",
+      "underReview": "En revisión",
+      "published": "Publicado",
+      "paused": "Pausado",
+      "archived": "Archivado",
+      "rejected": "Rechazado"
+    },
+    "dataType": {
+      "text": "Texto",
+      "longText": "Texto largo",
+      "number": "Número",
+      "measure": "Medida",
+      "boolean": "Sí / no",
+      "enum": "Uno de",
+      "multiEnum": "Varios de",
+      "duration": "Duración",
+      "date": "Fecha"
+    },
+    "group": {
+      "profile": "Perfil",
+      "requirements": "Requisitos",
+      "guiding": "Grupo y guía",
+      "logistics": "Logística",
+      "safety": "Seguridad",
+      "inclusions": "Incluye"
+    },
+    "col3": {
+      "attribute": "Atributo",
+      "type": "Tipo",
+      "group": "Grupo de comparación",
+      "normalisation": "Normalizado por",
+      "usage": "En uso",
+      "submitted": "Enviado",
+      "category": "Categoría",
+      "comparable": "Comparable",
+      "options": "Opciones"
     }
   }
 }

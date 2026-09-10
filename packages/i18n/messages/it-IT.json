@@ -280,6 +280,59 @@
       "staff": "Personale",
       "issuer": "Rilasciato da",
       "band": "Scadenza"
+    },
+    "catalog": {
+      "title": "Catalogo e tassonomia",
+      "subtitle": "Cosa possono pubblicare gli operatori e su cosa i viaggiatori lo confrontano.",
+      "queue": "In attesa di revisione",
+      "queueSub": "Cosa è cambiato e se sarà confrontabile una volta online.",
+      "attributes": "Attributi confrontabili · Immersioni",
+      "attributesSub": "Sono righe di una tabella, non colonne di un servizio. Ritirarne uno toglie una riga da ogni confronto che lo usa.",
+      "categories": "Categorie",
+      "categoriesSub": "Ognuna ha il proprio insieme di attributi. Nessuna condivide una colonna.",
+      "missing": "{count, plural, =0 {Pronto al confronto} one {manca # risposta} other {mancano # risposte}}",
+      "notComparable": "Solo descrittivo",
+      "usage": "Su {count, plural, one {# servizio} other {# servizi}}",
+      "dataAsData": "Gli attributi confrontabili stanno in attribute_definitions, mai come colonna su services. Una tabella alimenta la tassonomia, il costruttore di servizi e il motore di confronto.",
+      "serviceCount": "{count, plural, one {# servizio} other {# servizi}}"
+    },
+    "serviceStatus": {
+      "draft": "Bozza",
+      "underReview": "In revisione",
+      "published": "Pubblicato",
+      "paused": "In pausa",
+      "archived": "Archiviato",
+      "rejected": "Respinto"
+    },
+    "dataType": {
+      "text": "Testo",
+      "longText": "Testo lungo",
+      "number": "Numero",
+      "measure": "Misura",
+      "boolean": "Sì / no",
+      "enum": "Uno tra",
+      "multiEnum": "Uno o più tra",
+      "duration": "Durata",
+      "date": "Data"
+    },
+    "group": {
+      "profile": "Profilo",
+      "requirements": "Requisiti",
+      "guiding": "Gruppo e guida",
+      "logistics": "Logistica",
+      "safety": "Sicurezza",
+      "inclusions": "Incluso"
+    },
+    "col3": {
+      "attribute": "Attributo",
+      "type": "Tipo",
+      "group": "Gruppo di confronto",
+      "normalisation": "Normalizzato con",
+      "usage": "In uso",
+      "submitted": "Inviato",
+      "category": "Categoria",
+      "comparable": "Confrontabile",
+      "options": "Opzioni"
     }
   }
 }

@@ -7,7 +7,11 @@
       "action.ok",
       "admin.col.document",
       "admin.col.site",
+      "admin.col3.comparable",
+      "admin.col3.options",
+      "admin.col3.type",
       "admin.console",
+      "admin.dataType.date",
       "admin.expiry.count",
       "admin.nav.catalog",
       "app.name",
@@ -284,6 +288,59 @@
       "staff": "Équipe",
       "issuer": "Délivré par",
       "band": "Échéance"
+    },
+    "catalog": {
+      "title": "Catalogue et taxonomie",
+      "subtitle": "Ce que les opérateurs peuvent publier, et sur quoi les voyageurs le comparent.",
+      "queue": "En attente de revue",
+      "queueSub": "Ce qui a changé, et si ce sera comparable une fois en ligne.",
+      "attributes": "Attributs comparables · Plongée",
+      "attributesSub": "Ce sont des lignes d'un tableau, pas des colonnes d'une prestation. En retirer un supprime une ligne de chaque comparaison qui l'utilise.",
+      "categories": "Catégories",
+      "categoriesSub": "Chacune a son propre jeu d’attributs. Aucune ne partage de colonne avec une autre.",
+      "missing": "{count, plural, =0 {Prêt à comparer} one {# réponse manquante} other {# réponses manquantes}}",
+      "notComparable": "Descriptif seulement",
+      "usage": "Sur {count, plural, one {# prestation} other {# prestations}}",
+      "dataAsData": "Les attributs comparables vivent dans attribute_definitions, jamais en colonne sur services. Une table alimente la taxonomie, le constructeur de prestations et le moteur de comparaison.",
+      "serviceCount": "{count, plural, one {# prestation} other {# prestations}}"
+    },
+    "serviceStatus": {
+      "draft": "Brouillon",
+      "underReview": "En cours de revue",
+      "published": "Publié",
+      "paused": "En pause",
+      "archived": "Archivé",
+      "rejected": "Refusé"
+    },
+    "dataType": {
+      "text": "Texte",
+      "longText": "Texte long",
+      "number": "Nombre",
+      "measure": "Mesure",
+      "boolean": "Oui / non",
+      "enum": "Un parmi",
+      "multiEnum": "Plusieurs parmi",
+      "duration": "Durée",
+      "date": "Date"
+    },
+    "group": {
+      "profile": "Profil",
+      "requirements": "Prérequis",
+      "guiding": "Groupe et encadrement",
+      "logistics": "Logistique",
+      "safety": "Sécurité",
+      "inclusions": "Inclus"
+    },
+    "col3": {
+      "attribute": "Attribut",
+      "type": "Type",
+      "group": "Groupe de comparaison",
+      "normalisation": "Normalisé par",
+      "usage": "Utilisé",
+      "submitted": "Soumis",
+      "category": "Catégorie",
+      "comparable": "Comparable",
+      "options": "Options"
     }
   }
 }

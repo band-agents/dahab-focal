@@ -9,6 +9,7 @@
       "admin.col.status",
       "admin.cond.windLabel",
       "admin.console",
+      "admin.dataType.text",
       "app.name"
     ]
   },
@@ -281,6 +282,59 @@
       "staff": "Team",
       "issuer": "Ausgestellt von",
       "band": "Fällig"
+    },
+    "catalog": {
+      "title": "Katalog & Taxonomie",
+      "subtitle": "Was Anbieter veröffentlichen dürfen, und woran Reisende es vergleichen.",
+      "queue": "Wartet auf Prüfung",
+      "queueSub": "Was sich geändert hat, und ob es nach dem Livegang vergleichbar ist.",
+      "attributes": "Vergleichbare Merkmale · Tauchen",
+      "attributesSub": "Das sind Zeilen einer Tabelle, keine Spalten einer Leistung. Wird eines stillgelegt, verschwindet eine Zeile aus jedem Vergleich, der es nutzt.",
+      "categories": "Kategorien",
+      "categoriesSub": "Jede trägt ihren eigenen Merkmalssatz. Keine teilt sich eine Spalte mit einer anderen.",
+      "missing": "{count, plural, =0 {Vergleichsbereit} one {# Angabe fehlt} other {# Angaben fehlen}}",
+      "notComparable": "Nur beschreibend",
+      "usage": "Bei {count, plural, one {# Leistung} other {# Leistungen}}",
+      "dataAsData": "Vergleichbare Merkmale liegen in attribute_definitions, nie als Spalte auf services. Eine Tabelle speist die Taxonomie, den Leistungsbaukasten des Anbieters und die Vergleichsansicht der Reisenden.",
+      "serviceCount": "{count, plural, one {# Leistung} other {# Leistungen}}"
+    },
+    "serviceStatus": {
+      "draft": "Entwurf",
+      "underReview": "In Prüfung",
+      "published": "Veröffentlicht",
+      "paused": "Pausiert",
+      "archived": "Archiviert",
+      "rejected": "Abgelehnt"
+    },
+    "dataType": {
+      "text": "Text",
+      "longText": "Langtext",
+      "number": "Zahl",
+      "measure": "Messwert",
+      "boolean": "Ja / nein",
+      "enum": "Eines von",
+      "multiEnum": "Beliebige von",
+      "duration": "Dauer",
+      "date": "Datum"
+    },
+    "group": {
+      "profile": "Profil",
+      "requirements": "Voraussetzungen",
+      "guiding": "Gruppe und Guiding",
+      "logistics": "Logistik",
+      "safety": "Sicherheit",
+      "inclusions": "Enthaltene Leistungen"
+    },
+    "col3": {
+      "attribute": "Merkmal",
+      "type": "Typ",
+      "group": "Vergleichsgruppe",
+      "normalisation": "Normiert über",
+      "usage": "Im Einsatz",
+      "submitted": "Eingereicht",
+      "category": "Kategorie",
+      "comparable": "Vergleichbar",
+      "options": "Optionen"
     }
   }
 }
