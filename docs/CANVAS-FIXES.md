@@ -1,5 +1,26 @@
 # Canvas fixes — the worklist
 
+> **Status, 2026-09-11.** Sections 1 and 3 are DONE, and not the way this file
+> proposed. The board answered them itself in its own **section 09**
+> (7 Sep 2026), and `packages/tokens/tokens.json` now carries those values:
+>
+> - `clay-700` → `#7D6D5E` — as proposed here. Converged.
+> - Danger text was **split in two**, not replaced: `danger-text` `#A82B2B` on
+>   the `#F5DCDC` tint (5.30), and a new `danger-text-on-cream` `#C13333`
+>   (5.26) for danger on the page ground. The interim `#B82D2D` this file
+>   proposed is superseded.
+> - Night `text-link` `#8FE0D8`, `focus-ring` `#7FD8D0`, `cta-edge` /
+>   `cta-fill-pressed` `#E8A99C`, and all four status strips
+>   (success `#143A2C`/`#6FD39C`, warning `#3A2E14`/`#F0C57A`,
+>   danger `#3E1E1E`/`#F5A099`, info `#0F3A3A`/`#7FD8D0`) are imported.
+>   Seven of the eight differ from section 4a's proposals — the board's are
+>   more hue-committed. `pnpm test:tokens` asserts each against both grounds.
+>
+> **Still open:** night `text-brand` (coral text at night) has no value in any
+> export; the section 4c category surfaces; and every §5/§6 sub-bar pairing.
+> Sections 2, 4a and 4c below are kept as the record of what was proposed, but
+> re-derive them against the board before acting.
+
 Everything outstanding against the Claude Design canvas, in one list, ordered
 so it can be worked through in a single pass.
 
