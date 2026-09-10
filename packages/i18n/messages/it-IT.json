@@ -232,6 +232,54 @@
       "windLabel": "Vento",
       "waterLabel": "Acqua",
       "visLabel": "Visibilità"
+    },
+    "vendors": {
+      "title": "Operatori",
+      "subtitle": "Tutti quelli autorizzati a Dahab, e cosa deve loro la piattaforma.",
+      "queue": "Coda di verifica",
+      "queueSub": "Documenti in attesa di noi. Un rifiuto deve dire perché.",
+      "roster": "L'elenco",
+      "none": "Nessun operatore corrisponde a questo filtro.",
+      "noneQueue": "Nulla in attesa. Ogni documento ha avuto risposta."
+    },
+    "expiryPage": {
+      "title": "Il quadro delle scadenze",
+      "subtitle": "Tutto ciò che scade, per ogni operatore, prima che scada.",
+      "none": "Nulla scade in questo periodo.",
+      "blocksNote": "Blocca la pubblicazione nel momento in cui scade."
+    },
+    "vendorStatus": {
+      "applied": "Candidato",
+      "inReview": "In esame",
+      "active": "Attivo",
+      "suspended": "Sospeso",
+      "closed": "Chiuso"
+    },
+    "docType": {
+      "commercialRegister": "Registro delle imprese",
+      "taxCard": "Tessera fiscale",
+      "operatingPermit": "Licenza di esercizio",
+      "cdwsLicence": "Licenza CDWS",
+      "diveAgencyAffiliation": "Affiliazione a didattica subacquea",
+      "publicLiabilityInsurance": "Responsabilità civile",
+      "boatLicence": "Licenza imbarcazione",
+      "vehicleLicence": "Libretto del veicolo",
+      "other": "Altro"
+    },
+    "verify": {
+      "pending": "Non fornito",
+      "inReview": "In esame",
+      "verified": "Verificato",
+      "rejected": "Respinto",
+      "expired": "Scaduto"
+    },
+    "col2": {
+      "area": "Zona",
+      "services": "Servizi",
+      "rating": "Valutazione",
+      "staff": "Personale",
+      "issuer": "Rilasciato da",
+      "band": "Scadenza"
     }
   }
 }

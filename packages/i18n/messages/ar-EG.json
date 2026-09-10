@@ -228,6 +228,54 @@
       "windLabel": "الريح",
       "waterLabel": "الماء",
       "visLabel": "الرؤية"
+    },
+    "vendors": {
+      "title": "المراكز",
+      "subtitle": "كل مركز مرخّص يشتغل في دهب، وإيه اللي لسه على المنصة ليه.",
+      "queue": "طابور التوثيق",
+      "queueSub": "مستندات مستنيانا. الرفض لازم يقول السبب.",
+      "roster": "القائمة",
+      "none": "مفيش مركز مطابق للفلتر ده.",
+      "noneQueue": "مفيش حاجة مستنية. كل المستندات اترد عليها."
+    },
+    "expiryPage": {
+      "title": "لوحة الصلاحيات",
+      "subtitle": "كل ما تنتهي صلاحيته، في كل المراكز، قبل ما ينتهي.",
+      "none": "مفيش حاجة تنتهي في المدة دي.",
+      "blocksNote": "بيمنع المركز من النشر لحظة ما ينتهي."
+    },
+    "vendorStatus": {
+      "applied": "قدّم",
+      "inReview": "تحت المراجعة",
+      "active": "شغّال",
+      "suspended": "موقوف",
+      "closed": "مقفول"
+    },
+    "docType": {
+      "commercialRegister": "السجل التجاري",
+      "taxCard": "البطاقة الضريبية",
+      "operatingPermit": "ترخيص التشغيل",
+      "cdwsLicence": "رخصة CDWS",
+      "diveAgencyAffiliation": "انتساب لهيئة غوص",
+      "publicLiabilityInsurance": "تأمين المسؤولية المدنية",
+      "boatLicence": "رخصة قارب",
+      "vehicleLicence": "رخصة مركبة",
+      "other": "أخرى"
+    },
+    "verify": {
+      "pending": "لسه متقدّمش",
+      "inReview": "تحت المراجعة",
+      "verified": "موثّق",
+      "rejected": "مرفوض",
+      "expired": "منتهي"
+    },
+    "col2": {
+      "area": "المنطقة",
+      "services": "الخدمات",
+      "rating": "التقييم",
+      "staff": "الفريق",
+      "issuer": "جهة الإصدار",
+      "band": "الاستحقاق"
     }
   }
 }

@@ -225,6 +225,54 @@
       "windLabel": "Wind",
       "waterLabel": "Water",
       "visLabel": "Visibility"
+    },
+    "vendors": {
+      "title": "Operators",
+      "subtitle": "Everyone licensed to run in Dahab, and what the platform still owes them.",
+      "queue": "Verification queue",
+      "queueSub": "Documents waiting on us. A rejection has to say why.",
+      "roster": "The roster",
+      "none": "No operator matches this filter.",
+      "noneQueue": "Nothing waiting. Every document has been answered."
+    },
+    "expiryPage": {
+      "title": "The expiry board",
+      "subtitle": "Everything that lapses, across every operator, before it lapses.",
+      "none": "Nothing expires in this window.",
+      "blocksNote": "Stops the operator publishing the moment it lapses."
+    },
+    "vendorStatus": {
+      "applied": "Applied",
+      "inReview": "In review",
+      "active": "Active",
+      "suspended": "Suspended",
+      "closed": "Closed"
+    },
+    "docType": {
+      "commercialRegister": "Commercial register",
+      "taxCard": "Tax card",
+      "operatingPermit": "Operating permit",
+      "cdwsLicence": "CDWS licence",
+      "diveAgencyAffiliation": "Dive agency affiliation",
+      "publicLiabilityInsurance": "Public liability insurance",
+      "boatLicence": "Boat licence",
+      "vehicleLicence": "Vehicle licence",
+      "other": "Other"
+    },
+    "verify": {
+      "pending": "Not supplied",
+      "inReview": "In review",
+      "verified": "Verified",
+      "rejected": "Rejected",
+      "expired": "Expired"
+    },
+    "col2": {
+      "area": "Area",
+      "services": "Services",
+      "rating": "Rating",
+      "staff": "Staff",
+      "issuer": "Issued by",
+      "band": "Due"
     }
   }
 }

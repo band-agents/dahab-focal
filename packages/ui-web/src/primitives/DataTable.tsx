@@ -49,7 +49,10 @@ export function DataTable<Row>({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-start">
+      {/* min-w-max lets the wrapper scroll rather than squashing columns: a
+          narrow window should not turn "Public liability insurance" into two
+          words per line. */}
+      <table className="w-full min-w-max border-collapse text-start">
         {caption === undefined ? null : <caption className="sr-only">{caption}</caption>}
         <thead>
           <tr className="border-b border-border">

@@ -6,16 +6,25 @@
  * and they sit at 24px, where the <Mark> component thickens the line to 4.6 so
  * it survives at rail size.
  */
+import Link from 'next/link';
+import type { Route } from 'next';
 import type { ReactNode } from 'react';
 
 import { Mark } from '@dahab/ui-web';
 import type { MarkName } from '@dahab/ui-web';
 
+/** Shared by the link and the not-yet-built variants, so they cannot drift. */
+const ROW =
+  'flex min-h-11 items-center gap-3 rounded-md px-3 font-ui text-body transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring';
+
 export interface NavItem {
   readonly key: string;
   readonly label: string;
   readonly mark: MarkName;
+  readonly href: Route;
   readonly current?: boolean;
+  /** Sections with no screen yet read as pending rather than pretending. */
+  readonly pending?: boolean;
 }
 
 export interface ShellProps {
@@ -58,18 +67,28 @@ export function Shell({
         <ul className="flex flex-col gap-1">
           {nav.map((item) => (
             <li key={item.key}>
-              <a
-                href="#main"
-                aria-current={item.current === true ? 'page' : undefined}
-                className={`flex min-h-11 items-center gap-3 rounded-md px-3 font-ui text-body transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring ${
-                  item.current === true
-                    ? 'bg-surface-raised text-text'
-                    : 'text-text-muted hover:bg-surface-raised hover:text-text'
-                }`}
-              >
-                <Mark name={item.mark} size={24} />
-                {item.label}
-              </a>
+              {item.pending === true ? (
+                // Not a link: the screen does not exist yet, and an anchor to
+                // nowhere is worse for a keyboard or a screen reader than a
+                // plain entry that reads as not-yet-available.
+                <span className={`${ROW} text-text-muted opacity-60`} aria-disabled>
+                  <Mark name={item.mark} size={24} />
+                  {item.label}
+                </span>
+              ) : (
+                <Link
+                  href={item.href}
+                  aria-current={item.current === true ? 'page' : undefined}
+                  className={`${ROW} ${
+                    item.current === true
+                      ? 'bg-surface-raised text-text'
+                      : 'text-text-muted hover:bg-surface-raised hover:text-text'
+                  }`}
+                >
+                  <Mark name={item.mark} size={24} />
+                  {item.label}
+                </Link>
+              )}
             </li>
           ))}
         </ul>

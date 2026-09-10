@@ -233,6 +233,54 @@
       "windLabel": "Viento",
       "waterLabel": "Agua",
       "visLabel": "Visibilidad"
+    },
+    "vendors": {
+      "title": "Operadores",
+      "subtitle": "Todos los autorizados en Dahab, y lo que la plataforma aún les debe.",
+      "queue": "Cola de verificación",
+      "queueSub": "Documentos que nos esperan. Un rechazo tiene que decir por qué.",
+      "roster": "La lista",
+      "none": "Ningún operador coincide con este filtro.",
+      "noneQueue": "Nada pendiente. Todos los documentos tienen respuesta."
+    },
+    "expiryPage": {
+      "title": "El tablero de vencimientos",
+      "subtitle": "Todo lo que caduca, en todos los operadores, antes de que caduque.",
+      "none": "No caduca nada en este periodo.",
+      "blocksNote": "Bloquea la publicación en cuanto caduca."
+    },
+    "vendorStatus": {
+      "applied": "Solicitado",
+      "inReview": "En revisión",
+      "active": "Activo",
+      "suspended": "Suspendido",
+      "closed": "Cerrado"
+    },
+    "docType": {
+      "commercialRegister": "Registro mercantil",
+      "taxCard": "Tarjeta fiscal",
+      "operatingPermit": "Licencia de actividad",
+      "cdwsLicence": "Licencia CDWS",
+      "diveAgencyAffiliation": "Afiliación a agencia de buceo",
+      "publicLiabilityInsurance": "Responsabilidad civil",
+      "boatLicence": "Licencia de embarcación",
+      "vehicleLicence": "Permiso de circulación",
+      "other": "Otro"
+    },
+    "verify": {
+      "pending": "No aportado",
+      "inReview": "En revisión",
+      "verified": "Verificado",
+      "rejected": "Rechazado",
+      "expired": "Caducado"
+    },
+    "col2": {
+      "area": "Zona",
+      "services": "Servicios",
+      "rating": "Valoración",
+      "staff": "Equipo",
+      "issuer": "Emitido por",
+      "band": "Vence"
     }
   }
 }

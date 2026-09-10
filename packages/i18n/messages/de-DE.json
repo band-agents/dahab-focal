@@ -233,6 +233,54 @@
       "windLabel": "Wind",
       "waterLabel": "Wasser",
       "visLabel": "Sicht"
+    },
+    "vendors": {
+      "title": "Anbieter",
+      "subtitle": "Alle mit Lizenz in Dahab — und was die Plattform ihnen noch schuldet.",
+      "queue": "Prüfungswarteschlange",
+      "queueSub": "Dokumente, die auf uns warten. Eine Ablehnung muss begründet werden.",
+      "roster": "Die Liste",
+      "none": "Kein Anbieter passt zu diesem Filter.",
+      "noneQueue": "Nichts offen. Jedes Dokument wurde beantwortet."
+    },
+    "expiryPage": {
+      "title": "Die Fristenübersicht",
+      "subtitle": "Alles, was abläuft, über alle Anbieter hinweg — bevor es abläuft.",
+      "none": "In diesem Zeitraum läuft nichts ab.",
+      "blocksNote": "Sperrt die Veröffentlichung, sobald es abläuft."
+    },
+    "vendorStatus": {
+      "applied": "Beworben",
+      "inReview": "In Prüfung",
+      "active": "Aktiv",
+      "suspended": "Gesperrt",
+      "closed": "Geschlossen"
+    },
+    "docType": {
+      "commercialRegister": "Handelsregister",
+      "taxCard": "Steuerkarte",
+      "operatingPermit": "Betriebserlaubnis",
+      "cdwsLicence": "CDWS-Lizenz",
+      "diveAgencyAffiliation": "Tauchverband-Zugehörigkeit",
+      "publicLiabilityInsurance": "Haftpflichtversicherung",
+      "boatLicence": "Bootslizenz",
+      "vehicleLicence": "Fahrzeugschein",
+      "other": "Sonstiges"
+    },
+    "verify": {
+      "pending": "Nicht eingereicht",
+      "inReview": "In Prüfung",
+      "verified": "Bestätigt",
+      "rejected": "Abgelehnt",
+      "expired": "Abgelaufen"
+    },
+    "col2": {
+      "area": "Gegend",
+      "services": "Leistungen",
+      "rating": "Bewertung",
+      "staff": "Team",
+      "issuer": "Ausgestellt von",
+      "band": "Fällig"
     }
   }
 }

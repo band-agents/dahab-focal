@@ -1,18 +1,15 @@
-import { notFound } from 'next/navigation';
-
 import {
   formatCurrency,
   formatDate,
   formatDistance,
   formatTemperature,
-  isLocale,
   isolate,
   money,
 } from '@dahab/i18n/server';
 import { Button, DataTable, Mark, Panel, StatusPill } from '@dahab/ui-web';
 import type { Column } from '@dahab/ui-web';
 
-import { Shell, type NavItem } from '@/components/Shell';
+import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
 import { CONDITIONS, COUNTERS, DEPARTURES, EXPIRING, INCIDENTS } from '@/lib/data';
 import type { Departure, ExpiringDocument, Incident } from '@/lib/data';
 import { translator } from '@/lib/i18n';
@@ -21,20 +18,10 @@ import { translator } from '@/lib/i18n';
 const BASIS_POINTS = 10_000;
 
 export default async function TodayPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  if (!isLocale(locale)) notFound();
+  const { locale: raw } = await params;
+  const locale = resolveLocale(raw);
   const t = translator(locale);
 
-  const nav: readonly NavItem[] = [
-    { key: 'today', label: t('admin.nav.today'), mark: 'sun', current: true },
-    { key: 'vendors', label: t('admin.nav.vendors'), mark: 'compass' },
-    { key: 'expiry', label: t('admin.nav.expiry'), mark: 'firstAid' },
-    { key: 'catalog', label: t('admin.nav.catalog'), mark: 'pass' },
-    { key: 'bookings', label: t('admin.nav.bookings'), mark: 'tank' },
-    { key: 'money', label: t('admin.nav.money'), mark: 'shell' },
-    { key: 'trust', label: t('admin.nav.trust'), mark: 'chamber' },
-    { key: 'platform', label: t('admin.nav.platform'), mark: 'weave' },
-  ];
 
   const context = { locale } as const;
   const gross = formatCurrency(
@@ -135,10 +122,9 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
   ];
 
   return (
-    <Shell
-      nav={nav}
-      consoleName={t('admin.console')}
-      consoleSub={t('admin.consoleSub')}
+    <ConsolePage
+      locale={locale}
+      current="today"
       title={t('admin.today.title')}
       subtitle={t('admin.today.subtitle')}
       headerEnd={
@@ -232,7 +218,7 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
           />
         </Panel>
       </div>
-    </Shell>
+    </ConsolePage>
   );
 }
 

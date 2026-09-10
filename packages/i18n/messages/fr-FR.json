@@ -236,6 +236,54 @@
       "windLabel": "Vent",
       "waterLabel": "Eau",
       "visLabel": "Visibilité"
+    },
+    "vendors": {
+      "title": "Opérateurs",
+      "subtitle": "Tous ceux autorisés à Dahab, et ce que la plateforme leur doit encore.",
+      "queue": "File de vérification",
+      "queueSub": "Documents qui nous attendent. Un refus doit dire pourquoi.",
+      "roster": "La liste",
+      "none": "Aucun opérateur ne correspond à ce filtre.",
+      "noneQueue": "Rien en attente. Chaque document a reçu une réponse."
+    },
+    "expiryPage": {
+      "title": "Le tableau des échéances",
+      "subtitle": "Tout ce qui expire, chez tous les opérateurs, avant que ça n'expire.",
+      "none": "Rien n’expire sur cette période.",
+      "blocksNote": "Bloque la publication dès l’expiration."
+    },
+    "vendorStatus": {
+      "applied": "Candidature",
+      "inReview": "En cours d’examen",
+      "active": "Actif",
+      "suspended": "Suspendu",
+      "closed": "Fermé"
+    },
+    "docType": {
+      "commercialRegister": "Registre du commerce",
+      "taxCard": "Carte fiscale",
+      "operatingPermit": "Autorisation d’exploitation",
+      "cdwsLicence": "Licence CDWS",
+      "diveAgencyAffiliation": "Affiliation à une fédération de plongée",
+      "publicLiabilityInsurance": "Responsabilité civile",
+      "boatLicence": "Permis bateau",
+      "vehicleLicence": "Carte grise",
+      "other": "Autre"
+    },
+    "verify": {
+      "pending": "Non fourni",
+      "inReview": "En cours d’examen",
+      "verified": "Vérifié",
+      "rejected": "Refusé",
+      "expired": "Expiré"
+    },
+    "col2": {
+      "area": "Quartier",
+      "services": "Prestations",
+      "rating": "Note",
+      "staff": "Équipe",
+      "issuer": "Délivré par",
+      "band": "Échéance"
     }
   }
 }
