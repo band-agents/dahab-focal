@@ -145,5 +145,86 @@
     "stateEmpty": "Empty",
     "stateSkeleton": "Skeleton",
     "noComponentsYet": "No components are registered in this section yet."
+  },
+  "admin": {
+    "console": "Sky Eye",
+    "consoleSub": "Platform console",
+    "nav": {
+      "today": "Today",
+      "vendors": "Vendors",
+      "expiry": "Expiry",
+      "catalog": "Catalogue",
+      "bookings": "Bookings",
+      "money": "Money",
+      "trust": "Safety & trust",
+      "platform": "Platform"
+    },
+    "today": {
+      "title": "Today",
+      "subtitle": "What needs a decision before the boats go out.",
+      "departures": "Departures today",
+      "needsAction": "Bookings needing action",
+      "incidents": "Open incidents",
+      "disputes": "Disputes waiting on us",
+      "payouts": "Payouts due",
+      "expiring": "Expiring inside 30 days",
+      "revenue": "Gross bookings",
+      "takeRate": "Take rate",
+      "weather": "Dahab today",
+      "weatherNote": "Wind cancels boats, and a cancellation cascades."
+    },
+    "expiry": {
+      "title": "The expiry board",
+      "subtitle": "Everything that lapses, across every operator.",
+      "expired": "Expired",
+      "within7": "Inside 7 days",
+      "within30": "Inside 30 days",
+      "within90": "Inside 90 days",
+      "blocks": "Blocks publishing",
+      "count": "{count, plural, one {# document} other {# documents}}"
+    },
+    "departures": {
+      "title": "Departures",
+      "subtitle": "Capacity against headcount."
+    },
+    "col": {
+      "vendor": "Operator",
+      "document": "Document",
+      "expires": "Expires",
+      "status": "Status",
+      "service": "Service",
+      "when": "When",
+      "seats": "Seats",
+      "amount": "Amount",
+      "severity": "Severity",
+      "site": "Site"
+    },
+    "action": {
+      "review": "Review",
+      "open": "Open",
+      "verify": "Verify",
+      "viewAll": "View all"
+    },
+    "metric": {
+      "today": "Today",
+      "week": "This week",
+      "month": "This month"
+    },
+    "severity": {
+      "nearMiss": "Near miss",
+      "minor": "Minor",
+      "serious": "Serious",
+      "critical": "Critical"
+    },
+    "empty": {
+      "title": "Nothing waiting",
+      "body": "Every queue on this screen is clear."
+    },
+    "cond": {
+      "wind": "{value} kt",
+      "windLabel": "Wind",
+      "waterLabel": "Water",
+      "visLabel": "Visibility"
+    }
   }
 }

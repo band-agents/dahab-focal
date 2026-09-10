@@ -3,7 +3,14 @@
     "locale": "es-ES",
     "source": false,
     "needsTranslation": [],
-    "identicalToSource": ["app.name", "action.ok", "price.total", "gallery.stateError"]
+    "identicalToSource": [
+      "action.ok",
+      "admin.cond.wind",
+      "admin.console",
+      "app.name",
+      "gallery.stateError",
+      "price.total"
+    ]
   },
   "app": {
     "name": "Dahab Focal",
@@ -146,5 +153,86 @@
     "stateEmpty": "Vacío",
     "stateSkeleton": "Esqueleto",
     "noComponentsYet": "Aún no hay componentes registrados en esta sección."
+  },
+  "admin": {
+    "console": "Sky Eye",
+    "consoleSub": "Consola de la plataforma",
+    "nav": {
+      "today": "Hoy",
+      "vendors": "Operadores",
+      "expiry": "Vencimientos",
+      "catalog": "Catálogo",
+      "bookings": "Reservas",
+      "money": "Finanzas",
+      "trust": "Seguridad y confianza",
+      "platform": "Plataforma"
+    },
+    "today": {
+      "title": "Hoy",
+      "subtitle": "Lo que necesita una decisión antes de que salgan los barcos.",
+      "departures": "Salidas de hoy",
+      "needsAction": "Reservas que requieren acción",
+      "incidents": "Incidentes abiertos",
+      "disputes": "Disputas pendientes",
+      "payouts": "Pagos pendientes",
+      "expiring": "Vence en 30 días",
+      "revenue": "Volumen de reservas",
+      "takeRate": "Comisión de la plataforma",
+      "weather": "Dahab hoy",
+      "weatherNote": "El viento cancela los barcos, y una cancelación arrastra al resto."
+    },
+    "expiry": {
+      "title": "El tablero de vencimientos",
+      "subtitle": "Todo lo que caduca, en todos los operadores.",
+      "expired": "Vencido",
+      "within7": "En 7 días",
+      "within30": "En 30 días",
+      "within90": "En 90 días",
+      "blocks": "Bloquea la publicación",
+      "count": "{count, plural, one {# documento} other {# documentos}}"
+    },
+    "departures": {
+      "title": "Salidas",
+      "subtitle": "Capacidad frente a asistentes."
+    },
+    "col": {
+      "vendor": "Operador",
+      "document": "Documento",
+      "expires": "Vence",
+      "status": "Estado",
+      "service": "Servicio",
+      "when": "Cuándo",
+      "seats": "Plazas",
+      "amount": "Importe",
+      "severity": "Gravedad",
+      "site": "Sitio"
+    },
+    "action": {
+      "review": "Revisar",
+      "open": "Abrir",
+      "verify": "Verificar",
+      "viewAll": "Ver todos"
+    },
+    "metric": {
+      "today": "Hoy",
+      "week": "Esta semana",
+      "month": "Este mes"
+    },
+    "severity": {
+      "nearMiss": "Casi accidente",
+      "minor": "Leve",
+      "serious": "Grave",
+      "critical": "Crítico"
+    },
+    "empty": {
+      "title": "Nada pendiente",
+      "body": "Todas las colas de esta pantalla están vacías."
+    },
+    "cond": {
+      "wind": "{value} kt",
+      "windLabel": "Viento",
+      "waterLabel": "Agua",
+      "visLabel": "Visibilidad"
+    }
   }
 }

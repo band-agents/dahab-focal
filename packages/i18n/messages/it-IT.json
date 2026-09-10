@@ -3,7 +3,13 @@
     "locale": "it-IT",
     "source": false,
     "needsTranslation": [],
-    "identicalToSource": ["app.name", "action.ok", "gallery.stateFocus"]
+    "identicalToSource": [
+      "action.ok",
+      "admin.cond.wind",
+      "admin.console",
+      "app.name",
+      "gallery.stateFocus"
+    ]
   },
   "app": {
     "name": "Dahab Focal",
@@ -146,5 +152,86 @@
     "stateEmpty": "Vuoto",
     "stateSkeleton": "Scheletro",
     "noComponentsYet": "In questa sezione non c’è ancora nessun componente registrato."
+  },
+  "admin": {
+    "console": "Sky Eye",
+    "consoleSub": "Console della piattaforma",
+    "nav": {
+      "today": "Oggi",
+      "vendors": "Operatori",
+      "expiry": "Scadenze",
+      "catalog": "Catalogo",
+      "bookings": "Prenotazioni",
+      "money": "Contabilità",
+      "trust": "Sicurezza e fiducia",
+      "platform": "Piattaforma"
+    },
+    "today": {
+      "title": "Oggi",
+      "subtitle": "Cosa richiede una decisione prima che le barche escano.",
+      "departures": "Partenze di oggi",
+      "needsAction": "Prenotazioni da gestire",
+      "incidents": "Incidenti aperti",
+      "disputes": "Controversie in attesa",
+      "payouts": "Pagamenti dovuti",
+      "expiring": "In scadenza entro 30 giorni",
+      "revenue": "Volume prenotazioni",
+      "takeRate": "Quota piattaforma",
+      "weather": "Dahab oggi",
+      "weatherNote": "Il vento annulla le barche, e un annullamento trascina il resto."
+    },
+    "expiry": {
+      "title": "Il quadro delle scadenze",
+      "subtitle": "Tutto ciò che scade, per ogni operatore.",
+      "expired": "Scaduto",
+      "within7": "Entro 7 giorni",
+      "within30": "Entro 30 giorni",
+      "within90": "Entro 90 giorni",
+      "blocks": "Blocca la pubblicazione",
+      "count": "{count, plural, one {# documento} other {# documenti}}"
+    },
+    "departures": {
+      "title": "Partenze",
+      "subtitle": "Capienza rispetto ai presenti."
+    },
+    "col": {
+      "vendor": "Operatore",
+      "document": "Documento",
+      "expires": "Scade",
+      "status": "Stato",
+      "service": "Servizio",
+      "when": "Quando",
+      "seats": "Posti",
+      "amount": "Importo",
+      "severity": "Gravità",
+      "site": "Sito"
+    },
+    "action": {
+      "review": "Esamina",
+      "open": "Apri",
+      "verify": "Verifica",
+      "viewAll": "Vedi tutti"
+    },
+    "metric": {
+      "today": "Oggi",
+      "week": "Questa settimana",
+      "month": "Questo mese"
+    },
+    "severity": {
+      "nearMiss": "Quasi incidente",
+      "minor": "Lieve",
+      "serious": "Grave",
+      "critical": "Critico"
+    },
+    "empty": {
+      "title": "Nulla in attesa",
+      "body": "Tutte le code di questa schermata sono vuote."
+    },
+    "cond": {
+      "wind": "{value} kt",
+      "windLabel": "Vento",
+      "waterLabel": "Acqua",
+      "visLabel": "Visibilità"
+    }
   }
 }

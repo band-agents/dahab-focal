@@ -3,7 +3,14 @@
     "locale": "de-DE",
     "source": false,
     "needsTranslation": [],
-    "identicalToSource": ["app.name", "action.ok", "a11y.optional"]
+    "identicalToSource": [
+      "a11y.optional",
+      "action.ok",
+      "admin.col.status",
+      "admin.cond.windLabel",
+      "admin.console",
+      "app.name"
+    ]
   },
   "app": {
     "name": "Dahab Focal",
@@ -146,5 +153,86 @@
     "stateEmpty": "Leer",
     "stateSkeleton": "Skelett",
     "noComponentsYet": "In diesem Bereich sind noch keine Komponenten registriert."
+  },
+  "admin": {
+    "console": "Sky Eye",
+    "consoleSub": "Plattform-Konsole",
+    "nav": {
+      "today": "Heute",
+      "vendors": "Anbieter",
+      "expiry": "Fristen",
+      "catalog": "Katalog",
+      "bookings": "Buchungen",
+      "money": "Finanzen",
+      "trust": "Sicherheit & Vertrauen",
+      "platform": "Plattform"
+    },
+    "today": {
+      "title": "Heute",
+      "subtitle": "Was entschieden werden muss, bevor die Boote auslaufen.",
+      "departures": "Heutige Abfahrten",
+      "needsAction": "Buchungen mit Handlungsbedarf",
+      "incidents": "Offene Vorfälle",
+      "disputes": "Streitfälle bei uns",
+      "payouts": "Fällige Auszahlungen",
+      "expiring": "Läuft in 30 Tagen ab",
+      "revenue": "Buchungsvolumen",
+      "takeRate": "Plattformanteil",
+      "weather": "Dahab heute",
+      "weatherNote": "Wind sagt Boote ab, und eine Absage zieht weitere nach sich."
+    },
+    "expiry": {
+      "title": "Die Fristenübersicht",
+      "subtitle": "Alles, was abläuft, über alle Anbieter hinweg.",
+      "expired": "Abgelaufen",
+      "within7": "In 7 Tagen",
+      "within30": "In 30 Tagen",
+      "within90": "In 90 Tagen",
+      "blocks": "Blockiert das Veröffentlichen",
+      "count": "{count, plural, one {# Dokument} other {# Dokumente}}"
+    },
+    "departures": {
+      "title": "Abfahrten",
+      "subtitle": "Kapazität gegen Teilnehmerzahl."
+    },
+    "col": {
+      "vendor": "Anbieter",
+      "document": "Dokument",
+      "expires": "Läuft ab",
+      "status": "Status",
+      "service": "Leistung",
+      "when": "Wann",
+      "seats": "Plätze",
+      "amount": "Betrag",
+      "severity": "Schweregrad",
+      "site": "Platz"
+    },
+    "action": {
+      "review": "Prüfen",
+      "open": "Öffnen",
+      "verify": "Bestätigen",
+      "viewAll": "Alle anzeigen"
+    },
+    "metric": {
+      "today": "Heute",
+      "week": "Diese Woche",
+      "month": "Dieser Monat"
+    },
+    "severity": {
+      "nearMiss": "Beinaheunfall",
+      "minor": "Gering",
+      "serious": "Schwer",
+      "critical": "Kritisch"
+    },
+    "empty": {
+      "title": "Nichts offen",
+      "body": "Alle Listen auf diesem Bildschirm sind leer."
+    },
+    "cond": {
+      "wind": "{value} kn",
+      "windLabel": "Wind",
+      "waterLabel": "Wasser",
+      "visLabel": "Sicht"
+    }
   }
 }

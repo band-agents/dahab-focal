@@ -3,7 +3,9 @@
     "locale": "ar-EG",
     "source": false,
     "needsTranslation": [],
-    "identicalToSource": ["app.name"]
+    "identicalToSource": [
+      "app.name"
+    ]
   },
   "app": {
     "name": "Dahab Focal",
@@ -146,5 +148,86 @@
     "stateEmpty": "فارغ",
     "stateSkeleton": "هيكل",
     "noComponentsYet": "لا توجد مكوّنات مسجّلة في هذا القسم بعد."
+  },
+  "admin": {
+    "console": "عين السماء",
+    "consoleSub": "لوحة المنصة",
+    "nav": {
+      "today": "اليوم",
+      "vendors": "المراكز",
+      "expiry": "الصلاحيات",
+      "catalog": "الكتالوج",
+      "bookings": "الحجوزات",
+      "money": "المالية",
+      "trust": "السلامة والثقة",
+      "platform": "المنصة"
+    },
+    "today": {
+      "title": "اليوم",
+      "subtitle": "ما يحتاج قرارًا قبل خروج القوارب.",
+      "departures": "رحلات اليوم",
+      "needsAction": "حجوزات تحتاج إجراء",
+      "incidents": "حوادث مفتوحة",
+      "disputes": "نزاعات في انتظارنا",
+      "payouts": "مستحقات واجبة",
+      "expiring": "تنتهي خلال 30 يومًا",
+      "revenue": "إجمالي الحجوزات",
+      "takeRate": "نسبة المنصة",
+      "weather": "دهب اليوم",
+      "weatherNote": "الريح تلغي القوارب، والإلغاء يمتد لما بعده."
+    },
+    "expiry": {
+      "title": "لوحة الصلاحيات",
+      "subtitle": "كل ما تنتهي صلاحيته، في كل المراكز.",
+      "expired": "منتهية",
+      "within7": "خلال 7 أيام",
+      "within30": "خلال 30 يومًا",
+      "within90": "خلال 90 يومًا",
+      "blocks": "يمنع النشر",
+      "count": "{count, plural, zero {لا مستندات} one {مستند واحد} two {مستندان} few {# مستندات} many {# مستندًا} other {# مستند}}"
+    },
+    "departures": {
+      "title": "الرحلات",
+      "subtitle": "السعة مقابل عدد الحاضرين."
+    },
+    "col": {
+      "vendor": "المركز",
+      "document": "المستند",
+      "expires": "ينتهي",
+      "status": "الحالة",
+      "service": "الخدمة",
+      "when": "الموعد",
+      "seats": "المقاعد",
+      "amount": "المبلغ",
+      "severity": "الخطورة",
+      "site": "الموقع"
+    },
+    "action": {
+      "review": "مراجعة",
+      "open": "فتح",
+      "verify": "توثيق",
+      "viewAll": "عرض الكل"
+    },
+    "metric": {
+      "today": "اليوم",
+      "week": "هذا الأسبوع",
+      "month": "هذا الشهر"
+    },
+    "severity": {
+      "nearMiss": "كاد يقع",
+      "minor": "بسيط",
+      "serious": "خطير",
+      "critical": "حرج"
+    },
+    "empty": {
+      "title": "لا شيء منتظر",
+      "body": "كل القوائم في هذه الشاشة خالية."
+    },
+    "cond": {
+      "wind": "{value} عقدة",
+      "windLabel": "الريح",
+      "waterLabel": "الماء",
+      "visLabel": "الرؤية"
+    }
   }
 }

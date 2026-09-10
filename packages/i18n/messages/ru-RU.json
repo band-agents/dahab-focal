@@ -3,7 +3,9 @@
     "locale": "ru-RU",
     "source": false,
     "needsTranslation": [],
-    "identicalToSource": ["app.name"]
+    "identicalToSource": [
+      "app.name"
+    ]
   },
   "app": {
     "name": "Dahab Focal",
@@ -146,5 +148,86 @@
     "stateEmpty": "Пусто",
     "stateSkeleton": "Скелетон",
     "noComponentsYet": "В этом разделе пока нет зарегистрированных компонентов."
+  },
+  "admin": {
+    "console": "Небесное око",
+    "consoleSub": "Консоль платформы",
+    "nav": {
+      "today": "Сегодня",
+      "vendors": "Операторы",
+      "expiry": "Сроки",
+      "catalog": "Каталог",
+      "bookings": "Брони",
+      "money": "Финансы",
+      "trust": "Безопасность и доверие",
+      "platform": "Платформа"
+    },
+    "today": {
+      "title": "Сегодня",
+      "subtitle": "Что требует решения до выхода лодок.",
+      "departures": "Выходы сегодня",
+      "needsAction": "Брони, требующие действий",
+      "incidents": "Открытые происшествия",
+      "disputes": "Споры на нашей стороне",
+      "payouts": "Выплаты к перечислению",
+      "expiring": "Истекает в течение 30 дней",
+      "revenue": "Объём бронирований",
+      "takeRate": "Доля платформы",
+      "weather": "Дахаб сегодня",
+      "weatherNote": "Ветер отменяет лодки, и отмена тянет за собой остальное."
+    },
+    "expiry": {
+      "title": "Доска сроков",
+      "subtitle": "Всё, что истекает, по всем операторам.",
+      "expired": "Истекло",
+      "within7": "В течение 7 дней",
+      "within30": "В течение 30 дней",
+      "within90": "В течение 90 дней",
+      "blocks": "Блокирует публикацию",
+      "count": "{count, plural, one {# документ} few {# документа} many {# документов} other {# документа}}"
+    },
+    "departures": {
+      "title": "Выходы",
+      "subtitle": "Вместимость против числа участников."
+    },
+    "col": {
+      "vendor": "Оператор",
+      "document": "Документ",
+      "expires": "Истекает",
+      "status": "Статус",
+      "service": "Услуга",
+      "when": "Когда",
+      "seats": "Места",
+      "amount": "Сумма",
+      "severity": "Серьёзность",
+      "site": "Место"
+    },
+    "action": {
+      "review": "Проверить",
+      "open": "Открыть",
+      "verify": "Подтвердить",
+      "viewAll": "Показать все"
+    },
+    "metric": {
+      "today": "Сегодня",
+      "week": "На этой неделе",
+      "month": "В этом месяце"
+    },
+    "severity": {
+      "nearMiss": "Едва не произошло",
+      "minor": "Незначительное",
+      "serious": "Серьёзное",
+      "critical": "Критическое"
+    },
+    "empty": {
+      "title": "Ничего не ждёт",
+      "body": "Все очереди на этом экране пусты."
+    },
+    "cond": {
+      "wind": "{value} уз",
+      "windLabel": "Ветер",
+      "waterLabel": "Вода",
+      "visLabel": "Видимость"
+    }
   }
 }

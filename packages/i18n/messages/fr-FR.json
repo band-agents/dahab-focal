@@ -3,7 +3,17 @@
     "locale": "fr-FR",
     "source": false,
     "needsTranslation": [],
-    "identicalToSource": ["app.name", "action.ok", "price.total", "gallery.stateFocus"]
+    "identicalToSource": [
+      "action.ok",
+      "admin.col.document",
+      "admin.col.site",
+      "admin.console",
+      "admin.expiry.count",
+      "admin.nav.catalog",
+      "app.name",
+      "gallery.stateFocus",
+      "price.total"
+    ]
   },
   "app": {
     "name": "Dahab Focal",
@@ -146,5 +156,86 @@
     "stateEmpty": "Vide",
     "stateSkeleton": "Squelette",
     "noComponentsYet": "Aucun composant n’est encore enregistré dans cette section."
+  },
+  "admin": {
+    "console": "Sky Eye",
+    "consoleSub": "Console de la plateforme",
+    "nav": {
+      "today": "Aujourd'hui",
+      "vendors": "Opérateurs",
+      "expiry": "Échéances",
+      "catalog": "Catalogue",
+      "bookings": "Réservations",
+      "money": "Finances",
+      "trust": "Sécurité et confiance",
+      "platform": "Plateforme"
+    },
+    "today": {
+      "title": "Aujourd'hui",
+      "subtitle": "Ce qui demande une décision avant que les bateaux sortent.",
+      "departures": "Départs d'aujourd'hui",
+      "needsAction": "Réservations à traiter",
+      "incidents": "Incidents ouverts",
+      "disputes": "Litiges en attente",
+      "payouts": "Versements dus",
+      "expiring": "Expire sous 30 jours",
+      "revenue": "Volume de réservations",
+      "takeRate": "Part de la plateforme",
+      "weather": "Dahab aujourd'hui",
+      "weatherNote": "Le vent annule les bateaux, et une annulation en entraîne d’autres."
+    },
+    "expiry": {
+      "title": "Le tableau des échéances",
+      "subtitle": "Tout ce qui expire, chez tous les opérateurs.",
+      "expired": "Expiré",
+      "within7": "Sous 7 jours",
+      "within30": "Sous 30 jours",
+      "within90": "Sous 90 jours",
+      "blocks": "Bloque la publication",
+      "count": "{count, plural, one {# document} other {# documents}}"
+    },
+    "departures": {
+      "title": "Départs",
+      "subtitle": "Capacité face aux effectifs."
+    },
+    "col": {
+      "vendor": "Opérateur",
+      "document": "Document",
+      "expires": "Expire",
+      "status": "Statut",
+      "service": "Prestation",
+      "when": "Quand",
+      "seats": "Places",
+      "amount": "Montant",
+      "severity": "Gravité",
+      "site": "Site"
+    },
+    "action": {
+      "review": "Examiner",
+      "open": "Ouvrir",
+      "verify": "Valider",
+      "viewAll": "Tout afficher"
+    },
+    "metric": {
+      "today": "Aujourd'hui",
+      "week": "Cette semaine",
+      "month": "Ce mois-ci"
+    },
+    "severity": {
+      "nearMiss": "Presque accident",
+      "minor": "Mineur",
+      "serious": "Grave",
+      "critical": "Critique"
+    },
+    "empty": {
+      "title": "Rien en attente",
+      "body": "Toutes les files de cet écran sont vides."
+    },
+    "cond": {
+      "wind": "{value} nd",
+      "windLabel": "Vent",
+      "waterLabel": "Eau",
+      "visLabel": "Visibilité"
+    }
   }
 }
