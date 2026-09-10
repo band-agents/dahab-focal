@@ -1,0 +1,38 @@
+/* Self-hosted Baloo 2, Rubik and Baloo Bhaijaan 2, one @font-face per script. */
+@import '@dahab/tokens/fonts.css';
+
+/* The token custom properties (light + Night Dive), generated from tokens.json. */
+@import '@dahab/tokens/tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/*
+ * Marks of physical objects keep their orientation when the layout mirrors.
+ * The <Mark noFlip> prop reads this, so the value lives with the direction
+ * rather than inside every component.
+ */
+:root {
+  --mark-flip: 1;
+
+  /*
+   * PROPOSED, not yet tokens. The design system's `grid` section describes the
+   * 390px phone reference only — it has never specified a desktop grid. These
+   * two are the admin console's working values and belong in tokens.json once
+   * the board ratifies them; they are declared here, once, rather than spread
+   * through components as magic numbers.
+   */
+  --admin-rail: 248px;
+  --admin-content-max: 1120px;
+}
+
+[dir='rtl'] {
+  --mark-flip: -1;
+}
