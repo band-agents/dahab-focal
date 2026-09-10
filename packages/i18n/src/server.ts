@@ -1,3 +1,15 @@
+/**
+ * @dahab/i18n/server — the React-free surface.
+ *
+ * Everything a React Server Component, the tRPC API or a Node script needs:
+ * locales, direction, money, the formatters, bidi isolation and a translator.
+ * Nothing here imports `react-i18next`, whose module body calls
+ * `createContext()` on import and throws outside a client bundle.
+ *
+ * The one thing missing compared with the main entry is the hooks — a server
+ * component knows its locale from the route, so it has no use for them.
+ */
+
 export {
   LOCALES,
   LOCALE_DESCRIPTORS,
@@ -71,16 +83,6 @@ export {
 export { byDirection, directionSign, htmlDir, shouldMirrorIcon } from './direction-core';
 
 export {
-  applyDirectionChange,
-  getRtlPlatform,
-  planDirectionChange,
-  registerRtlPlatform,
-  type ApplyDirectionOptions,
-  type DirectionChangePlan,
-  type RtlPlatformAdapter,
-} from './rtl-runtime';
-
-export {
   DEFAULT_NAMESPACE,
   buildResources,
   createI18n,
@@ -90,6 +92,3 @@ export {
   type CreateI18nOptions,
   type I18nInstance,
 } from './i18n';
-
-// Importing ./react registers the React binding with the i18next factory.
-export { Trans, useTranslation, useDirection, useLocale } from './react';
