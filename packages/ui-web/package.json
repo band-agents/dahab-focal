@@ -1,0 +1,35 @@
+{
+  "name": "@dahab/ui-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./marks": "./src/marks/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "marks": "node scripts/generate-marks.mjs"
+  },
+  "dependencies": {
+    "@dahab/i18n": "workspace:*",
+    "@dahab/tokens": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "19.0.0"
+  },
+  "devDependencies": {
+    "@dahab/config": "workspace:*",
+    "@types/node": "^22.10.2",
+    "@types/react": "~19.0.10",
+    "react": "19.0.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
