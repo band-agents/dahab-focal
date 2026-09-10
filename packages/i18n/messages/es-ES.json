@@ -6,8 +6,10 @@
     "identicalToSource": [
       "action.ok",
       "admin.col3.comparable",
+      "admin.col4.total",
       "admin.cond.wind",
       "admin.console",
+      "admin.party.instructor",
       "app.name",
       "gallery.stateError",
       "price.total"
@@ -335,6 +337,54 @@
       "category": "Categoría",
       "comparable": "Comparable",
       "options": "Opciones"
+    },
+    "bookings": {
+      "title": "Reservas",
+      "subtitle": "Todas las reservas de la plataforma, y lo que el tiempo está a punto de hacerles.",
+      "all": "Todas las reservas",
+      "risk": "Viento por encima del límite de este operador",
+      "riskSub": "Se prevén {forecast} kt frente a un límite de {limit} kt para {service}, {when}. Cancelar es una sola operación, pero llega más lejos que esta salida.",
+      "cascadeTitle": "A qué afecta la cancelación",
+      "cascadeSub": "Se muestra antes, no después. Nada de lo de abajo se ha ejecutado — es la vista previa.",
+      "commit": "Cancelar la salida",
+      "keep": "Mantenerla",
+      "seats": "{used} de {total} plazas",
+      "chargeableNote": "Los bebés y los instructores acompañantes ocupan plaza sin cobrarse, así que la lista y la factura nunca coinciden."
+    },
+    "cascade": {
+      "bookings": "Reservas canceladas",
+      "transfer": "Traslado asociado",
+      "refunds": "Reembolsos abiertos",
+      "ledger": "Asientos contables",
+      "notifications": "Personas avisadas",
+      "releasedNote": "Una reserva sigue esperando el pago: se libera en vez de reembolsarse — no se cobró nada."
+    },
+    "bookingStatus": {
+      "pendingPayment": "Pendiente de pago",
+      "confirmed": "Confirmada",
+      "awaitingVendor": "Esperando al operador",
+      "cancelledByTraveler": "Cancelada por el viajero",
+      "cancelledByVendor": "Cancelada por el operador",
+      "cancelledByWeather": "Cancelada por el tiempo",
+      "noShow": "No se presentó",
+      "completed": "Completada",
+      "refunded": "Reembolsada",
+      "disputed": "En disputa"
+    },
+    "party": {
+      "adult": "Adulto",
+      "child": "Niño",
+      "infant": "Bebé",
+      "student": "Estudiante",
+      "resident": "Residente",
+      "instructor": "Instructor"
+    },
+    "col4": {
+      "ref": "Referencia",
+      "traveler": "Viajero",
+      "party": "Grupo",
+      "departs": "Salida",
+      "total": "Total"
     }
   }
 }

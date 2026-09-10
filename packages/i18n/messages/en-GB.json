@@ -326,6 +326,54 @@
       "category": "Category",
       "comparable": "Comparable",
       "options": "Options"
+    },
+    "bookings": {
+      "title": "Bookings",
+      "subtitle": "Every booking on the platform, and what the weather is about to do to them.",
+      "all": "All bookings",
+      "risk": "Wind above this operator’s limit",
+      "riskSub": "{forecast} kt forecast against this operator’s {limit} kt limit for {service}, {when}. Cancelling is one operation, and it reaches further than this departure.",
+      "cascadeTitle": "What cancelling touches",
+      "cascadeSub": "Shown before it happens, not after. Nothing below has run yet — this is the preview.",
+      "commit": "Cancel the departure",
+      "keep": "Leave it running",
+      "seats": "{used} of {total} seats",
+      "chargeableNote": "Infants and accompanying instructors hold a seat without being charged, so the manifest and the invoice never match."
+    },
+    "cascade": {
+      "bookings": "Bookings cancelled",
+      "transfer": "Transfer that fed it",
+      "refunds": "Refunds opened",
+      "ledger": "Ledger entries written",
+      "notifications": "People told",
+      "releasedNote": "One booking is still awaiting payment, so it is released rather than refunded — nothing was captured to return."
+    },
+    "bookingStatus": {
+      "pendingPayment": "Awaiting payment",
+      "confirmed": "Confirmed",
+      "awaitingVendor": "Awaiting operator",
+      "cancelledByTraveler": "Cancelled by traveller",
+      "cancelledByVendor": "Cancelled by operator",
+      "cancelledByWeather": "Cancelled by weather",
+      "noShow": "No show",
+      "completed": "Completed",
+      "refunded": "Refunded",
+      "disputed": "Disputed"
+    },
+    "party": {
+      "adult": "Adult",
+      "child": "Child",
+      "infant": "Infant",
+      "student": "Student",
+      "resident": "Resident",
+      "instructor": "Instructor"
+    },
+    "col4": {
+      "ref": "Reference",
+      "traveler": "Traveller",
+      "party": "Party",
+      "departs": "Departs",
+      "total": "Total"
     }
   }
 }

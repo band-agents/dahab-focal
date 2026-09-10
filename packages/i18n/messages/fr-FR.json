@@ -10,6 +10,7 @@
       "admin.col3.comparable",
       "admin.col3.options",
       "admin.col3.type",
+      "admin.col4.total",
       "admin.console",
       "admin.dataType.date",
       "admin.expiry.count",
@@ -341,6 +342,54 @@
       "category": "Catégorie",
       "comparable": "Comparable",
       "options": "Options"
+    },
+    "bookings": {
+      "title": "Réservations",
+      "subtitle": "Toutes les réservations de la plateforme, et ce que la météo va leur faire.",
+      "all": "Toutes les réservations",
+      "risk": "Vent au-dessus de la limite de cet opérateur",
+      "riskSub": "{forecast} nd prévus contre une limite de {limit} nd pour {service}, {when}. Annuler est une seule opération, mais elle va plus loin que ce départ.",
+      "cascadeTitle": "Ce que l’annulation touche",
+      "cascadeSub": "Montré avant, pas après. Rien ci-dessous n’a été exécuté — c’est l’aperçu.",
+      "commit": "Annuler le départ",
+      "keep": "Le maintenir",
+      "seats": "{used} sur {total} places",
+      "chargeableNote": "Les nourrissons et les moniteurs accompagnants occupent une place sans être facturés : la liste et la facture ne coïncident jamais."
+    },
+    "cascade": {
+      "bookings": "Réservations annulées",
+      "transfer": "Transfert associé",
+      "refunds": "Remboursements ouverts",
+      "ledger": "Écritures comptables",
+      "notifications": "Personnes prévenues",
+      "releasedNote": "Une réservation attend encore le paiement : elle est libérée et non remboursée — rien n’a été encaissé."
+    },
+    "bookingStatus": {
+      "pendingPayment": "En attente de paiement",
+      "confirmed": "Confirmée",
+      "awaitingVendor": "En attente de l’opérateur",
+      "cancelledByTraveler": "Annulée par le voyageur",
+      "cancelledByVendor": "Annulée par l’opérateur",
+      "cancelledByWeather": "Annulée pour météo",
+      "noShow": "Absent",
+      "completed": "Terminée",
+      "refunded": "Remboursée",
+      "disputed": "Contestée"
+    },
+    "party": {
+      "adult": "Adulte",
+      "child": "Enfant",
+      "infant": "Nourrisson",
+      "student": "Étudiant",
+      "resident": "Résident",
+      "instructor": "Moniteur"
+    },
+    "col4": {
+      "ref": "Référence",
+      "traveler": "Voyageur",
+      "party": "Groupe",
+      "departs": "Départ",
+      "total": "Total"
     }
   }
 }

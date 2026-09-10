@@ -333,6 +333,54 @@
       "category": "Categoria",
       "comparable": "Confrontabile",
       "options": "Opzioni"
+    },
+    "bookings": {
+      "title": "Prenotazioni",
+      "subtitle": "Tutte le prenotazioni della piattaforma, e cosa sta per farne il meteo.",
+      "all": "Tutte le prenotazioni",
+      "risk": "Vento oltre il limite di questo operatore",
+      "riskSub": "Previsti {forecast} kt contro un limite di {limit} kt per {service}, {when}. Annullare è una sola operazione, ma arriva oltre questa partenza.",
+      "cascadeTitle": "Cosa tocca l'annullamento",
+      "cascadeSub": "Mostrato prima, non dopo. Nulla qui sotto è stato eseguito — è l’anteprima.",
+      "commit": "Annulla la partenza",
+      "keep": "Lasciala attiva",
+      "seats": "{used} di {total} posti",
+      "chargeableNote": "Neonati e istruttori accompagnatori occupano un posto senza essere addebitati: lista e fattura non coincidono mai."
+    },
+    "cascade": {
+      "bookings": "Prenotazioni annullate",
+      "transfer": "Transfer collegato",
+      "refunds": "Rimborsi aperti",
+      "ledger": "Scritture contabili",
+      "notifications": "Persone avvisate",
+      "releasedNote": "Una prenotazione attende ancora il pagamento: viene liberata, non rimborsata — nulla è stato incassato."
+    },
+    "bookingStatus": {
+      "pendingPayment": "In attesa di pagamento",
+      "confirmed": "Confermata",
+      "awaitingVendor": "In attesa dell’operatore",
+      "cancelledByTraveler": "Annullata dal viaggiatore",
+      "cancelledByVendor": "Annullata dall’operatore",
+      "cancelledByWeather": "Annullata per meteo",
+      "noShow": "Non presentato",
+      "completed": "Completata",
+      "refunded": "Rimborsata",
+      "disputed": "Contestata"
+    },
+    "party": {
+      "adult": "Adulto",
+      "child": "Bambino",
+      "infant": "Neonato",
+      "student": "Studente",
+      "resident": "Residente",
+      "instructor": "Istruttore"
+    },
+    "col4": {
+      "ref": "Riferimento",
+      "traveler": "Viaggiatore",
+      "party": "Gruppo",
+      "departs": "Partenza",
+      "total": "Totale"
     }
   }
 }

@@ -335,6 +335,54 @@
       "category": "Kategorie",
       "comparable": "Vergleichbar",
       "options": "Optionen"
+    },
+    "bookings": {
+      "title": "Buchungen",
+      "subtitle": "Alle Buchungen der Plattform — und was das Wetter gleich mit ihnen macht.",
+      "all": "Alle Buchungen",
+      "risk": "Wind über dem Limit dieses Anbieters",
+      "riskSub": "{forecast} kn erwartet bei einem Limit von {limit} kn für {service}, {when}. Die Absage ist ein Vorgang, reicht aber weiter als diese Abfahrt.",
+      "cascadeTitle": "Was eine Absage auslöst",
+      "cascadeSub": "Wird vorher gezeigt, nicht hinterher. Nichts davon ist ausgeführt — das ist die Vorschau.",
+      "commit": "Abfahrt absagen",
+      "keep": "Weiterlaufen lassen",
+      "seats": "{used} von {total} Plätzen",
+      "chargeableNote": "Kleinkinder und begleitende Guides belegen einen Platz, ohne berechnet zu werden — Teilnehmerliste und Rechnung stimmen daher nie überein."
+    },
+    "cascade": {
+      "bookings": "Stornierte Buchungen",
+      "transfer": "Zubringer dazu",
+      "refunds": "Eröffnete Erstattungen",
+      "ledger": "Geschriebene Buchungssätze",
+      "notifications": "Benachrichtigte Personen",
+      "releasedNote": "Eine Buchung wartet noch auf Zahlung und wird freigegeben statt erstattet — es wurde nichts eingezogen."
+    },
+    "bookingStatus": {
+      "pendingPayment": "Zahlung ausstehend",
+      "confirmed": "Bestätigt",
+      "awaitingVendor": "Wartet auf Anbieter",
+      "cancelledByTraveler": "Vom Reisenden storniert",
+      "cancelledByVendor": "Vom Anbieter storniert",
+      "cancelledByWeather": "Wetterbedingt abgesagt",
+      "noShow": "Nicht erschienen",
+      "completed": "Abgeschlossen",
+      "refunded": "Erstattet",
+      "disputed": "Strittig"
+    },
+    "party": {
+      "adult": "Erwachsen",
+      "child": "Kind",
+      "infant": "Kleinkind",
+      "student": "Studierend",
+      "resident": "Ansässig",
+      "instructor": "Guide"
+    },
+    "col4": {
+      "ref": "Referenz",
+      "traveler": "Reisende:r",
+      "party": "Gruppe",
+      "departs": "Abfahrt",
+      "total": "Summe"
     }
   }
 }
