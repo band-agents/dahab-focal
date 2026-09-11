@@ -100,6 +100,17 @@ console's eight boards, the marks moved into `@dahab/tokens` and given a React
 Native twin, the vendor app, the three schema gaps the wiring exposed, and the
 API's admin router. Tests went 193 → 228.
 
+**Session 4 (2026-09-11).** The blocker closed and the console went live.
+Board 04 Discover became `apps/traveler`; a Supabase Postgres was created and
+`pnpm db:migrate && pnpm db:seed` ran against it for the first time (PostGIS
+3.3.7, 59 tables, 7 GIST indexes); `apps/api` booted and its health check went
+from `degraded` to `ok`; the admin console was deployed to Vercel. Then the
+operating week went into the database — services, departures, bookings,
+payments, a balanced double-entry ledger, payouts, reviews, incidents and
+disputes — and **all eight admin screens were moved off fixtures onto the
+API**. The fixture modules under `apps/admin/lib/` were deleted rather than
+left to rot.
+
 The user's standing instruction from this session, still in force:
 
 > "write simple responses and make sure your responses in arabic egyptian"
@@ -187,10 +198,10 @@ apps/
   admin     Next.js 15, port 4310. 8 screens. 7 tests.
   vendor    Expo web, port 4320. 5 screens. 13 tests.
   gallery   Expo web. Exists for the screenshot gate. 4 tests.
-  traveler  Empty.
+  traveler  Expo web, port 4330. Board 04 Discover. On fixtures.
 ```
 
-**228 tests across 11 packages.** Both gates pass.
+**228 tests across 12 packages.** Both gates pass.
 
 ### The admin console — `/[locale]` on port 4310
 
@@ -200,6 +211,13 @@ A08 Platform.
 
 Every locale is a real route, so `dir` is a document fact rather than a runtime
 toggle. Light and Night Dive both work.
+
+**Every screen reads the API, and every panel fails on its own.** A page runs
+its queries through `load()` in `apps/admin/lib/api.ts` and renders a
+`DataProblemNotice` per panel, not per page — two panels on one screen are
+usually two procedures behind two different permissions. There are no fixtures
+left in `apps/admin/lib/`; if you are about to add one, the thing you actually
+want is a procedure in `apps/api/src/routers/admin.ts`.
 
 ### The vendor app — port 4320
 
@@ -351,47 +369,75 @@ Do not rediscover these.
 
 ## 10. What is real and what is not
 
-**Three things this codebase is deliberately honest about. Keep it that way.**
+**Keep this section honest. It is the first thing the next person reads.**
 
-**1. Seven of the eight admin screens read fixtures, not the database.** Only
-A03 (the expiry board) goes through the API. The fixtures in `apps/admin/lib/`
-are shaped like the db so swapping them is a change of import, but they are
-hand-written numbers, proven against no query.
+**1. All eight admin screens read the database, through the API, over HTTP.**
+No screen in `apps/admin` reads a fixture any more — the fixture modules were
+deleted, not commented out. Every figure on every board is a query against
+Supabase: the roster's ratings, the ledger's eight balances, the departures'
+seat counts, the catalogue's "on N services", the cancellation cascade.
 
-**2. There is no database.** The schema has never been applied to a live
-Postgres. `pnpm db:migrate` has not run. The API's health check reports
-`degraded` / `database: unavailable`, which is the truthful answer — and a test
-asserts it, because a green health check on a server that cannot reach its
-database is exactly the failure that assertion exists to prevent.
+**2. The data behind it is a seed, not production traffic.** `pnpm db:seed`
+writes an operating week: 12 services across 7 operators, 7 departures, 23
+bookings, 23 payments, 2 refunds, 10 payouts, 153 balanced ledger legs, 9
+reviews, 2 incidents, 2 disputes. It is real Dahab — the real sites,
+neighbourhoods and operators — with one exception stated in
+`packages/db/src/seed/operations.ts`: the travellers are named because a
+manifest with no names on it cannot be read, and they are the only fictional
+thing in the database.
 
-**3. Nothing writes, and nothing authenticates.** Every admin procedure is a
-read. "Cancel the departure", "Confirm", "Review" and "Check in" are inert.
-Anyone who opens either URL is in. The OTP flow exists in `apps/api` and needs
-wiring.
+**3. Three things are genuinely absent, and the console says so rather than
+filling them in.**
+
+- **No weather source.** A01's conditions strip and A05's "wind above this
+  operator's limit" both read "No weather source connected". A plausible wind
+  speed on the screen that decides whether a boat sails would be the most
+  dangerous placeholder in the product. A05 previews a cancellation for a
+  departure you pick instead of one a forecast picked.
+- **No exchange-rate feed.** A06's header says so. `exchange_rates` exists and
+  is empty.
+- **No writes, so no audit log.** A08's audit panel is empty and explains why.
+  "Cancel the departure", "Review" and "Confirm" are `disabled`, not merely
+  unwired — a button that silently does nothing is worse than one that is not
+  there yet.
+
+**4. Nothing authenticates.** Anyone who opens either URL is in. The console
+talks to the API with a long-lived service token in `.env`
+(`DAHAB_ADMIN_TOKEN`). The OTP flow exists in `apps/api` and needs wiring.
 
 The honest-failure pattern is the house style here. `apps/admin/lib/api.ts`
 classifies a failure as `unreachable` / `noDatabase` / `forbidden` /
-`unauthorized` and `DataProblemNotice` renders it. **A console that renders an
-empty table when the API is down is lying**, and "nothing is expiring" is the
-one wrong answer the expiry board must never give.
+`unauthorized` and `DataProblemNotice` renders it, **per panel** — the roster
+and the verification queue are separate procedures with separate permissions,
+so one failing must not blank the other. **A console that renders an empty
+table when the API is down is lying**, and "nothing is expiring" is the one
+wrong answer the expiry board must never give.
 
 ---
 
-## 11. The blocker, and what unblocks it
+## 11. The database
 
-**Postgres.** The machine has no Docker, no psql, no WSL and no admin rights,
-so the local `docker-compose.yml` cannot run. The user chose a cloud Postgres
-(Neon or Supabase). It is blocked on them:
+**Closed as of session 4.** Supabase Postgres, project `oggsssfydturfqjynwli`,
+reached through the session pooler. PostGIS 3.3.7 is enabled, all 59 tables
+and 7 GIST indexes are applied, and both `pnpm db:migrate` and `pnpm db:seed`
+run clean and are idempotent — re-seeding replaces the seeded set and moves
+every relative date forward rather than duplicating rows.
 
-1. Create a project on [neon.tech](https://neon.tech) — free tier is enough.
-2. In the SQL editor: `CREATE EXTENSION IF NOT EXISTS postgis;`
-3. Put the connection string in `.env` as `DATABASE_URL`.
-   **`.env` is gitignored and the password must never enter the repo.**
-4. `pnpm db:migrate && pnpm db:seed`
+The connection string lives in `.env` as `DATABASE_URL`. **`.env` is gitignored
+and the password must never enter the repo, a commit, or a browser form.**
 
 `.env.example` documents every variable: `DATABASE_URL`, `REDIS_URL`, `PORT`,
 `NODE_ENV`, `AUTH_SECRET`, `OTP_TRANSPORT`, `DAHAB_API_URL`,
 `DAHAB_ADMIN_TOKEN`.
+
+Two things to know before touching it:
+
+- The machine has no Docker, no psql, no WSL and no admin rights, so the local
+  `docker-compose.yml` still cannot run. Everything goes through the cloud
+  instance.
+- The Supabase↔Vercel integration provisions `POSTGRES_URL`, not
+  `DATABASE_URL`. Anything deployed that reads the database needs the name
+  mapped or the variable set explicitly.
 
 ---
 
@@ -446,25 +492,29 @@ fixture and requires it to fail, so weakening the gate breaks a test.
 
 ## 13. Suggested order from here
 
-1. **A database.** Everything below is easier once queries can run.
-2. **Auth**, so neither surface is open to anyone with the URL.
-3. **The writes**, starting with document verification and the weather
-   cancellation — both already have their previews built. Each write needs a
-   reason field, a confirmation and an audit row. `audit_log.reason` exists for
-   this.
-4. **The remaining seven admin screens onto the API**, following A03's pattern
-   including its `DataProblemNotice`.
-5. **The vendor app's own API wiring** — `booking.readVendor` and
+1. **Auth**, so neither surface is open to anyone with the URL. It is now the
+   largest single gap: the console reads real bookings, real money and real
+   incident reports, and nothing checks who is looking.
+2. **The writes**, starting with document verification and the weather
+   cancellation — both already have their previews built and both previews are
+   computed from the same rows a commit would touch. Each write needs a reason
+   field, a confirmation and an audit row. `audit_log.reason` exists for this,
+   and A08's audit panel is waiting for the first one.
+3. **A weather source.** It is the only thing standing between A05's
+   cancellation preview and the feature the screen was designed for. Until
+   then the screen says plainly that nothing is flagged.
+4. **The vendor app's own API wiring** — `booking.readVendor` and
    `payout.readOwn` need writing so a vendor session only ever sees its own
-   rows.
-6. **The traveller app.** Board 03 Home is approved and
-   `docs/DESIGN-PROMPT-BOARDS-04-11.md` is written but not yet run through
-   Claude Design.
+   rows. The vendor app is still on fixtures; the admin console is not.
+5. **The traveller app.** `apps/traveler` has Board 04 Discover; boards 05–11
+   are written in `docs/DESIGN-PROMPT-BOARDS-04-11.md` but not yet run through
+   Claude Design, and nothing in the app reads the API yet.
 
-**What the i18n catalogue still owes:** 501 keys × 7 locales = 3,507 messages
-today. `participant.*` exists because the pricing engine emits it. Still
-missing: `attribute.diving.*`, `certLevel.*`, `diveSite.*`, `neighborhood.*`,
-`category.*`, `gas.*`.
+**What the i18n catalogue still owes:** 625 keys × 7 locales = 4,375 messages
+today. `participant.*`, `category.*` and `diveSite.*` now exist because
+something renders them. Still missing: `attribute.diving.*`, `certLevel.*`,
+`neighborhood.*`, `gas.*` — every one of those is currently shown as its raw
+slug somewhere in the console.
 
 **What the design board still owes** (from `docs/CANVAS-FIXES.md`):
 

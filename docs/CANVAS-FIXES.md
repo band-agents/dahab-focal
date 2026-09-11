@@ -222,6 +222,7 @@ since you are touching that token anyway.
 | JSON/CSS naming | The JSON `night` block omits the `raised` vs `surface-raised` naming the CSS uses. Cosmetic, but it is why an importer has to special-case one of them. |
 | Motion signatures | The six named motion signatures exist only as one prose `$note` in the JSON, not as structured tokens. Components cannot read them. Worth promoting to real entries. |
 | `noFlip` icon list | The per-mark list is not published on the board. `tokens.json` carries a conservative first pass in `icon.noFlip.names` (27 of 48 marks) that needs sign-off. |
+| Category marks vs the taxonomy | The board draws twelve category marks and the seeded taxonomy has twelve categories, but not the same twelve. The board includes `foodCooking`, which `CLAUDE.md` rules out ("experiences, not food"); the taxonomy includes `photography`, which the board never drew. `apps/admin/components/CategoryGlyph.tsx` maps the eleven that match and falls back to the generic `camera` mark for photography rather than redrawing one. The board owes a `photography` mark, and `foodCooking` should be retired from the set. |
 
 ---
 
