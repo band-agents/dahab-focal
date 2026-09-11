@@ -377,6 +377,151 @@
       "party": "المجموعة",
       "departs": "الانطلاق",
       "total": "الإجمالي"
+    },
+    "money": {
+      "title": "الفلوس",
+      "subtitle": "اللي دخل، واللي مستحق يخرج، وكل قيد حرّكه.",
+      "payments": "المدفوعات",
+      "payouts": "مستحقات واجبة",
+      "payoutsSub": "الإجمالي والعمولة والرسوم كل واحد لوحده — مش رقم واحد مخلوط.",
+      "ledger": "دفتر الحسابات",
+      "ledgerSub": "مزدوج القيد وإضافة فقط. مفيش تعديل هنا: التصحيح قيد جديد بيعكس اللي قبله.",
+      "balanced": "متوازن",
+      "unbalanced": "مش متوازن",
+      "reverses": "يعكس {id}",
+      "reversedBy": "اتعكس بـ {id}",
+      "fxTitle": "سعر الصرف",
+      "fxSub": "متخزّن مضروب في مليون، والسعر اللي الحجز اتحسب بيه محفوظ مع الحجز.",
+      "gross": "الإجمالي",
+      "commission": "العمولة",
+      "fees": "الرسوم",
+      "net": "الصافي"
+    },
+    "paymentStatus": {
+      "initiated": "اتبدأ",
+      "pending": "معلّق",
+      "authorized": "متصرّح",
+      "captured": "اتحصّل",
+      "failed": "فشل",
+      "cancelled": "اتلغى",
+      "refunded": "اترد",
+      "partiallyRefunded": "اترد جزئيًا",
+      "chargeback": "استرداد قسري"
+    },
+    "payoutStatus": {
+      "scheduled": "مجدول",
+      "processing": "جاري التنفيذ",
+      "paid": "اتدفع",
+      "failed": "فشل",
+      "cancelled": "اتلغى"
+    },
+    "provider": {
+      "paymob": "باي موب",
+      "kashier": "كاشير",
+      "paypal": "باي بال",
+      "fawry": "فوري",
+      "instapay": "إنستاباي",
+      "wise": "وايز",
+      "bankTransfer": "تحويل بنكي"
+    },
+    "account": {
+      "travelerReceivable": "مستحق على المسافر",
+      "providerClearing": "تسوية مزوّد الدفع",
+      "platformCash": "نقدية المنصة",
+      "vendorPayable": "مستحق للمركز",
+      "platformCommission": "عمولة المنصة",
+      "paymentFees": "رسوم الدفع",
+      "refundsPayable": "مستحقات الاسترداد",
+      "taxPayable": "ضرائب مستحقة"
+    },
+    "trust": {
+      "title": "السلامة والثقة",
+      "subtitle": "إيه اللي حصل غلط، ومين مستني رد، وإيه اللي اتغيّر بسببه.",
+      "incidents": "سجل الحوادث",
+      "incidentsSub": "سجل مش طابور. كل بلاغ بيحمل إيه اللي اتغيّر نتيجته، وغرفة الضغط في دهب على بعد 6 دقايق.",
+      "chamber": "اتستخدمت غرفة الضغط",
+      "outcomePending": "المراجعة لسه مفتوحة",
+      "disputes": "النزاعات",
+      "disputesSub": "الحل بيكتب قيد عكسي في الدفتر، مش تعديل.",
+      "moderation": "الإشراف",
+      "impersonation": "انتحال الهوية",
+      "impersonationSub": "الدعم بيعيد إنتاج العطل بحساب المستخدم؛ مش وسيلة يتصفّح بيها. محدود بـ {minutes} دقيقة، والسبب إلزامي، وفيه شريط بيبان طول ما شغّال."
+    },
+    "incidentKind": {
+      "divingIncident": "حادث غوص",
+      "decompressionIllness": "مرض انخفاض الضغط",
+      "equipmentFailure": "عطل معدات",
+      "vesselIncident": "حادث قارب",
+      "vehicleIncident": "حادث مركبة",
+      "medicalEmergency": "طوارئ طبية",
+      "marineLifeInjury": "إصابة من كائن بحري",
+      "weatherEvent": "حدث جوي",
+      "lostDiver": "غواص تايه",
+      "other": "أخرى"
+    },
+    "disputeStatus": {
+      "open": "مفتوح",
+      "awaitingTraveler": "في انتظار المسافر",
+      "awaitingVendor": "في انتظار المركز",
+      "underReview": "تحت المراجعة",
+      "resolved": "اتحل",
+      "escalated": "اتصعّد",
+      "closed": "مقفول"
+    },
+    "moderationStatus": {
+      "published": "منشور",
+      "pendingReview": "في انتظار المراجعة",
+      "hidden": "مخفي",
+      "removed": "اتشال"
+    },
+    "platform": {
+      "title": "المنصة",
+      "subtitle": "سجل التدقيق، والمفاتيح، والخريطة، والسبع لغات.",
+      "audit": "سجل التدقيق",
+      "auditSub": "الموازن لكون الأدمن معاه كل الصلاحيات: الفاعل والصلاحية والهدف والسبب، على كل إجراء.",
+      "flags": "مفاتيح الخصائص",
+      "sites": "مواقع الغوص",
+      "translations": "تغطية الترجمة",
+      "translationsSub": "إزاي العربي اللي بيكتبه مركز في دهب يوصل لست لغات تانية. مخرجات الآلة لسه محتاجة مراجعة بشرية.",
+      "on": "شغّال",
+      "off": "مقفول"
+    },
+    "difficulty": {
+      "beginner": "مبتدئ",
+      "intermediate": "متوسط",
+      "advanced": "متقدم",
+      "technical": "تقني"
+    },
+    "entry": {
+      "shore": "من الشاطئ",
+      "boat": "من القارب",
+      "both": "شاطئ أو قارب"
+    },
+    "col5": {
+      "when": "الوقت",
+      "actor": "الفاعل",
+      "permission": "الصلاحية",
+      "target": "الهدف",
+      "reason": "السبب",
+      "flag": "المفتاح",
+      "gates": "بيتحكم في",
+      "rollout": "النطاق",
+      "site": "الموقع",
+      "depth": "العمق",
+      "difficulty": "الصعوبة",
+      "hazard": "الخطر",
+      "entryType": "الدخول",
+      "locale": "اللغة",
+      "human": "بشري",
+      "machine": "آلي",
+      "needsReview": "يحتاج مراجعة",
+      "missing": "ناقص",
+      "severity": "الخطورة",
+      "outcome": "إيه اللي اتغيّر",
+      "provider": "المزوّد",
+      "due": "الاستحقاق",
+      "entryId": "القيد",
+      "narrative": "البيان"
     }
   }
 }

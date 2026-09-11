@@ -7,9 +7,16 @@
       "action.ok",
       "admin.col3.comparable",
       "admin.col4.total",
+      "admin.col5.actor",
       "admin.cond.wind",
       "admin.console",
       "admin.party.instructor",
+      "admin.provider.fawry",
+      "admin.provider.instapay",
+      "admin.provider.kashier",
+      "admin.provider.paymob",
+      "admin.provider.paypal",
+      "admin.provider.wise",
       "app.name",
       "gallery.stateError",
       "price.total"
@@ -385,6 +392,151 @@
       "party": "Grupo",
       "departs": "Salida",
       "total": "Total"
+    },
+    "money": {
+      "title": "Finanzas",
+      "subtitle": "Lo que entró, lo que se debe y cada apunte que lo movió.",
+      "payments": "Pagos",
+      "payouts": "Pagos pendientes",
+      "payoutsSub": "Bruto, comisión y gastos por separado — nunca una cifra mezclada.",
+      "ledger": "Libro mayor",
+      "ledgerSub": "Partida doble, solo añadir. Aquí no se edita: una corrección es un apunte nuevo que revierte el anterior.",
+      "balanced": "Cuadra",
+      "unbalanced": "No cuadra",
+      "reverses": "Revierte {id}",
+      "reversedBy": "Revertido por {id}",
+      "fxTitle": "Tipo de cambio",
+      "fxSub": "Guardado escalado por un millón; el tipo que usó una reserva se queda con la reserva.",
+      "gross": "Bruto",
+      "commission": "Comisión",
+      "fees": "Gastos",
+      "net": "Neto"
+    },
+    "paymentStatus": {
+      "initiated": "Iniciado",
+      "pending": "Pendiente",
+      "authorized": "Autorizado",
+      "captured": "Cobrado",
+      "failed": "Fallido",
+      "cancelled": "Cancelado",
+      "refunded": "Reembolsado",
+      "partiallyRefunded": "Reembolsado en parte",
+      "chargeback": "Contracargo"
+    },
+    "payoutStatus": {
+      "scheduled": "Programado",
+      "processing": "En proceso",
+      "paid": "Pagado",
+      "failed": "Fallido",
+      "cancelled": "Cancelado"
+    },
+    "provider": {
+      "paymob": "Paymob",
+      "kashier": "Kashier",
+      "paypal": "PayPal",
+      "fawry": "Fawry",
+      "instapay": "InstaPay",
+      "wise": "Wise",
+      "bankTransfer": "Transferencia bancaria"
+    },
+    "account": {
+      "travelerReceivable": "Cobro a viajero",
+      "providerClearing": "Compensación del proveedor",
+      "platformCash": "Caja de la plataforma",
+      "vendorPayable": "Pago al operador",
+      "platformCommission": "Comisión de la plataforma",
+      "paymentFees": "Gastos de pago",
+      "refundsPayable": "Reembolsos a pagar",
+      "taxPayable": "Impuestos a pagar"
+    },
+    "trust": {
+      "title": "Seguridad y confianza",
+      "subtitle": "Qué salió mal, a quién se le debe respuesta y qué cambió por ello.",
+      "incidents": "Registro de incidentes",
+      "incidentsSub": "Un registro, no una cola. Cada parte lleva lo que cambió, y la cámara hiperbárica de Dahab está a seis minutos.",
+      "chamber": "Cámara utilizada",
+      "outcomePending": "Revisión aún abierta",
+      "disputes": "Disputas",
+      "disputesSub": "Una resolución escribe un asiento inverso, nunca una edición.",
+      "moderation": "Moderación",
+      "impersonation": "Suplantación",
+      "impersonationSub": "Soporte reproduce un fallo como el usuario; no es una forma de navegar por él. Limitado a {minutes} minutos, motivo obligatorio, y un aviso visible mientras dura."
+    },
+    "incidentKind": {
+      "divingIncident": "Incidente de buceo",
+      "decompressionIllness": "Enfermedad descompresiva",
+      "equipmentFailure": "Fallo de equipo",
+      "vesselIncident": "Incidente de embarcación",
+      "vehicleIncident": "Incidente de vehículo",
+      "medicalEmergency": "Emergencia médica",
+      "marineLifeInjury": "Lesión por fauna marina",
+      "weatherEvent": "Evento meteorológico",
+      "lostDiver": "Buceador perdido",
+      "other": "Otro"
+    },
+    "disputeStatus": {
+      "open": "Abierta",
+      "awaitingTraveler": "Esperando al viajero",
+      "awaitingVendor": "Esperando al operador",
+      "underReview": "En revisión",
+      "resolved": "Resuelta",
+      "escalated": "Escalada",
+      "closed": "Cerrada"
+    },
+    "moderationStatus": {
+      "published": "Publicado",
+      "pendingReview": "Pendiente de revisión",
+      "hidden": "Oculto",
+      "removed": "Eliminado"
+    },
+    "platform": {
+      "title": "Plataforma",
+      "subtitle": "El rastro de auditoría, los interruptores, el mapa y los siete idiomas.",
+      "audit": "Registro de auditoría",
+      "auditSub": "El contrapeso a que un admin tenga todos los permisos: actor, permiso, objetivo y motivo, en cada acción.",
+      "flags": "Interruptores de función",
+      "sites": "Puntos de buceo",
+      "translations": "Cobertura de traducción",
+      "translationsSub": "Cómo el árabe escrito por un operador de Dahab llega a otros seis idiomas. La salida automática sigue necesitando una pasada humana.",
+      "on": "Activo",
+      "off": "Inactivo"
+    },
+    "difficulty": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado",
+      "technical": "Técnico"
+    },
+    "entry": {
+      "shore": "Desde orilla",
+      "boat": "Desde barco",
+      "both": "Orilla o barco"
+    },
+    "col5": {
+      "when": "Cuándo",
+      "actor": "Actor",
+      "permission": "Permiso",
+      "target": "Objetivo",
+      "reason": "Motivo",
+      "flag": "Interruptor",
+      "gates": "Controla",
+      "rollout": "Despliegue",
+      "site": "Punto",
+      "depth": "Profundidad",
+      "difficulty": "Dificultad",
+      "hazard": "Peligro",
+      "entryType": "Entrada",
+      "locale": "Idioma",
+      "human": "Humano",
+      "machine": "Automático",
+      "needsReview": "Por revisar",
+      "missing": "Falta",
+      "severity": "Gravedad",
+      "outcome": "Qué cambió",
+      "provider": "Proveedor",
+      "due": "Vence",
+      "entryId": "Apunte",
+      "narrative": "Concepto"
     }
   }
 }

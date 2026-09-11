@@ -5,8 +5,16 @@
     "needsTranslation": [],
     "identicalToSource": [
       "action.ok",
+      "admin.col5.flag",
+      "admin.col5.provider",
       "admin.cond.wind",
       "admin.console",
+      "admin.provider.fawry",
+      "admin.provider.instapay",
+      "admin.provider.kashier",
+      "admin.provider.paymob",
+      "admin.provider.paypal",
+      "admin.provider.wise",
       "app.name",
       "gallery.stateFocus"
     ]
@@ -381,6 +389,151 @@
       "party": "Gruppo",
       "departs": "Partenza",
       "total": "Totale"
+    },
+    "money": {
+      "title": "Contabilità",
+      "subtitle": "Cosa è entrato, cosa è dovuto e ogni scrittura che lo ha mosso.",
+      "payments": "Pagamenti",
+      "payouts": "Pagamenti dovuti",
+      "payoutsSub": "Lordo, commissione e spese indicati separatamente — mai una cifra unica.",
+      "ledger": "Partita doppia",
+      "ledgerSub": "Doppia registrazione, solo in aggiunta. Qui non si modifica: una correzione è una nuova scrittura che storna quella precedente.",
+      "balanced": "Quadra",
+      "unbalanced": "Non quadra",
+      "reverses": "Storna {id}",
+      "reversedBy": "Stornata da {id}",
+      "fxTitle": "Tasso di cambio",
+      "fxSub": "Memorizzato scalato di un milione; il tasso usato da una prenotazione resta con la prenotazione.",
+      "gross": "Lordo",
+      "commission": "Commissione",
+      "fees": "Spese",
+      "net": "Netto"
+    },
+    "paymentStatus": {
+      "initiated": "Avviato",
+      "pending": "In sospeso",
+      "authorized": "Autorizzato",
+      "captured": "Incassato",
+      "failed": "Fallito",
+      "cancelled": "Annullato",
+      "refunded": "Rimborsato",
+      "partiallyRefunded": "Rimborsato in parte",
+      "chargeback": "Storno carta"
+    },
+    "payoutStatus": {
+      "scheduled": "Programmato",
+      "processing": "In elaborazione",
+      "paid": "Pagato",
+      "failed": "Fallito",
+      "cancelled": "Annullato"
+    },
+    "provider": {
+      "paymob": "Paymob",
+      "kashier": "Kashier",
+      "paypal": "PayPal",
+      "fawry": "Fawry",
+      "instapay": "InstaPay",
+      "wise": "Wise",
+      "bankTransfer": "Bonifico bancario"
+    },
+    "account": {
+      "travelerReceivable": "Credito verso viaggiatore",
+      "providerClearing": "Compensazione provider",
+      "platformCash": "Cassa piattaforma",
+      "vendorPayable": "Debito verso operatore",
+      "platformCommission": "Commissione piattaforma",
+      "paymentFees": "Spese di pagamento",
+      "refundsPayable": "Rimborsi da pagare",
+      "taxPayable": "Imposte da versare"
+    },
+    "trust": {
+      "title": "Sicurezza e fiducia",
+      "subtitle": "Cosa è andato storto, a chi si deve una risposta e cosa è cambiato.",
+      "incidents": "Registro incidenti",
+      "incidentsSub": "Un registro, non una coda. Ogni segnalazione porta con sé cosa è cambiato, e la camera iperbarica di Dahab è a sei minuti.",
+      "chamber": "Camera iperbarica usata",
+      "outcomePending": "Revisione ancora aperta",
+      "disputes": "Controversie",
+      "disputesSub": "Una risoluzione scrive uno storno, mai una modifica.",
+      "moderation": "Moderazione",
+      "impersonation": "Accesso come utente",
+      "impersonationSub": "L'assistenza riproduce un guasto come l'utente; non è un modo per navigare al posto suo. Limitato a {minutes} minuti, motivo obbligatorio, banner visibile mentre è attivo."
+    },
+    "incidentKind": {
+      "divingIncident": "Incidente subacqueo",
+      "decompressionIllness": "Malattia da decompressione",
+      "equipmentFailure": "Guasto attrezzatura",
+      "vesselIncident": "Incidente imbarcazione",
+      "vehicleIncident": "Incidente veicolo",
+      "medicalEmergency": "Emergenza medica",
+      "marineLifeInjury": "Lesione da fauna marina",
+      "weatherEvent": "Evento meteo",
+      "lostDiver": "Subacqueo disperso",
+      "other": "Altro"
+    },
+    "disputeStatus": {
+      "open": "Aperta",
+      "awaitingTraveler": "In attesa del viaggiatore",
+      "awaitingVendor": "In attesa dell'operatore",
+      "underReview": "In esame",
+      "resolved": "Risolta",
+      "escalated": "Scalata",
+      "closed": "Chiusa"
+    },
+    "moderationStatus": {
+      "published": "Pubblicato",
+      "pendingReview": "In attesa di revisione",
+      "hidden": "Nascosto",
+      "removed": "Rimosso"
+    },
+    "platform": {
+      "title": "Piattaforma",
+      "subtitle": "La traccia di audit, gli interruttori, la mappa e le sette lingue.",
+      "audit": "Registro di audit",
+      "auditSub": "Il contrappeso al fatto che un admin abbia ogni permesso: attore, permesso, oggetto e motivo, su ogni azione.",
+      "flags": "Feature flag",
+      "sites": "Siti di immersione",
+      "translations": "Copertura delle traduzioni",
+      "translationsSub": "Come l'arabo scritto da un operatore di Dahab raggiunge altre sei lingue. L'output automatico richiede comunque una revisione umana.",
+      "on": "Attivo",
+      "off": "Disattivo"
+    },
+    "difficulty": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzato",
+      "technical": "Tecnico"
+    },
+    "entry": {
+      "shore": "Da riva",
+      "boat": "Da barca",
+      "both": "Riva o barca"
+    },
+    "col5": {
+      "when": "Quando",
+      "actor": "Attore",
+      "permission": "Permesso",
+      "target": "Oggetto",
+      "reason": "Motivo",
+      "flag": "Flag",
+      "gates": "Controlla",
+      "rollout": "Distribuzione",
+      "site": "Sito",
+      "depth": "Profondità",
+      "difficulty": "Difficoltà",
+      "hazard": "Pericolo",
+      "entryType": "Ingresso",
+      "locale": "Lingua",
+      "human": "Umano",
+      "machine": "Automatico",
+      "needsReview": "Da rivedere",
+      "missing": "Mancante",
+      "severity": "Gravità",
+      "outcome": "Cosa è cambiato",
+      "provider": "Provider",
+      "due": "Scadenza",
+      "entryId": "Scrittura",
+      "narrative": "Causale"
     }
   }
 }

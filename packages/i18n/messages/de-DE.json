@@ -10,6 +10,13 @@
       "admin.cond.windLabel",
       "admin.console",
       "admin.dataType.text",
+      "admin.provider.fawry",
+      "admin.provider.instapay",
+      "admin.provider.kashier",
+      "admin.provider.paymob",
+      "admin.provider.paypal",
+      "admin.provider.wise",
+      "admin.trust.moderation",
       "app.name"
     ]
   },
@@ -383,6 +390,151 @@
       "party": "Gruppe",
       "departs": "Abfahrt",
       "total": "Summe"
+    },
+    "money": {
+      "title": "Finanzen",
+      "subtitle": "Was hereinkam, was hinausgeht, und jede Buchung, die es bewegt hat.",
+      "payments": "Zahlungen",
+      "payouts": "Fällige Auszahlungen",
+      "payoutsSub": "Brutto, Provision und Gebühren getrennt ausgewiesen — nie eine Mischzahl.",
+      "ledger": "Hauptbuch",
+      "ledgerSub": "Doppelte Buchführung, nur anfügend. Hier wird nichts bearbeitet: eine Korrektur ist ein neuer Satz, der den alten storniert.",
+      "balanced": "Ausgeglichen",
+      "unbalanced": "Nicht ausgeglichen",
+      "reverses": "Storniert {id}",
+      "reversedBy": "Storniert durch {id}",
+      "fxTitle": "Wechselkurs",
+      "fxSub": "Millionenfach skaliert gespeichert; der für eine Buchung verwendete Kurs bleibt bei der Buchung.",
+      "gross": "Brutto",
+      "commission": "Provision",
+      "fees": "Gebühren",
+      "net": "Netto"
+    },
+    "paymentStatus": {
+      "initiated": "Eingeleitet",
+      "pending": "Ausstehend",
+      "authorized": "Autorisiert",
+      "captured": "Eingezogen",
+      "failed": "Fehlgeschlagen",
+      "cancelled": "Storniert",
+      "refunded": "Erstattet",
+      "partiallyRefunded": "Teilweise erstattet",
+      "chargeback": "Rückbelastung"
+    },
+    "payoutStatus": {
+      "scheduled": "Geplant",
+      "processing": "In Bearbeitung",
+      "paid": "Ausgezahlt",
+      "failed": "Fehlgeschlagen",
+      "cancelled": "Storniert"
+    },
+    "provider": {
+      "paymob": "Paymob",
+      "kashier": "Kashier",
+      "paypal": "PayPal",
+      "fawry": "Fawry",
+      "instapay": "InstaPay",
+      "wise": "Wise",
+      "bankTransfer": "Banküberweisung"
+    },
+    "account": {
+      "travelerReceivable": "Forderung an Reisende",
+      "providerClearing": "Zahlungsdienst-Verrechnung",
+      "platformCash": "Plattform-Kasse",
+      "vendorPayable": "Verbindlichkeit an Anbieter",
+      "platformCommission": "Plattform-Provision",
+      "paymentFees": "Zahlungsgebühren",
+      "refundsPayable": "Erstattungsverbindlichkeiten",
+      "taxPayable": "Steuerverbindlichkeit"
+    },
+    "trust": {
+      "title": "Sicherheit & Vertrauen",
+      "subtitle": "Was schiefging, wer eine Antwort verdient, und was sich dadurch geändert hat.",
+      "incidents": "Vorfallregister",
+      "incidentsSub": "Ein Register, keine Warteschlange. Jeder Bericht führt mit, was sich geändert hat — und Dahabs Druckkammer ist sechs Minuten entfernt.",
+      "chamber": "Druckkammer genutzt",
+      "outcomePending": "Prüfung läuft noch",
+      "disputes": "Streitfälle",
+      "disputesSub": "Eine Lösung schreibt eine Stornobuchung, nie eine Änderung.",
+      "moderation": "Moderation",
+      "impersonation": "Identitätsübernahme",
+      "impersonationSub": "Der Support reproduziert einen Fehler als Nutzer; es ist kein Weg, als jemand zu stöbern. Auf {minutes} Minuten begrenzt, Begründung Pflicht, sichtbares Banner währenddessen."
+    },
+    "incidentKind": {
+      "divingIncident": "Tauchunfall",
+      "decompressionIllness": "Dekompressionskrankheit",
+      "equipmentFailure": "Ausrüstungsdefekt",
+      "vesselIncident": "Bootsvorfall",
+      "vehicleIncident": "Fahrzeugvorfall",
+      "medicalEmergency": "Medizinischer Notfall",
+      "marineLifeInjury": "Verletzung durch Meerestier",
+      "weatherEvent": "Wetterereignis",
+      "lostDiver": "Vermisster Taucher",
+      "other": "Sonstiges"
+    },
+    "disputeStatus": {
+      "open": "Offen",
+      "awaitingTraveler": "Wartet auf Reisende",
+      "awaitingVendor": "Wartet auf Anbieter",
+      "underReview": "In Prüfung",
+      "resolved": "Gelöst",
+      "escalated": "Eskaliert",
+      "closed": "Geschlossen"
+    },
+    "moderationStatus": {
+      "published": "Veröffentlicht",
+      "pendingReview": "Prüfung ausstehend",
+      "hidden": "Verborgen",
+      "removed": "Entfernt"
+    },
+    "platform": {
+      "title": "Plattform",
+      "subtitle": "Die Protokollspur, die Schalter, die Karte und die sieben Sprachen.",
+      "audit": "Prüfprotokoll",
+      "auditSub": "Das Gegengewicht dazu, dass ein Admin jede Berechtigung hält: Akteur, Berechtigung, Ziel und Begründung, bei jeder Aktion.",
+      "flags": "Feature-Schalter",
+      "sites": "Tauchplätze",
+      "translations": "Übersetzungsabdeckung",
+      "translationsSub": "Wie Arabisch von einem Anbieter in Dahab sechs weitere Sprachen erreicht. Maschinелle Ausgabe braucht weiterhin einen menschlichen Durchgang.",
+      "on": "An",
+      "off": "Aus"
+    },
+    "difficulty": {
+      "beginner": "Anfänger",
+      "intermediate": "Fortgeschritten",
+      "advanced": "Erfahren",
+      "technical": "Technisch"
+    },
+    "entry": {
+      "shore": "Ufer",
+      "boat": "Boot",
+      "both": "Ufer oder Boot"
+    },
+    "col5": {
+      "when": "Wann",
+      "actor": "Akteur",
+      "permission": "Berechtigung",
+      "target": "Ziel",
+      "reason": "Begründung",
+      "flag": "Schalter",
+      "gates": "Steuert",
+      "rollout": "Ausrollung",
+      "site": "Platz",
+      "depth": "Tiefe",
+      "difficulty": "Schwierigkeit",
+      "hazard": "Gefahr",
+      "entryType": "Einstieg",
+      "locale": "Sprache",
+      "human": "Mensch",
+      "machine": "Maschine",
+      "needsReview": "Prüfung nötig",
+      "missing": "Fehlt",
+      "severity": "Schweregrad",
+      "outcome": "Was sich änderte",
+      "provider": "Anbieter",
+      "due": "Fällig",
+      "entryId": "Buchungssatz",
+      "narrative": "Buchungstext"
     }
   }
 }

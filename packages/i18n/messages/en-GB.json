@@ -374,6 +374,151 @@
       "party": "Party",
       "departs": "Departs",
       "total": "Total"
+    },
+    "money": {
+      "title": "Money",
+      "subtitle": "What came in, what is owed out, and every leg that moved it.",
+      "payments": "Payments",
+      "payouts": "Payouts due",
+      "payoutsSub": "Gross, commission and fees stated separately — never one blended figure.",
+      "ledger": "Ledger",
+      "ledgerSub": "Double-entry and append-only. There is no edit here: a correction is a new entry that reverses the one it replaces.",
+      "balanced": "Balances",
+      "unbalanced": "Does not balance",
+      "reverses": "Reverses {id}",
+      "reversedBy": "Reversed by {id}",
+      "fxTitle": "Exchange rate",
+      "fxSub": "Stored scaled by a million, and the rate a booking used is kept with the booking.",
+      "gross": "Gross",
+      "commission": "Commission",
+      "fees": "Fees",
+      "net": "Net"
+    },
+    "paymentStatus": {
+      "initiated": "Initiated",
+      "pending": "Pending",
+      "authorized": "Authorised",
+      "captured": "Captured",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded",
+      "partiallyRefunded": "Partly refunded",
+      "chargeback": "Chargeback"
+    },
+    "payoutStatus": {
+      "scheduled": "Scheduled",
+      "processing": "Processing",
+      "paid": "Paid",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "provider": {
+      "paymob": "Paymob",
+      "kashier": "Kashier",
+      "paypal": "PayPal",
+      "fawry": "Fawry",
+      "instapay": "InstaPay",
+      "wise": "Wise",
+      "bankTransfer": "Bank transfer"
+    },
+    "account": {
+      "travelerReceivable": "Traveller receivable",
+      "providerClearing": "Provider clearing",
+      "platformCash": "Platform cash",
+      "vendorPayable": "Operator payable",
+      "platformCommission": "Platform commission",
+      "paymentFees": "Payment fees",
+      "refundsPayable": "Refunds payable",
+      "taxPayable": "Tax payable"
+    },
+    "trust": {
+      "title": "Safety & trust",
+      "subtitle": "What went wrong, who is owed an answer, and what changed because of it.",
+      "incidents": "Incident record",
+      "incidentsSub": "A record, not a queue. Every report carries what changed as a result, and Dahab’s hyperbaric chamber is six minutes away.",
+      "chamber": "Chamber used",
+      "outcomePending": "Review still open",
+      "disputes": "Disputes",
+      "disputesSub": "A resolution writes a ledger reversal, never an edit.",
+      "moderation": "Moderation",
+      "impersonation": "Impersonation",
+      "impersonationSub": "Support reproduces a fault as the user; it is not a way to browse as one. Time-boxed to {minutes} minutes, a reason is required, and a banner shows while it runs."
+    },
+    "incidentKind": {
+      "divingIncident": "Diving incident",
+      "decompressionIllness": "Decompression illness",
+      "equipmentFailure": "Equipment failure",
+      "vesselIncident": "Vessel incident",
+      "vehicleIncident": "Vehicle incident",
+      "medicalEmergency": "Medical emergency",
+      "marineLifeInjury": "Marine life injury",
+      "weatherEvent": "Weather event",
+      "lostDiver": "Lost diver",
+      "other": "Other"
+    },
+    "disputeStatus": {
+      "open": "Open",
+      "awaitingTraveler": "Awaiting traveller",
+      "awaitingVendor": "Awaiting operator",
+      "underReview": "Under review",
+      "resolved": "Resolved",
+      "escalated": "Escalated",
+      "closed": "Closed"
+    },
+    "moderationStatus": {
+      "published": "Published",
+      "pendingReview": "Pending review",
+      "hidden": "Hidden",
+      "removed": "Removed"
+    },
+    "platform": {
+      "title": "Platform",
+      "subtitle": "The audit trail, the switches, the map and the seven languages.",
+      "audit": "Audit log",
+      "auditSub": "The counterweight to an admin holding every permission: actor, permission, target and reason, on every action.",
+      "flags": "Feature flags",
+      "sites": "Dive sites",
+      "translations": "Translation coverage",
+      "translationsSub": "How Arabic written by a Dahab operator reaches six other languages. Machine output still needs a human pass.",
+      "on": "On",
+      "off": "Off"
+    },
+    "difficulty": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "technical": "Technical"
+    },
+    "entry": {
+      "shore": "Shore",
+      "boat": "Boat",
+      "both": "Shore or boat"
+    },
+    "col5": {
+      "when": "When",
+      "actor": "Actor",
+      "permission": "Permission",
+      "target": "Target",
+      "reason": "Reason",
+      "flag": "Flag",
+      "gates": "Gates",
+      "rollout": "Rollout",
+      "site": "Site",
+      "depth": "Depth",
+      "difficulty": "Difficulty",
+      "hazard": "Hazard",
+      "entryType": "Entry",
+      "locale": "Language",
+      "human": "Human",
+      "machine": "Machine",
+      "needsReview": "Needs review",
+      "missing": "Missing",
+      "severity": "Severity",
+      "outcome": "What changed",
+      "provider": "Provider",
+      "due": "Due",
+      "entryId": "Entry",
+      "narrative": "Narrative"
     }
   }
 }

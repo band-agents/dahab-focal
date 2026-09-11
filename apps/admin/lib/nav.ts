@@ -31,7 +31,9 @@ export const SECTIONS: readonly Section[] = [
 ];
 
 /** Sections that have no screen yet, so the rail can say so rather than 404. */
-export const BUILT = new Set(['today', 'vendors', 'expiry', 'catalog', 'bookings']);
+/** Every section now has a screen. Kept so the rail can degrade honestly if
+ * one is ever removed or gated behind a flag. */
+export const BUILT = new Set(SECTIONS.map((section) => section.key));
 
 export function hrefFor(locale: Locale, section: Section): Route {
   const href = section.path === '' ? `/${locale}` : `/${locale}/${section.path}`;

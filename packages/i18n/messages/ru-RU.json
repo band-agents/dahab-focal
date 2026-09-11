@@ -4,6 +4,12 @@
     "source": false,
     "needsTranslation": [],
     "identicalToSource": [
+      "admin.provider.fawry",
+      "admin.provider.instapay",
+      "admin.provider.kashier",
+      "admin.provider.paymob",
+      "admin.provider.paypal",
+      "admin.provider.wise",
       "app.name"
     ]
   },
@@ -377,6 +383,151 @@
       "party": "Группа",
       "departs": "Выход",
       "total": "Итого"
+    },
+    "money": {
+      "title": "Финансы",
+      "subtitle": "Что поступило, что причитается и каждая проводка, которая это двигала.",
+      "payments": "Платежи",
+      "payouts": "Выплаты к перечислению",
+      "payoutsSub": "Брутто, комиссия и сборы показаны отдельно — никогда одной смешанной суммой.",
+      "ledger": "Книга проводок",
+      "ledgerSub": "Двойная запись, только добавление. Здесь нет правки: исправление — это новая запись, сторнирующая прежнюю.",
+      "balanced": "Сходится",
+      "unbalanced": "Не сходится",
+      "reverses": "Сторнирует {id}",
+      "reversedBy": "Сторнирована записью {id}",
+      "fxTitle": "Курс обмена",
+      "fxSub": "Хранится с масштабом в миллион; курс, по которому прошла бронь, остаётся при броне.",
+      "gross": "Брутто",
+      "commission": "Комиссия",
+      "fees": "Сборы",
+      "net": "Нетто"
+    },
+    "paymentStatus": {
+      "initiated": "Начат",
+      "pending": "В ожидании",
+      "authorized": "Авторизован",
+      "captured": "Списан",
+      "failed": "Неудачно",
+      "cancelled": "Отменён",
+      "refunded": "Возвращён",
+      "partiallyRefunded": "Частично возвращён",
+      "chargeback": "Чарджбэк"
+    },
+    "payoutStatus": {
+      "scheduled": "Запланирована",
+      "processing": "В обработке",
+      "paid": "Выплачена",
+      "failed": "Неудачно",
+      "cancelled": "Отменена"
+    },
+    "provider": {
+      "paymob": "Paymob",
+      "kashier": "Kashier",
+      "paypal": "PayPal",
+      "fawry": "Fawry",
+      "instapay": "InstaPay",
+      "wise": "Wise",
+      "bankTransfer": "Банковский перевод"
+    },
+    "account": {
+      "travelerReceivable": "Дебиторка путешественника",
+      "providerClearing": "Клиринг провайдера",
+      "platformCash": "Денежные средства платформы",
+      "vendorPayable": "Кредиторка оператора",
+      "platformCommission": "Комиссия платформы",
+      "paymentFees": "Платёжные сборы",
+      "refundsPayable": "Возвраты к выплате",
+      "taxPayable": "Налоги к уплате"
+    },
+    "trust": {
+      "title": "Безопасность и доверие",
+      "subtitle": "Что пошло не так, кому должны ответ и что из-за этого изменилось.",
+      "incidents": "Реестр происшествий",
+      "incidentsSub": "Реестр, а не очередь. Каждый отчёт несёт то, что изменилось, а барокамера Дахаба — в шести минутах.",
+      "chamber": "Барокамера применялась",
+      "outcomePending": "Разбор ещё идёт",
+      "disputes": "Споры",
+      "disputesSub": "Решение пишет сторно в книге, а не правку.",
+      "moderation": "Модерация",
+      "impersonation": "Вход под пользователем",
+      "impersonationSub": "Поддержка воспроизводит сбой от лица пользователя; это не способ просматривать за него. Ограничено {minutes} минутами, причина обязательна, во время сеанса виден баннер."
+    },
+    "incidentKind": {
+      "divingIncident": "Дайв-происшествие",
+      "decompressionIllness": "Декомпрессионная болезнь",
+      "equipmentFailure": "Отказ снаряжения",
+      "vesselIncident": "Происшествие на судне",
+      "vehicleIncident": "Происшествие с транспортом",
+      "medicalEmergency": "Медицинская помощь",
+      "marineLifeInjury": "Травма от морского животного",
+      "weatherEvent": "Погодное событие",
+      "lostDiver": "Потерянный дайвер",
+      "other": "Прочее"
+    },
+    "disputeStatus": {
+      "open": "Открыт",
+      "awaitingTraveler": "Ждёт путешественника",
+      "awaitingVendor": "Ждёт оператора",
+      "underReview": "На рассмотрении",
+      "resolved": "Решён",
+      "escalated": "Эскалирован",
+      "closed": "Закрыт"
+    },
+    "moderationStatus": {
+      "published": "Опубликовано",
+      "pendingReview": "Ждёт проверки",
+      "hidden": "Скрыто",
+      "removed": "Удалено"
+    },
+    "platform": {
+      "title": "Платформа",
+      "subtitle": "Журнал аудита, переключатели, карта и семь языков.",
+      "audit": "Журнал аудита",
+      "auditSub": "Противовес тому, что у админа есть все права: субъект, право, объект и причина — на каждом действии.",
+      "flags": "Флаги функций",
+      "sites": "Дайв-сайты",
+      "translations": "Покрытие переводом",
+      "translationsSub": "Как арабский, написанный оператором в Дахабе, доходит до шести других языков. Машинный вывод всё равно требует человека.",
+      "on": "Вкл",
+      "off": "Выкл"
+    },
+    "difficulty": {
+      "beginner": "Начальный",
+      "intermediate": "Средний",
+      "advanced": "Продвинутый",
+      "technical": "Технический"
+    },
+    "entry": {
+      "shore": "С берега",
+      "boat": "С лодки",
+      "both": "С берега или лодки"
+    },
+    "col5": {
+      "when": "Когда",
+      "actor": "Субъект",
+      "permission": "Право",
+      "target": "Объект",
+      "reason": "Причина",
+      "flag": "Флаг",
+      "gates": "Управляет",
+      "rollout": "Охват",
+      "site": "Сайт",
+      "depth": "Глубина",
+      "difficulty": "Сложность",
+      "hazard": "Опасность",
+      "entryType": "Вход",
+      "locale": "Язык",
+      "human": "Человек",
+      "machine": "Машина",
+      "needsReview": "Нужна проверка",
+      "missing": "Нет",
+      "severity": "Серьёзность",
+      "outcome": "Что изменилось",
+      "provider": "Провайдер",
+      "due": "Срок",
+      "entryId": "Запись",
+      "narrative": "Основание"
     }
   }
 }
