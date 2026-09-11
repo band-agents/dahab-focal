@@ -18,6 +18,27 @@ export {
   type ThemeProviderProps,
 } from './theme';
 
+export { Mark, Illo, CategoryMark } from './marks/Mark';
+export type { MarkProps } from './marks/Mark';
+
+export { MARKS, ILLOS, CATEGORY_MARKS } from '@dahab/tokens/marks';
+export type {
+  MarkGlyph,
+  MarkName,
+  MarkTint,
+  IlloName,
+  CategoryMarkName,
+} from '@dahab/tokens/marks';
+
+export { StatusPill } from './primitives/StatusPill';
+export type { StatusPillProps, StatusTone } from './primitives/StatusPill';
+
+export { Button } from './primitives/Button';
+export type { ButtonProps, ButtonVariant } from './primitives/Button';
+
+export { Card, Row } from './primitives/Card';
+export type { CardProps, RowProps } from './primitives/Card';
+
 export {
   curves,
   durations,

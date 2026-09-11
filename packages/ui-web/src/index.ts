@@ -8,14 +8,14 @@
 export { Mark, Illo, CategoryMark } from './marks/Mark';
 export type { MarkProps, NamedMarkProps, IlloProps, CategoryMarkProps } from './marks/Mark';
 
-export { MARKS, ILLOS, CATEGORY_MARKS } from './marks/data';
+export { MARKS, ILLOS, CATEGORY_MARKS } from '@dahab/tokens/marks';
 export type {
   MarkGlyph,
   MarkName,
   MarkTint,
   IlloName,
   CategoryMarkName,
-} from './marks/data';
+} from '@dahab/tokens/marks';
 
 export { StatusPill } from './primitives/StatusPill';
 export type { StatusPillProps, StatusTone } from './primitives/StatusPill';

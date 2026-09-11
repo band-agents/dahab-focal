@@ -12,8 +12,8 @@
  */
 import type { CSSProperties, SVGProps } from 'react';
 
-import { MARKS, ILLOS, CATEGORY_MARKS } from './data';
-import type { IlloName, MarkGlyph, MarkName, CategoryMarkName } from './data';
+import { MARKS, ILLOS, CATEGORY_MARKS } from '@dahab/tokens/marks';
+import type { IlloName, MarkGlyph, MarkName, CategoryMarkName } from '@dahab/tokens/marks';
 
 /** Below this pixel size the line thickens so it does not disappear. */
 const DENSE_SIZE_THRESHOLD = 24;

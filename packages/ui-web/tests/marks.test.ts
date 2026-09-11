@@ -3,8 +3,8 @@ import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
 
-import { CATEGORY_MARKS, ILLOS, MARKS } from '../src/marks/data';
-import type { MarkGlyph } from '../src/marks/data';
+import { CATEGORY_MARKS, ILLOS, MARKS } from '@dahab/tokens/marks';
+import type { MarkGlyph } from '@dahab/tokens/marks';
 
 /**
  * The marks are generated from the design board, so these tests guard the

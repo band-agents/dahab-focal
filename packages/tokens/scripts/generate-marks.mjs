@@ -1,5 +1,10 @@
 /**
- * Generates src/marks/data.ts from the approved design board.
+ * Generates src/marks.ts from the approved design board.
+ *
+ * The marks live in @dahab/tokens rather than in a UI package because they
+ * are design-system DATA, exactly like the colour ramps — and because both
+ * the web console and the React Native apps need them. A UI package cannot
+ * be the source for a surface built on the other runtime.
  *
  * The 37 marks, the 6 illustrations and the 12 category marks are lifted
  * VERBATIM out of `Board 03 - Home.dc.html`'s script block, so no symbol on any
@@ -7,7 +12,7 @@
  *
  *   node scripts/generate-marks.mjs <path to Board 03 - Home.dc.html>
  */
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -144,8 +149,7 @@ ${entries(CATS)}
 export type CategoryMarkName = keyof typeof CATEGORY_MARKS;
 `;
 
-mkdirSync(resolve(here, '../src/marks'), { recursive: true });
-writeFileSync(resolve(here, '../src/marks/data.ts'), out);
+writeFileSync(resolve(here, '../src/marks.ts'), out);
 console.log(
   `generate-marks: ${MARKS.length} marks, ${ILLOS.length} illustrations, ${CATS.length} category marks.`,
 );

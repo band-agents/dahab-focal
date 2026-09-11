@@ -13,7 +13,7 @@
 import type { ReactNode } from 'react';
 
 import { Mark } from '../marks/Mark';
-import type { MarkName } from '../marks/data';
+import type { MarkName } from '@dahab/tokens/marks';
 
 export type StatusTone = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
 
