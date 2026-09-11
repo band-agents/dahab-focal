@@ -576,6 +576,43 @@
       "checkIn": "Check in",
       "openManifest": "Open manifest",
       "message": "Message everyone"
+    },
+    "bookings": {
+      "title": "Bookings",
+      "subtitle": "Yours only. Confirm what is waiting, and see what a cancellation reaches.",
+      "waiting": "Waiting on you",
+      "upcoming": "Coming up",
+      "heads": "{count, plural, one {# person} other {# people}}",
+      "confirm": "Confirm",
+      "cancelTitle": "Cancelling the 14:00 boat",
+      "cancelSub": "Shown before it happens. Nothing below has run yet.",
+      "commit": "Cancel the departure",
+      "keep": "Leave it running",
+      "released": "One booking is still awaiting payment, so it is released rather than refunded — nothing was captured.",
+      "notifyDetail": "{count, plural, one {# traveller} other {# travellers}} · {transfer}"
+    },
+    "services": {
+      "title": "Services",
+      "subtitle": "What you offer, and whether a traveller can compare it.",
+      "comparable": "{count, plural, =0 {Ready to compare} one {# answer missing} other {# answers missing}}",
+      "inclusions": "Stated inclusions",
+      "inclusionsNote": "The comparison normalises every inclusion into one price. Filling this in honestly is what makes you rank well, not what costs you.",
+      "publishOwner": "Only the owner can publish. Save a draft and it goes to {name}.",
+      "from": "From"
+    },
+    "more": {
+      "title": "More",
+      "money": "Earnings",
+      "moneySub": "Gross, commission and fees separately — never one blended figure.",
+      "nextPayout": "Next payout {date}",
+      "staff": "Team",
+      "staffSub": "A lapsed rating cannot be assigned as guide. The calendar refuses it.",
+      "lapsed": "Rating lapsed",
+      "resources": "Equipment",
+      "resourcesSub": "A cylinder inside its hydrostatic window cannot go on a manifest.",
+      "blocked": "Blocked until tested",
+      "dueOn": "Due {date}",
+      "ownerOnly": "Owner only"
     }
   }
 }

@@ -18,6 +18,7 @@
       "admin.provider.wise",
       "admin.trust.moderation",
       "app.name",
+      "vendor.more.staff",
       "vendor.role.staff",
       "vendor.today.guide"
     ]
@@ -594,6 +595,43 @@
       "checkIn": "Einchecken",
       "openManifest": "Liste öffnen",
       "message": "Alle anschreiben"
+    },
+    "bookings": {
+      "title": "Buchungen",
+      "subtitle": "Nur deine. Bestätige, was wartet, und sieh, was eine Absage auslöst.",
+      "waiting": "Wartet auf dich",
+      "upcoming": "Demnächst",
+      "heads": "{count, plural, one {# Person} other {# Personen}}",
+      "confirm": "Bestätigen",
+      "cancelTitle": "Absage des 14:00-Boots",
+      "cancelSub": "Wird vorher gezeigt. Nichts davon ist ausgeführt.",
+      "commit": "Abfahrt absagen",
+      "keep": "Weiterlaufen lassen",
+      "released": "Eine Buchung wartet noch auf Zahlung und wird freigegeben statt erstattet — es wurde nichts eingezogen.",
+      "notifyDetail": "{count, plural, one {# Reisende:r} other {# Reisende}} · {transfer}"
+    },
+    "services": {
+      "title": "Leistungen",
+      "subtitle": "Was du anbietest, und ob Reisende es vergleichen können.",
+      "comparable": "{count, plural, =0 {Vergleichsbereit} one {# Angabe fehlt} other {# Angaben fehlen}}",
+      "inclusions": "Angegebene Leistungen",
+      "inclusionsNote": "Der Vergleich rechnet alle enthaltenen Leistungen in einen Preis um. Das ehrlich auszufüllen bringt dich nach vorn, es kostet dich nichts.",
+      "publishOwner": "Nur der Inhaber veröffentlicht. Speichere einen Entwurf, er geht an {name}.",
+      "from": "Ab"
+    },
+    "more": {
+      "title": "Mehr",
+      "money": "Einnahmen",
+      "moneySub": "Brutto, Provision und Gebühren getrennt — nie eine Mischzahl.",
+      "nextPayout": "Nächste Auszahlung {date}",
+      "staff": "Team",
+      "staffSub": "Ein abgelaufenes Brevet kann nicht als Guide eingeteilt werden.",
+      "lapsed": "Brevet abgelaufen",
+      "resources": "Ausrüstung",
+      "resourcesSub": "Eine Flasche in der Prüffrist darf nicht auf die Teilnehmerliste.",
+      "blocked": "Gesperrt bis zur Prüfung",
+      "dueOn": "Fällig {date}",
+      "ownerOnly": "Nur Inhaber"
     }
   }
 }

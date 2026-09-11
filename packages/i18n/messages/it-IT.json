@@ -591,6 +591,43 @@
       "checkIn": "Check-in",
       "openManifest": "Apri elenco",
       "message": "Scrivi a tutti"
+    },
+    "bookings": {
+      "title": "Prenotazioni",
+      "subtitle": "Solo le tue. Conferma ciò che attende e guarda cosa tocca un annullamento.",
+      "waiting": "In attesa di te",
+      "upcoming": "In arrivo",
+      "heads": "{count, plural, one {# persona} other {# persone}}",
+      "confirm": "Conferma",
+      "cancelTitle": "Annullare la barca delle 14:00",
+      "cancelSub": "Mostrato prima. Nulla qui sotto è stato eseguito.",
+      "commit": "Annulla la partenza",
+      "keep": "Lasciala attiva",
+      "released": "Una prenotazione attende ancora il pagamento: viene liberata, non rimborsata — nulla è stato incassato.",
+      "notifyDetail": "{count, plural, one {# viaggiatore} other {# viaggiatori}} · {transfer}"
+    },
+    "services": {
+      "title": "Servizi",
+      "subtitle": "Cosa offri e se un viaggiatore può confrontarlo.",
+      "comparable": "{count, plural, =0 {Pronto al confronto} one {manca # risposta} other {mancano # risposte}}",
+      "inclusions": "Inclusioni dichiarate",
+      "inclusionsNote": "Il confronto riduce ogni inclusione a un solo prezzo. Compilarlo onestamente ti fa salire, non ti costa.",
+      "publishOwner": "Solo il titolare pubblica. Salva una bozza e va a {name}.",
+      "from": "Da"
+    },
+    "more": {
+      "title": "Altro",
+      "money": "Guadagni",
+      "moneySub": "Lordo, commissione e spese separati — mai una cifra unica.",
+      "nextPayout": "Prossimo pagamento {date}",
+      "staff": "Squadra",
+      "staffSub": "Un brevetto scaduto non può essere assegnato come guida.",
+      "lapsed": "Brevetto scaduto",
+      "resources": "Attrezzatura",
+      "resourcesSub": "Una bombola in scadenza di collaudo non va in elenco.",
+      "blocked": "Bloccata fino al collaudo",
+      "dueOn": "Scade {date}",
+      "ownerOnly": "Solo titolare"
     }
   }
 }

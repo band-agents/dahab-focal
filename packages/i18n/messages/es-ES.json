@@ -594,6 +594,43 @@
       "checkIn": "Registrar",
       "openManifest": "Abrir lista",
       "message": "Escribir a todos"
+    },
+    "bookings": {
+      "title": "Reservas",
+      "subtitle": "Solo las tuyas. Confirma lo que espera y mira a qué afecta una cancelación.",
+      "waiting": "Esperándote",
+      "upcoming": "Próximamente",
+      "heads": "{count, plural, one {# persona} other {# personas}}",
+      "confirm": "Confirmar",
+      "cancelTitle": "Cancelar el barco de las 14:00",
+      "cancelSub": "Se muestra antes. Nada de lo de abajo se ha ejecutado.",
+      "commit": "Cancelar la salida",
+      "keep": "Mantenerla",
+      "released": "Una reserva sigue esperando el pago: se libera en vez de reembolsarse — no se cobró nada.",
+      "notifyDetail": "{count, plural, one {# viajero} other {# viajeros}} · {transfer}"
+    },
+    "services": {
+      "title": "Servicios",
+      "subtitle": "Lo que ofreces y si un viajero puede compararlo.",
+      "comparable": "{count, plural, =0 {Listo para comparar} one {falta # respuesta} other {faltan # respuestas}}",
+      "inclusions": "Inclusiones declaradas",
+      "inclusionsNote": "La comparación reduce cada inclusión a un precio único. Rellenarlo con honestidad te sube, no te cuesta.",
+      "publishOwner": "Solo el propietario publica. Guarda un borrador y le llegará a {name}.",
+      "from": "Desde"
+    },
+    "more": {
+      "title": "Más",
+      "money": "Ingresos",
+      "moneySub": "Bruto, comisión y gastos por separado — nunca una cifra mezclada.",
+      "nextPayout": "Próximo pago {date}",
+      "staff": "Equipo",
+      "staffSub": "Una titulación caducada no puede asignarse como guía.",
+      "lapsed": "Titulación caducada",
+      "resources": "Equipo",
+      "resourcesSub": "Una botella en periodo de prueba no entra en una lista.",
+      "blocked": "Bloqueada hasta la prueba",
+      "dueOn": "Vence {date}",
+      "ownerOnly": "Solo propietario"
     }
   }
 }

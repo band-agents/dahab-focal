@@ -1,22 +1,128 @@
 import { ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Illo } from '@dahab/ui';
+import { formatCurrency, isolate, money } from '@dahab/i18n';
+import { Button, Card, Mark, StatusPill } from '@dahab/ui';
+import type { StatusTone } from '@dahab/ui';
+
+import { SERVICES } from '../src/operations';
+import type { ServiceStatus, VendorService } from '../src/operations';
+import { isOwner, session } from '../src/session';
 
 /**
- * V02–V07 land here next. The tab exists so the shell is navigable and the
- * role split is visible; the screen itself is deliberately empty rather than
- * filled with placeholder rows that would read as real.
+ * V03 · Services.
+ *
+ * The screen this product is judged on, because it is where an operator finds
+ * out whether a traveller can compare their trip at all. Comparable attributes
+ * are data, so "three answers missing" is not a nag — it is the difference
+ * between appearing in a comparison and being invisible in it.
+ *
+ * The inclusions line is the honest-operator argument made out loud: the
+ * hidden-cost detector normalises every inclusion into one shown price, so
+ * stating them fully is what makes you rank well rather than what costs you.
+ * An operator who believes the opposite under-declares, and the whole
+ * comparison degrades.
+ *
+ * Publishing is the owner's: `catalog.publish` is not in vendorStaff.
  */
-export default function Screen() {
+
+const TONE: Record<ServiceStatus, StatusTone> = {
+  draft: 'neutral',
+  underReview: 'warning',
+  published: 'success',
+  paused: 'info',
+};
+
+export default function ServicesScreen() {
   const { t } = useTranslation();
+  const owner = isOwner(session.role);
+
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerClassName="gap-6 px-5 pb-16 pt-14">
-      <Text className="font-display text-displayL text-text">{t('vendor.tabs.services')}</Text>
-      <View className="items-center gap-4 py-10">
-        <Illo name="jellyfish" size={96} />
-        <Text className="font-ui text-body text-text-muted">{t('state.emptyBody')}</Text>
+      <View>
+        <Text className="font-display text-displayL text-text">{t('vendor.services.title')}</Text>
+        <Text className="mt-1 font-ui text-body text-text-muted">
+          {t('vendor.services.subtitle')}
+        </Text>
       </View>
+
+      {owner ? null : (
+        <View className="flex-row items-start gap-3 rounded-lg bg-info-surface p-4">
+          <Mark name="chat" size={20} />
+          <Text className="flex-1 font-ui text-small text-info-text">
+            {t('vendor.services.publishOwner', { name: isolate('Mahmoud') })}
+          </Text>
+        </View>
+      )}
+
+      {SERVICES.map((service) => (
+        <ServiceCard key={service.id} service={service} owner={owner} />
+      ))}
     </ScrollView>
+  );
+}
+
+function ServiceCard({
+  service,
+  owner,
+}: {
+  readonly service: VendorService;
+  readonly owner: boolean;
+}) {
+  const { t } = useTranslation();
+  const context = { locale: session.locale } as const;
+  const ready = service.missingComparable === 0;
+
+  return (
+    <Card
+      mark="tank"
+      title={service.title}
+      eyebrow={service.categorySlug}
+      trailing={
+        <StatusPill tone={TONE[service.status]}>
+          {t(`admin.serviceStatus.${service.status}`)}
+        </StatusPill>
+      }
+    >
+      <View className="flex-row items-baseline gap-2">
+        <Text className="font-ui text-small text-text-muted">{t('vendor.services.from')}</Text>
+        <Text className="font-display text-h2 tabular-nums text-text">
+          {formatCurrency(money(service.from.amountMinor, service.from.currency), context)}
+        </Text>
+      </View>
+
+      <View className="mt-3">
+        <StatusPill tone={ready ? 'success' : 'warning'} mark={ready ? 'eco' : 'firstAid'}>
+          {t('vendor.services.comparable', { count: service.missingComparable })}
+        </StatusPill>
+      </View>
+
+      <View className="mt-4">
+        <Text className="font-ui text-overline uppercase text-text-muted">
+          {t('vendor.services.inclusions')}
+        </Text>
+        <View className="mt-2 flex-row flex-wrap gap-2">
+          {service.inclusions.map((inclusion) => (
+            <View key={inclusion} className="rounded-pill bg-surface-raised px-3 py-1">
+              <Text className="font-ui text-small text-text">{inclusion}</Text>
+            </View>
+          ))}
+        </View>
+        <Text className="mt-2 font-ui text-caption text-text-muted">
+          {t('vendor.services.inclusionsNote')}
+        </Text>
+      </View>
+
+      {/*
+        Publishing is gated by permission, not by a disabled button: a guide
+        saves a draft and it goes to the owner, which is a different action
+        rather than the same one refused.
+      */}
+      <View className="mt-4">
+        <Button variant={owner ? 'primary' : 'secondary'} mark="pass" block>
+          {owner ? t('action.save') : t('status.draft')}
+        </Button>
+      </View>
+    </Card>
   );
 }

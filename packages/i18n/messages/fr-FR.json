@@ -604,6 +604,43 @@
       "checkIn": "Pointer",
       "openManifest": "Ouvrir la liste",
       "message": "Écrire à tous"
+    },
+    "bookings": {
+      "title": "Réservations",
+      "subtitle": "Les vôtres seulement. Confirmez ce qui attend et voyez ce qu’une annulation touche.",
+      "waiting": "En attente de vous",
+      "upcoming": "À venir",
+      "heads": "{count, plural, one {# personne} other {# personnes}}",
+      "confirm": "Confirmer",
+      "cancelTitle": "Annuler le bateau de 14:00",
+      "cancelSub": "Montré avant. Rien ci-dessous n’a été exécuté.",
+      "commit": "Annuler le départ",
+      "keep": "Le maintenir",
+      "released": "Une réservation attend encore le paiement : elle est libérée et non remboursée — rien n’a été encaissé.",
+      "notifyDetail": "{count, plural, one {# voyageur} other {# voyageurs}} · {transfer}"
+    },
+    "services": {
+      "title": "Prestations",
+      "subtitle": "Ce que vous proposez, et si un voyageur peut le comparer.",
+      "comparable": "{count, plural, =0 {Prêt à comparer} one {# réponse manquante} other {# réponses manquantes}}",
+      "inclusions": "Inclusions déclarées",
+      "inclusionsNote": "La comparaison ramène chaque inclusion à un seul prix. Le remplir honnêtement vous fait monter, cela ne vous coûte rien.",
+      "publishOwner": "Seul le propriétaire publie. Enregistrez un brouillon, il ira à {name}.",
+      "from": "À partir de"
+    },
+    "more": {
+      "title": "Plus",
+      "money": "Revenus",
+      "moneySub": "Brut, commission et frais séparément — jamais un chiffre unique.",
+      "nextPayout": "Prochain versement {date}",
+      "staff": "Équipe",
+      "staffSub": "Un niveau expiré ne peut pas être affecté comme moniteur.",
+      "lapsed": "Niveau expiré",
+      "resources": "Matériel",
+      "resourcesSub": "Une bouteille en période de requalification ne part pas en liste.",
+      "blocked": "Bloquée jusqu’au contrôle",
+      "dueOn": "Échéance {date}",
+      "ownerOnly": "Propriétaire seulement"
     }
   }
 }
