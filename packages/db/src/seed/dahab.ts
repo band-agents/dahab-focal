@@ -196,6 +196,34 @@ export const DIVE_SITES: readonly SeedDiveSite[] = [
     hazards: ['protectorate: camel or boat access', 'no mobile signal', 'no chamber nearby'],
     seasonalNotes: WATER_TEMPERATURE,
   },
+  {
+    slug: 'the-islands',
+    nameKey: 'diveSite.theIslands',
+    latitude: 28.4667,
+    longitude: 34.5117,
+    minDepthMetres: 3,
+    maxDepthMetres: 30,
+    difficulty: 'beginner',
+    entryType: 'both',
+    requiresCertification: null,
+    marineLife: ['hard coral labyrinth', 'glassfish', 'moray', 'blue-spotted stingray'],
+    hazards: ['maze of coral heads: easy to lose the guide', 'shallow exit at low water'],
+    seasonalNotes: WATER_TEMPERATURE,
+  },
+  {
+    slug: 'umm-sid',
+    nameKey: 'diveSite.ummSid',
+    latitude: 28.4772,
+    longitude: 34.5136,
+    minDepthMetres: 5,
+    maxDepthMetres: 30,
+    difficulty: 'beginner',
+    entryType: 'both',
+    requiresCertification: null,
+    marineLife: ['anemone city', 'gorgonian fans', 'lionfish', 'crocodilefish'],
+    hazards: ['current on the point when the wind is up'],
+    seasonalNotes: WATER_TEMPERATURE,
+  },
 ];
 
 export interface SeedVendor {
@@ -206,6 +234,14 @@ export interface SeedVendor {
   readonly latitude: number;
   readonly longitude: number;
   readonly categorySlugs: readonly string[];
+  /**
+   * Not every operator is `active`. A roster where all seven are green cannot
+   * exercise the console: the suspension and the application in review are
+   * what the status column, the verification queue and the expiry board are
+   * for. `vendor_status` in the schema.
+   */
+  readonly status: 'applied' | 'inReview' | 'active' | 'suspended' | 'closed';
+  readonly verificationStatus: 'pending' | 'inReview' | 'verified' | 'rejected' | 'expired';
 }
 
 export const VENDORS: readonly SeedVendor[] = [
@@ -217,6 +253,8 @@ export const VENDORS: readonly SeedVendor[] = [
     latitude: 28.5119,
     longitude: 34.518,
     categorySlugs: ['scuba-diving', 'courses-certifications', 'gear-rental'],
+    status: 'active',
+    verificationStatus: 'verified',
   },
   {
     slug: 'blue-beach-freediving',
@@ -226,6 +264,8 @@ export const VENDORS: readonly SeedVendor[] = [
     latitude: 28.4903,
     longitude: 34.5124,
     categorySlugs: ['freediving', 'courses-certifications'],
+    status: 'active',
+    verificationStatus: 'verified',
   },
   {
     slug: 'sinai-nomads',
@@ -235,6 +275,8 @@ export const VENDORS: readonly SeedVendor[] = [
     latitude: 28.5079,
     longitude: 34.5163,
     categorySlugs: ['desert-safari', 'bedouin-culture'],
+    status: 'active',
+    verificationStatus: 'verified',
   },
   {
     slug: 'baraka-kite',
@@ -244,6 +286,10 @@ export const VENDORS: readonly SeedVendor[] = [
     latitude: 28.4885,
     longitude: 34.5108,
     categorySlugs: ['kitesurfing', 'gear-rental', 'courses-certifications'],
+    // Suspended: the liability certificate lapsed on 6 September and the tax
+    // card was rejected. Both are in VENDOR_DOCUMENTS below.
+    status: 'suspended',
+    verificationStatus: 'verified',
   },
   {
     slug: 'moya-yoga',
@@ -253,6 +299,8 @@ export const VENDORS: readonly SeedVendor[] = [
     latitude: 28.4961,
     longitude: 34.5147,
     categorySlugs: ['wellness-yoga'],
+    status: 'active',
+    verificationStatus: 'verified',
   },
   {
     slug: 'shamandura-boat-trips',
@@ -262,6 +310,8 @@ export const VENDORS: readonly SeedVendor[] = [
     latitude: 28.5131,
     longitude: 34.5189,
     categorySlugs: ['boat-trips', 'snorkeling'],
+    status: 'active',
+    verificationStatus: 'verified',
   },
   {
     slug: 'assalah-transfers',
@@ -271,8 +321,173 @@ export const VENDORS: readonly SeedVendor[] = [
     latitude: 28.5071,
     longitude: 34.5159,
     categorySlugs: ['transfers'],
+    // The newest applicant: commercial register submitted, liability cover
+    // not supplied yet. This is what the verification queue exists to show.
+    status: 'inReview',
+    verificationStatus: 'inReview',
   },
 ];
+
+/**
+ * The paperwork every Dahab operator actually carries, and the dates it runs
+ * out on. This is the spine of the vendor model: a CDWS licence, a governorate
+ * operating permit, public liability cover, a boat or vehicle licence and a
+ * cylinder's hydrostatic test all lapse, and the console's whole job is to
+ * surface each one before it does.
+ *
+ * `blocksPublishing` is per document rather than per type on purpose — an
+ * expired liability certificate stops the operator trading, an overdue tank
+ * test stops that cylinder.
+ *
+ * Dates are relative to SEED_TODAY so the expiry board has something in every
+ * band no matter when the seed is run; re-seeding moves them forward.
+ */
+export const SEED_TODAY = new Date();
+
+/**
+ * A calendar day relative to the seed's own "today", as YYYY-MM-DD.
+ *
+ * Exported because the operational seed dates everything the same way — a
+ * departure this morning, a payout last Thursday, a review a fortnight old —
+ * and two different notions of "today" inside one seed would put the console's
+ * boards out of step with each other.
+ */
+export function inDays(days: number): string {
+  const date = new Date(SEED_TODAY.getTime() + days * 86_400_000);
+  return date.toISOString().slice(0, 10);
+}
+
+export interface SeedVendorDocument {
+  readonly vendorSlug: string;
+  readonly type:
+    | 'commercialRegister'
+    | 'taxCard'
+    | 'operatingPermit'
+    | 'cdwsLicence'
+    | 'diveAgencyAffiliation'
+    | 'publicLiabilityInsurance'
+    | 'boatLicence'
+    | 'vehicleLicence'
+    | 'other';
+  readonly documentNumber: string | null;
+  readonly issuer: string;
+  /** Days from today. Negative is already lapsed. Null never expires. */
+  readonly expiresInDays: number | null;
+  readonly blocksPublishing: boolean;
+  readonly verificationStatus: 'pending' | 'inReview' | 'verified' | 'rejected' | 'expired';
+  readonly rejectionReason?: string;
+}
+
+export const VENDOR_DOCUMENTS: readonly SeedVendorDocument[] = [
+  // Lapsed, and it stops them trading — which is why Baraka Kite is suspended.
+  {
+    vendorSlug: 'baraka-kite',
+    type: 'publicLiabilityInsurance',
+    documentNumber: 'MI-2261-4408',
+    issuer: 'Misr Insurance',
+    expiresInDays: -5,
+    blocksPublishing: true,
+    verificationStatus: 'expired',
+  },
+  {
+    vendorSlug: 'baraka-kite',
+    type: 'taxCard',
+    documentNumber: '442-119-806',
+    issuer: 'Egyptian Tax Authority',
+    expiresInDays: null,
+    blocksPublishing: true,
+    verificationStatus: 'rejected',
+    rejectionReason: 'The card is for a different legal entity than the commercial register.',
+  },
+  // Inside seven days: the permit a boat cannot go out without.
+  {
+    vendorSlug: 'fanous-divers',
+    type: 'operatingPermit',
+    documentNumber: 'SSG-DIV-1180',
+    issuer: 'South Sinai Governorate',
+    expiresInDays: 3,
+    blocksPublishing: true,
+    verificationStatus: 'verified',
+  },
+  {
+    vendorSlug: 'shamandura-boat-trips',
+    type: 'boatLicence',
+    documentNumber: 'EMA-SH-II-773',
+    issuer: 'Egyptian Maritime Authority',
+    expiresInDays: 11,
+    blocksPublishing: true,
+    verificationStatus: 'verified',
+  },
+  // A cylinder test: overdue stops that tank, not the whole centre.
+  {
+    vendorSlug: 'fanous-divers',
+    type: 'other',
+    documentNumber: 'HYDRO-2-CYL',
+    issuer: 'CDWS approved test centre',
+    expiresInDays: 17,
+    blocksPublishing: false,
+    verificationStatus: 'verified',
+  },
+  {
+    vendorSlug: 'blue-beach-freediving',
+    type: 'cdwsLicence',
+    documentNumber: 'CDWS-FR-0642',
+    issuer: 'Chamber of Diving and Watersports',
+    expiresInDays: 38,
+    blocksPublishing: true,
+    verificationStatus: 'verified',
+  },
+  {
+    vendorSlug: 'moya-yoga',
+    type: 'commercialRegister',
+    documentNumber: 'GAFI-90-33417',
+    issuer: 'GAFI',
+    expiresInDays: 80,
+    blocksPublishing: false,
+    verificationStatus: 'verified',
+  },
+  {
+    vendorSlug: 'assalah-transfers',
+    type: 'vehicleLicence',
+    documentNumber: 'TD-MB-2-5518',
+    issuer: 'Traffic Department',
+    expiresInDays: 84,
+    blocksPublishing: false,
+    verificationStatus: 'verified',
+  },
+  {
+    vendorSlug: 'sinai-nomads',
+    type: 'diveAgencyAffiliation',
+    documentNumber: 'PADI-S-24119',
+    issuer: 'PADI',
+    expiresInDays: 142,
+    blocksPublishing: false,
+    verificationStatus: 'verified',
+  },
+  // Waiting on the platform: the two rows the verification queue is for.
+  {
+    vendorSlug: 'assalah-transfers',
+    type: 'commercialRegister',
+    documentNumber: 'GAFI-90-41220',
+    issuer: 'GAFI',
+    expiresInDays: null,
+    blocksPublishing: false,
+    verificationStatus: 'inReview',
+  },
+  {
+    vendorSlug: 'assalah-transfers',
+    type: 'publicLiabilityInsurance',
+    documentNumber: null,
+    issuer: 'Not yet supplied',
+    expiresInDays: null,
+    blocksPublishing: true,
+    verificationStatus: 'pending',
+  },
+];
+
+export function documentExpiresOn(document: SeedVendorDocument): string | null {
+  return document.expiresInDays === null ? null : inDays(document.expiresInDays);
+}
 
 export interface SeedCategory {
   readonly slug: string;
