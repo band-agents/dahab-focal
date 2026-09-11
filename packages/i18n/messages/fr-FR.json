@@ -29,6 +29,7 @@
       "app.name",
       "gallery.stateFocus",
       "price.total",
+      "vendor.pricing.total",
       "vendor.today.guide"
     ]
   },
@@ -560,7 +561,8 @@
       "today": "Aujourd'hui",
       "bookings": "Réservations",
       "services": "Prestations",
-      "more": "Plus"
+      "more": "Plus",
+      "pricing": "Tarifs"
     },
     "today": {
       "greeting": "Bonjour, {name}.",
@@ -641,6 +643,37 @@
       "blocked": "Bloquée jusqu’au contrôle",
       "dueOn": "Échéance {date}",
       "ownerOnly": "Propriétaire seulement"
+    },
+    "pricing": {
+      "title": "Tarifs",
+      "subtitle": "Vos règles, et ce qu’un voyageur paie réellement.",
+      "order": "Ordre d’application",
+      "orderNote": "C’est votre choix et cela change le résultat : 10% puis un bon fixe ne donne pas le même total que l’inverse.",
+      "simulator": "Simulateur",
+      "simulatorNote": "Appelle le même computePrice() que le paiement et la comparaison. Ce qui s’affiche ici est ce qui est facturé.",
+      "total": "Total",
+      "charged": "{count, plural, one {# facturé} other {# facturés}}",
+      "seated": "{count, plural, one {# place} other {# places}}",
+      "suppressed": "{count, plural, one {# règle écartée par son groupe d’exclusion} other {# règles écartées par leurs groupes d’exclusion}}",
+      "preset": {
+        "twoAdults": "Deux adultes",
+        "fourAdults": "Quatre adultes",
+        "familyWithInfant": "Famille + nourrisson",
+        "residents": "Trois résidents"
+      }
     }
+  },
+  "participant": {
+    "adult": "Adultes",
+    "child": "Enfants",
+    "infant": "Nourrissons",
+    "student": "Étudiants",
+    "resident": "Résidents",
+    "instructor": "Moniteurs accompagnants"
+  },
+  "priceRule": {
+    "earlyBird": "Réservation anticipée",
+    "residentRate": "Tarif résident",
+    "groupOfFour": "Groupe de quatre ou plus"
   }
 }

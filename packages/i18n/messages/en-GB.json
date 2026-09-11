@@ -532,7 +532,8 @@
       "today": "Today",
       "bookings": "Bookings",
       "services": "Services",
-      "more": "More"
+      "more": "More",
+      "pricing": "Pricing"
     },
     "today": {
       "greeting": "Morning, {name}.",
@@ -613,6 +614,37 @@
       "blocked": "Blocked until tested",
       "dueOn": "Due {date}",
       "ownerOnly": "Owner only"
+    },
+    "pricing": {
+      "title": "Pricing",
+      "subtitle": "Your rules, and what a traveller actually pays.",
+      "order": "Order they apply in",
+      "orderNote": "Your choice, and it changes the answer: 10% off then a fixed voucher is a different total from the reverse.",
+      "simulator": "Simulator",
+      "simulatorNote": "Runs the same computePrice() the checkout and the comparison use. What you see here is what a traveller is charged.",
+      "total": "Total",
+      "charged": "{count, plural, one {# charged} other {# charged}}",
+      "seated": "{count, plural, one {# seat} other {# seats}}",
+      "suppressed": "{count, plural, one {# rule suppressed by its exclusion group} other {# rules suppressed by their exclusion groups}}",
+      "preset": {
+        "twoAdults": "Two adults",
+        "fourAdults": "Four adults",
+        "familyWithInfant": "Family + infant",
+        "residents": "Three residents"
+      }
     }
+  },
+  "participant": {
+    "adult": "Adults",
+    "child": "Children",
+    "infant": "Infants",
+    "student": "Students",
+    "resident": "Residents",
+    "instructor": "Accompanying instructors"
+  },
+  "priceRule": {
+    "earlyBird": "Early bird",
+    "residentRate": "Resident rate",
+    "groupOfFour": "Group of four or more"
   }
 }

@@ -19,6 +19,7 @@
       "admin.trust.moderation",
       "app.name",
       "vendor.more.staff",
+      "vendor.pricing.simulator",
       "vendor.role.staff",
       "vendor.today.guide"
     ]
@@ -551,7 +552,8 @@
       "today": "Heute",
       "bookings": "Buchungen",
       "services": "Leistungen",
-      "more": "Mehr"
+      "more": "Mehr",
+      "pricing": "Preise"
     },
     "today": {
       "greeting": "Morgen, {name}.",
@@ -632,6 +634,37 @@
       "blocked": "Gesperrt bis zur Prüfung",
       "dueOn": "Fällig {date}",
       "ownerOnly": "Nur Inhaber"
+    },
+    "pricing": {
+      "title": "Preise",
+      "subtitle": "Deine Regeln, und was Reisende wirklich zahlen.",
+      "order": "Reihenfolge der Anwendung",
+      "orderNote": "Deine Wahl, und sie ändert das Ergebnis: 10% Rabatt und dann ein fester Gutschein ergibt eine andere Summe als umgekehrt.",
+      "simulator": "Simulator",
+      "simulatorNote": "Führt dasselbe computePrice() aus wie Kasse und Vergleich. Was hier steht, wird berechnet.",
+      "total": "Summe",
+      "charged": "{count, plural, one {# berechnet} other {# berechnet}}",
+      "seated": "{count, plural, one {# Platz} other {# Plätze}}",
+      "suppressed": "{count, plural, one {# Regel durch ihre Ausschlussgruppe unterdrückt} other {# Regeln durch ihre Ausschlussgruppen unterdrückt}}",
+      "preset": {
+        "twoAdults": "Zwei Erwachsene",
+        "fourAdults": "Vier Erwachsene",
+        "familyWithInfant": "Familie + Kleinkind",
+        "residents": "Drei Ansässige"
+      }
     }
+  },
+  "participant": {
+    "adult": "Erwachsene",
+    "child": "Kinder",
+    "infant": "Kleinkinder",
+    "student": "Studierende",
+    "resident": "Ansässige",
+    "instructor": "Begleitende Guides"
+  },
+  "priceRule": {
+    "earlyBird": "Frühbucher",
+    "residentRate": "Ansässigen-Tarif",
+    "groupOfFour": "Gruppe ab vier"
   }
 }

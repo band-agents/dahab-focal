@@ -535,7 +535,8 @@
       "today": "اليوم",
       "bookings": "الحجوزات",
       "services": "الخدمات",
-      "more": "المزيد"
+      "more": "المزيد",
+      "pricing": "التسعير"
     },
     "today": {
       "greeting": "صباح الخير يا {name}.",
@@ -616,6 +617,37 @@
       "blocked": "موقوفة لحد الاختبار",
       "dueOn": "الاستحقاق {date}",
       "ownerOnly": "للمالك فقط"
+    },
+    "pricing": {
+      "title": "التسعير",
+      "subtitle": "قواعدك، واللي المسافر بيدفعه فعلاً.",
+      "order": "ترتيب التطبيق",
+      "orderNote": "اختيارك إنت، وبيغيّر النتيجة: خصم 10% وبعده قسيمة ثابتة مش زي العكس.",
+      "simulator": "المحاكي",
+      "simulatorNote": "بيشغّل نفس computePrice() اللي الدفع والمقارنة بيستخدموها. اللي بتشوفه هنا هو اللي المسافر هيتحاسب بيه.",
+      "total": "الإجمالي",
+      "charged": "{count, plural, zero {مفيش محاسبة} one {واحد بيدفع} two {اتنين بيدفعوا} few {# بيدفعوا} many {# بيدفعوا} other {# بيدفعوا}}",
+      "seated": "{count, plural, zero {مفيش مقاعد} one {مقعد واحد} two {مقعدان} few {# مقاعد} many {# مقعدًا} other {# مقعد}}",
+      "suppressed": "{count, plural, zero {مفيش} one {قاعدة واحدة اتوقفت بسبب مجموعة الاستبعاد} two {قاعدتان اتوقفوا} few {# قواعد اتوقفت} many {# قاعدة اتوقفت} other {# قاعدة اتوقفت}}",
+      "preset": {
+        "twoAdults": "بالغان",
+        "fourAdults": "أربعة بالغين",
+        "familyWithInfant": "عيلة + رضيع",
+        "residents": "تلات مقيمين"
+      }
     }
+  },
+  "participant": {
+    "adult": "البالغون",
+    "child": "الأطفال",
+    "infant": "الرُّضَّع",
+    "student": "الطلبة",
+    "resident": "المقيمون",
+    "instructor": "المدربون المرافقون"
+  },
+  "priceRule": {
+    "earlyBird": "حجز مبكر",
+    "residentRate": "سعر المقيمين",
+    "groupOfFour": "مجموعة من أربعة أو أكتر"
   }
 }

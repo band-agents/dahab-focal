@@ -547,7 +547,8 @@
       "today": "Oggi",
       "bookings": "Prenotazioni",
       "services": "Servizi",
-      "more": "Altro"
+      "more": "Altro",
+      "pricing": "Prezzi"
     },
     "today": {
       "greeting": "Buongiorno, {name}.",
@@ -628,6 +629,37 @@
       "blocked": "Bloccata fino al collaudo",
       "dueOn": "Scade {date}",
       "ownerOnly": "Solo titolare"
+    },
+    "pricing": {
+      "title": "Prezzi",
+      "subtitle": "Le tue regole, e quanto paga davvero un viaggiatore.",
+      "order": "Ordine di applicazione",
+      "orderNote": "È una tua scelta e cambia il risultato: 10% di sconto e poi un buono fisso dà un totale diverso dal contrario.",
+      "simulator": "Simulatore",
+      "simulatorNote": "Esegue lo stesso computePrice() di checkout e confronto. Quello che vedi qui è ciò che viene addebitato.",
+      "total": "Totale",
+      "charged": "{count, plural, one {# a pagamento} other {# a pagamento}}",
+      "seated": "{count, plural, one {# posto} other {# posti}}",
+      "suppressed": "{count, plural, one {# regola esclusa dal suo gruppo} other {# regole escluse dai loro gruppi}}",
+      "preset": {
+        "twoAdults": "Due adulti",
+        "fourAdults": "Quattro adulti",
+        "familyWithInfant": "Famiglia + neonato",
+        "residents": "Tre residenti"
+      }
     }
+  },
+  "participant": {
+    "adult": "Adulti",
+    "child": "Bambini",
+    "infant": "Neonati",
+    "student": "Studenti",
+    "resident": "Residenti",
+    "instructor": "Istruttori accompagnatori"
+  },
+  "priceRule": {
+    "earlyBird": "Prenotazione anticipata",
+    "residentRate": "Tariffa residenti",
+    "groupOfFour": "Gruppo da quattro"
   }
 }

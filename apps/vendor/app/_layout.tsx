@@ -54,6 +54,10 @@ export default function RootLayout() {
             options={{ title: t('vendor.tabs.services'), tabBarIcon: () => <Mark name="tank" size={24} /> }}
           />
           <Tabs.Screen
+            name="pricing"
+            options={{ title: t('vendor.tabs.pricing'), tabBarIcon: () => <Mark name="shell" size={24} /> }}
+          />
+          <Tabs.Screen
             name="more"
             options={{ title: t('vendor.tabs.more'), tabBarIcon: () => <Mark name="compass" size={24} noFlip /> }}
           />

@@ -195,6 +195,9 @@ importers:
 
   apps/vendor:
     dependencies:
+      '@dahab/api-contract':
+        specifier: workspace:*
+        version: link:../../packages/api-contract
       '@dahab/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
