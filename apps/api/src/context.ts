@@ -4,6 +4,9 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Role, Session } from '@dahab/api-contract';
 import type { Locale } from '@dahab/i18n';
 
+import type { Database } from '@dahab/db';
+
+import { getDatabase } from './database';
 import { logger as rootLogger, type Logger } from './logger';
 import { localeFrom, verifyAccessToken } from './auth/tokens';
 
@@ -21,6 +24,12 @@ export interface Context {
   readonly session: Session | null;
   readonly locale: Locale;
   readonly now: Date;
+  /**
+   * Null when DATABASE_URL is absent. A procedure that needs it says so with
+   * a 503 rather than throwing a connection error at the caller — the two
+   * read very differently in a log.
+   */
+  readonly db: Database | null;
 }
 
 function headerValue(request: IncomingMessage, name: string): string | undefined {
@@ -49,6 +58,7 @@ export function createContext(options: {
     session,
     locale: session === null ? locale : (session as { locale?: Locale }).locale ?? locale,
     now: options.now ?? new Date(),
+    db: getDatabase(),
   };
 }
 
@@ -83,6 +93,7 @@ export function createTestContext(overrides: Partial<Context> = {}): Context {
     session: null,
     locale: 'en-GB',
     now: new Date('2026-03-19T06:00:00Z'),
+    db: null,
     ...overrides,
   };
 }

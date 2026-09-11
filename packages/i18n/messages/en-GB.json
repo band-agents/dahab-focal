@@ -519,6 +519,12 @@
       "due": "Due",
       "entryId": "Entry",
       "narrative": "Narrative"
+    },
+    "problem": {
+      "unreachable": "The API did not answer, so this screen has nothing to show — not an empty result.",
+      "noDatabase": "The API is running but has no database configured.",
+      "forbidden": "This account does not hold the permission this screen needs.",
+      "unauthorized": "This console has no valid session."
     }
   }
 }

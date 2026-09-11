@@ -535,6 +535,12 @@
       "due": "Fällig",
       "entryId": "Buchungssatz",
       "narrative": "Buchungstext"
+    },
+    "problem": {
+      "unreachable": "Die API hat nicht geantwortet — dieser Bildschirm hat nichts zu zeigen, kein leeres Ergebnis.",
+      "noDatabase": "Die API läuft, hat aber keine Datenbank konfiguriert.",
+      "forbidden": "Dieses Konto hat die Berechtigung nicht, die dieser Bildschirm braucht.",
+      "unauthorized": "Diese Konsole hat keine gültige Sitzung."
     }
   }
 }

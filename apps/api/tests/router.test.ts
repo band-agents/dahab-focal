@@ -29,11 +29,17 @@ describe('health', () => {
     const caller = createCaller(createTestContext());
     const result = await caller.health();
 
-    expect(result.status).toBe('ok');
     expect(result.locales).toHaveLength(7);
     expect(result.requestId).toMatch(/[0-9a-f-]{36}/);
-    // Unchecked, not ok: nothing has touched Postgres or Redis on this path.
-    expect(result.checks['database']).toBe('unchecked');
+
+    // The database is really probed now, and this suite runs without a
+    // DATABASE_URL — so `unavailable` is the truthful answer and `degraded`
+    // follows from it. A green health check on a server that cannot reach its
+    // database is the failure this assertion exists to prevent.
+    expect(result.checks['database']).toBe('unavailable');
+    expect(result.status).toBe('degraded');
+
+    // Redis is still genuinely unchecked; nothing on this path touches it.
     expect(result.checks['redis']).toBe('unchecked');
   });
 });

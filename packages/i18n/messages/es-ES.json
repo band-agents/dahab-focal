@@ -537,6 +537,12 @@
       "due": "Vence",
       "entryId": "Apunte",
       "narrative": "Concepto"
+    },
+    "problem": {
+      "unreachable": "La API no respondió, así que esta pantalla no tiene nada que mostrar — no es un resultado vacío.",
+      "noDatabase": "La API está en marcha pero no tiene base de datos configurada.",
+      "forbidden": "Esta cuenta no tiene el permiso que necesita esta pantalla.",
+      "unauthorized": "Esta consola no tiene una sesión válida."
     }
   }
 }

@@ -546,6 +546,12 @@
       "due": "Échéance",
       "entryId": "Écriture",
       "narrative": "Libellé"
+    },
+    "problem": {
+      "unreachable": "L'API n'a pas répondu : cet écran n'a rien à montrer — ce n'est pas un résultat vide.",
+      "noDatabase": "L'API fonctionne mais aucune base de données n'est configurée.",
+      "forbidden": "Ce compte ne détient pas la permission dont cet écran a besoin.",
+      "unauthorized": "Cette console n'a pas de session valide."
     }
   }
 }

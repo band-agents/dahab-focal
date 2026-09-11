@@ -7,7 +7,14 @@
 /** @type {import('next').NextConfig} */
 export default {
   reactStrictMode: true,
-  transpilePackages: ['@dahab/ui-web', '@dahab/i18n', '@dahab/tokens', '@dahab/api-contract'],
+  transpilePackages: [
+    '@dahab/ui-web',
+    '@dahab/i18n',
+    '@dahab/tokens',
+    '@dahab/api-contract',
+    '@dahab/api',
+    '@dahab/db',
+  ],
   async redirects() {
     return [{ source: '/', destination: '/en-GB', permanent: false }];
   },

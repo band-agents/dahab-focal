@@ -534,6 +534,12 @@
       "due": "Scadenza",
       "entryId": "Scrittura",
       "narrative": "Causale"
+    },
+    "problem": {
+      "unreachable": "L'API non ha risposto, quindi questa schermata non ha nulla da mostrare — non è un risultato vuoto.",
+      "noDatabase": "L'API è attiva ma non ha un database configurato.",
+      "forbidden": "Questo account non ha il permesso richiesto da questa schermata.",
+      "unauthorized": "Questa console non ha una sessione valida."
     }
   }
 }
