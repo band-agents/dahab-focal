@@ -21,7 +21,18 @@
       "traveler.tabs.account",
       "traveler.hub.chip.nitrox",
       "traveler.discover.compareCategoryCount",
-      "traveler.site.meters"
+      "traveler.site.meters",
+      "diveSite.blueHole",
+      "diveSite.theBells",
+      "diveSite.theArch",
+      "diveSite.elCanyon",
+      "diveSite.threePools",
+      "diveSite.eelGarden",
+      "diveSite.lighthouse",
+      "diveSite.gabrElBint",
+      "diveSite.rasAbuGalum",
+      "diveSite.theIslands",
+      "diveSite.ummSid"
     ]
   },
   "app": {
@@ -191,7 +202,10 @@
       "revenue": "Volume prenotazioni",
       "takeRate": "Quota piattaforma",
       "weather": "Dahab oggi",
-      "weatherNote": "Il vento annulla le barche, e un annullamento trascina il resto."
+      "weatherNote": "Il vento annulla le barche, e un annullamento trascina il resto.",
+      "noDepartures": "Oggi non parte nulla.",
+      "seats": "{booked} di {total} posti",
+      "incidentsRecent": "Segnalati negli ultimi sette giorni"
     },
     "expiry": {
       "title": "Il quadro delle scadenze",
@@ -244,7 +258,8 @@
       "wind": "{value} kt",
       "windLabel": "Vento",
       "waterLabel": "Acqua",
-      "visLabel": "Visibilità"
+      "visLabel": "Visibilità",
+      "noSource": "Nessuna fonte meteo collegata"
     },
     "vendors": {
       "title": "Operatori",
@@ -307,7 +322,8 @@
       "notComparable": "Solo descrittivo",
       "usage": "Su {count, plural, one {# servizio} other {# servizi}}",
       "dataAsData": "Gli attributi confrontabili stanno in attribute_definitions, mai come colonna su services. Una tabella alimenta la tassonomia, il costruttore di servizi e il motore di confronto.",
-      "serviceCount": "{count, plural, one {# servizio} other {# servizi}}"
+      "serviceCount": "{count, plural, one {# servizio} other {# servizi}}",
+      "noQueue": "Nulla è in attesa di revisione."
     },
     "serviceStatus": {
       "draft": "Bozza",
@@ -358,7 +374,9 @@
       "commit": "Annulla la partenza",
       "keep": "Lasciala attiva",
       "seats": "{used} di {total} posti",
-      "chargeableNote": "Neonati e istruttori accompagnatori occupano un posto senza essere addebitati: lista e fattura non coincidono mai."
+      "chargeableNote": "Neonati e istruttori accompagnatori occupano un posto senza essere addebitati: lista e fattura non coincidono mai.",
+      "noRisk": "Nessuna partenza supera il limite di vento dell’operatore.",
+      "none": "Ancora nessuna prenotazione."
     },
     "cascade": {
       "bookings": "Prenotazioni annullate",
@@ -366,7 +384,8 @@
       "refunds": "Rimborsi aperti",
       "ledger": "Scritture contabili",
       "notifications": "Persone avvisate",
-      "releasedNote": "Una prenotazione attende ancora il pagamento: viene liberata, non rimborsata — nulla è stato incassato."
+      "releasedNote": "Una prenotazione attende ancora il pagamento: viene liberata, non rimborsata — nulla è stato incassato.",
+      "releases": "Prenotazioni rilasciate"
     },
     "bookingStatus": {
       "pendingPayment": "In attesa di pagamento",
@@ -412,7 +431,14 @@
       "gross": "Lordo",
       "commission": "Commissione",
       "fees": "Spese",
-      "net": "Netto"
+      "net": "Netto",
+      "balances": "Saldi dei conti",
+      "balancesSub": "Ogni saldo è una SUM su un conto, mai un numero aggiornato a mano. Gli otto insieme fanno zero.",
+      "noPayments": "Non è ancora stato incassato alcun pagamento.",
+      "noPayouts": "Non c’è nulla da liquidare.",
+      "noLedger": "Il libro mastro non ha registrazioni.",
+      "period": "Periodo",
+      "noFxSource": "Nessuna fonte di cambio collegata"
     },
     "paymentStatus": {
       "initiated": "Avviato",
@@ -462,7 +488,11 @@
       "disputesSub": "Una risoluzione scrive uno storno, mai una modifica.",
       "moderation": "Moderazione",
       "impersonation": "Accesso come utente",
-      "impersonationSub": "L'assistenza riproduce un guasto come l'utente; non è un modo per navigare al posto suo. Limitato a {minutes} minuti, motivo obbligatorio, banner visibile mentre è attivo."
+      "impersonationSub": "L'assistenza riproduce un guasto come l'utente; non è un modo per navigare al posto suo. Limitato a {minutes} minuti, motivo obbligatorio, banner visibile mentre è attivo.",
+      "noIncidents": "Nessun incidente segnalato.",
+      "noDisputes": "Nessuna controversia aperta.",
+      "noModeration": "Nulla è in attesa di un moderatore.",
+      "narrative": "Che cosa è successo"
     },
     "incidentKind": {
       "divingIncident": "Incidente subacqueo",
@@ -501,7 +531,10 @@
       "translations": "Copertura delle traduzioni",
       "translationsSub": "Come l'arabo scritto da un operatore di Dahab raggiunge altre sei lingue. L'output automatico richiede comunque una revisione umana.",
       "on": "Attivo",
-      "off": "Disattivo"
+      "off": "Disattivo",
+      "noAudit": "Il registro di controllo è vuoto: da questa console non è ancora stato scritto nulla.",
+      "flagsSub": "Un flag è una manopola, non un interruttore. Ciò che conta è la percentuale.",
+      "sitesSub": "Profondità, ingresso e il pericolo che decide chi può immergersi."
     },
     "difficulty": {
       "beginner": "Principiante",
@@ -538,13 +571,26 @@
       "provider": "Provider",
       "due": "Scadenza",
       "entryId": "Scrittura",
-      "narrative": "Causale"
+      "narrative": "Causale",
+      "balance": "Saldo",
+      "legs": "Righe",
+      "event": "Evento",
+      "reviews": "Recensioni",
+      "claimed": "Richiesto",
+      "account": "Conto"
     },
     "problem": {
       "unreachable": "L'API non ha risposto, quindi questa schermata non ha nulla da mostrare — non è un risultato vuoto.",
       "noDatabase": "L'API è attiva ma non ha un database configurato.",
       "forbidden": "Questo account non ha il permesso richiesto da questa schermata.",
       "unauthorized": "Questa console non ha una sessione valida."
+    },
+    "event": {
+      "bookingConfirmed": "Prenotazione confermata",
+      "paymentCaptured": "Pagamento incassato",
+      "paymentFeeCharged": "Commissione del provider",
+      "refundIssued": "Rimborso emesso",
+      "payoutPaid": "Liquidazione pagata"
     }
   },
   "vendor": {
@@ -772,5 +818,18 @@
       "suggestWhatsNotIncluded": "Cosa non è incluso?",
       "suggestFreedivingInstead": "Apnea invece"
     }
+  },
+  "diveSite": {
+    "blueHole": "Blue Hole",
+    "theBells": "The Bells",
+    "theArch": "The Arch",
+    "elCanyon": "El Canyon",
+    "threePools": "Three Pools",
+    "eelGarden": "Eel Garden",
+    "lighthouse": "Lighthouse",
+    "gabrElBint": "Gabr El Bint",
+    "rasAbuGalum": "Ras Abu Galum",
+    "theIslands": "The Islands",
+    "ummSid": "Umm Sid"
   }
 }

@@ -171,7 +171,10 @@
       "revenue": "Gross bookings",
       "takeRate": "Take rate",
       "weather": "Dahab today",
-      "weatherNote": "Wind cancels boats, and a cancellation cascades."
+      "weatherNote": "Wind cancels boats, and a cancellation cascades.",
+      "noDepartures": "Nothing is going out today.",
+      "seats": "{booked} of {total} seats",
+      "incidentsRecent": "Reported in the last seven days"
     },
     "expiry": {
       "title": "The expiry board",
@@ -224,7 +227,8 @@
       "wind": "{value} kt",
       "windLabel": "Wind",
       "waterLabel": "Water",
-      "visLabel": "Visibility"
+      "visLabel": "Visibility",
+      "noSource": "No weather source connected"
     },
     "vendors": {
       "title": "Operators",
@@ -287,7 +291,8 @@
       "notComparable": "Descriptive only",
       "usage": "On {count, plural, one {# service} other {# services}}",
       "dataAsData": "Comparable attributes live in attribute_definitions, never as a column on services. One table feeds the taxonomy manager, the vendor service builder and the traveller comparison engine.",
-      "serviceCount": "{count, plural, one {# service} other {# services}}"
+      "serviceCount": "{count, plural, one {# service} other {# services}}",
+      "noQueue": "Nothing is waiting on a review."
     },
     "serviceStatus": {
       "draft": "Draft",
@@ -338,7 +343,9 @@
       "commit": "Cancel the departure",
       "keep": "Leave it running",
       "seats": "{used} of {total} seats",
-      "chargeableNote": "Infants and accompanying instructors hold a seat without being charged, so the manifest and the invoice never match."
+      "chargeableNote": "Infants and accompanying instructors hold a seat without being charged, so the manifest and the invoice never match.",
+      "noRisk": "No departure is above its operator’s wind limit.",
+      "none": "No bookings yet."
     },
     "cascade": {
       "bookings": "Bookings cancelled",
@@ -346,7 +353,8 @@
       "refunds": "Refunds opened",
       "ledger": "Ledger entries written",
       "notifications": "People told",
-      "releasedNote": "One booking is still awaiting payment, so it is released rather than refunded — nothing was captured to return."
+      "releasedNote": "One booking is still awaiting payment, so it is released rather than refunded — nothing was captured to return.",
+      "releases": "Holds released"
     },
     "bookingStatus": {
       "pendingPayment": "Awaiting payment",
@@ -392,7 +400,14 @@
       "gross": "Gross",
       "commission": "Commission",
       "fees": "Fees",
-      "net": "Net"
+      "net": "Net",
+      "balances": "Account balances",
+      "balancesSub": "Every balance is a SUM over an account, never a figure kept up to date by hand. The eight together come to zero.",
+      "noPayments": "No payment has been taken yet.",
+      "noPayouts": "Nothing is owed out.",
+      "noLedger": "The ledger has no entries.",
+      "period": "Period",
+      "noFxSource": "No exchange-rate source connected"
     },
     "paymentStatus": {
       "initiated": "Initiated",
@@ -442,7 +457,11 @@
       "disputesSub": "A resolution writes a ledger reversal, never an edit.",
       "moderation": "Moderation",
       "impersonation": "Impersonation",
-      "impersonationSub": "Support reproduces a fault as the user; it is not a way to browse as one. Time-boxed to {minutes} minutes, a reason is required, and a banner shows while it runs."
+      "impersonationSub": "Support reproduces a fault as the user; it is not a way to browse as one. Time-boxed to {minutes} minutes, a reason is required, and a banner shows while it runs.",
+      "noIncidents": "No incident has been reported.",
+      "noDisputes": "No dispute is open.",
+      "noModeration": "Nothing is waiting on a moderator.",
+      "narrative": "What happened"
     },
     "incidentKind": {
       "divingIncident": "Diving incident",
@@ -481,7 +500,10 @@
       "translations": "Translation coverage",
       "translationsSub": "How Arabic written by a Dahab operator reaches six other languages. Machine output still needs a human pass.",
       "on": "On",
-      "off": "Off"
+      "off": "Off",
+      "noAudit": "The audit log is empty: nothing has been written through this console yet.",
+      "flagsSub": "A flag is a dial, not a switch. The percentage is what is actually in force.",
+      "sitesSub": "Depth, entry and the hazard that decides who may dive it."
     },
     "difficulty": {
       "beginner": "Beginner",
@@ -518,13 +540,26 @@
       "provider": "Provider",
       "due": "Due",
       "entryId": "Entry",
-      "narrative": "Narrative"
+      "narrative": "Narrative",
+      "balance": "Balance",
+      "legs": "Legs",
+      "event": "Event",
+      "reviews": "Reviews",
+      "claimed": "Claimed",
+      "account": "Account"
     },
     "problem": {
       "unreachable": "The API did not answer, so this screen has nothing to show — not an empty result.",
       "noDatabase": "The API is running but has no database configured.",
       "forbidden": "This account does not hold the permission this screen needs.",
       "unauthorized": "This console has no valid session."
+    },
+    "event": {
+      "bookingConfirmed": "Booking confirmed",
+      "paymentCaptured": "Payment captured",
+      "paymentFeeCharged": "Provider fee",
+      "refundIssued": "Refund issued",
+      "payoutPaid": "Payout paid"
     }
   },
   "vendor": {
@@ -752,5 +787,18 @@
       "suggestWhatsNotIncluded": "What is not included?",
       "suggestFreedivingInstead": "Freediving instead"
     }
+  },
+  "diveSite": {
+    "blueHole": "Blue Hole",
+    "theBells": "The Bells",
+    "theArch": "The Arch",
+    "elCanyon": "El Canyon",
+    "threePools": "Three Pools",
+    "eelGarden": "Eel Garden",
+    "lighthouse": "Lighthouse",
+    "gabrElBint": "Gabr El Bint",
+    "rasAbuGalum": "Ras Abu Galum",
+    "theIslands": "The Islands",
+    "ummSid": "Umm Sid"
   }
 }
