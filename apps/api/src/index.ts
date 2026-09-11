@@ -1,8 +1,8 @@
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
 
-import { createContext } from './context';
-import { logger } from './logger';
-import { appRouter } from './routers/index';
+import { createContext } from './context.ts';
+import { logger } from './logger.ts';
+import { appRouter } from './routers/index.ts';
 
 /**
  * The standalone adapter, on node:http. No web framework: tRPC is the only

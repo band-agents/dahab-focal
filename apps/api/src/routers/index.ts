@@ -2,11 +2,11 @@ import { z } from 'zod';
 
 import { LOCALES } from '@dahab/i18n';
 
-import { probeDatabase } from '../database';
-import { publicProcedure, router } from '../trpc';
-import { adminRouter } from './admin';
-import { authRouter } from './auth';
-import { catalogRouter } from './catalog';
+import { probeDatabase } from '../database.ts';
+import { publicProcedure, router } from '../trpc.ts';
+import { adminRouter } from './admin.ts';
+import { authRouter } from './auth.ts';
+import { catalogRouter } from './catalog.ts';
 
 export const appRouter = router({
   /**

@@ -1,6 +1,6 @@
 import { createDatabase, type Database } from '@dahab/db';
 
-import { logger } from './logger';
+import { logger } from './logger.ts';
 
 /**
  * The process-wide database handle.

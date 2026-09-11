@@ -13,14 +13,14 @@
 
 import { useTranslation } from 'react-i18next';
 
-import { LOCALE_DESCRIPTORS, resolveLocale, type Direction, type Locale } from './locales';
+import { LOCALE_DESCRIPTORS, resolveLocale, type Direction, type Locale } from './locales.ts';
 
 export {
   byDirection,
   directionSign,
   shouldMirrorIcon,
   htmlDir,
-} from './direction-core';
+} from './direction-core.ts';
 
 /**
  * The current writing direction, derived from the active i18next language.

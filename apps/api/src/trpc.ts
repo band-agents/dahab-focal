@@ -3,7 +3,7 @@ import { ZodError } from 'zod';
 
 import { can, type Permission, type Role } from '@dahab/api-contract';
 
-import type { Context } from './context';
+import type { Context } from './context.ts';
 
 /**
  * The tRPC root, and the procedures every router builds on.

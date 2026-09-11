@@ -8,7 +8,7 @@ import {
   optionIdSchema,
   pricingRuleIdSchema,
   serviceIdSchema,
-} from '../common';
+} from '../common.ts';
 
 /**
  * The pricing vocabulary.

@@ -6,9 +6,9 @@ import type { Locale } from '@dahab/i18n';
 
 import type { Database } from '@dahab/db';
 
-import { getDatabase } from './database';
-import { logger as rootLogger, type Logger } from './logger';
-import { localeFrom, verifyAccessToken } from './auth/tokens';
+import { getDatabase } from './database.ts';
+import { logger as rootLogger, type Logger } from './logger.ts';
+import { localeFrom, verifyAccessToken } from './auth/tokens.ts';
 
 /**
  * The per-request context.

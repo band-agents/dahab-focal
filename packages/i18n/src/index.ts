@@ -11,7 +11,7 @@ export {
   type Locale,
   type LocaleDescriptor,
   type NumberingSystem,
-} from './locales';
+} from './locales.ts';
 
 export {
   CURRENCIES,
@@ -32,7 +32,7 @@ export {
   type CurrencyCode,
   type Money,
   type RoundingMode,
-} from './money';
+} from './money.ts';
 
 export {
   DISPLAY_TIME_ZONE,
@@ -50,7 +50,7 @@ export {
   type CurrencyOptions,
   type DatePreset,
   type FormatContext,
-} from './formatters';
+} from './formatters.ts';
 
 export {
   FSI,
@@ -66,9 +66,9 @@ export {
   isolateOnce,
   stripIsolation,
   type IsolationDirection,
-} from './bidi';
+} from './bidi.ts';
 
-export { byDirection, directionSign, htmlDir, shouldMirrorIcon } from './direction-core';
+export { byDirection, directionSign, htmlDir, shouldMirrorIcon } from './direction-core.ts';
 
 export {
   applyDirectionChange,
@@ -78,7 +78,7 @@ export {
   type ApplyDirectionOptions,
   type DirectionChangePlan,
   type RtlPlatformAdapter,
-} from './rtl-runtime';
+} from './rtl-runtime.ts';
 
 export {
   DEFAULT_NAMESPACE,
@@ -89,7 +89,7 @@ export {
   setLocale,
   type CreateI18nOptions,
   type I18nInstance,
-} from './i18n';
+} from './i18n.ts';
 
 // Importing ./react registers the React binding with the i18next factory.
-export { Trans, useTranslation, useDirection, useLocale } from './react';
+export { Trans, useTranslation, useDirection, useLocale } from './react.ts';

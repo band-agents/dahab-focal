@@ -8,9 +8,9 @@
  */
 import { initReactI18next } from 'react-i18next';
 
-import { registerReactBinding } from './i18n';
+import { registerReactBinding } from './i18n.ts';
 
 registerReactBinding(initReactI18next);
 
 export { Trans, useTranslation } from 'react-i18next';
-export { useDirection, useLocale } from './direction';
+export { useDirection, useLocale } from './direction.ts';

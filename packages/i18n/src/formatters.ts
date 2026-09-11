@@ -4,10 +4,10 @@
  * money string by concatenation (CLAUDE.md).
  */
 
-import { minorUnitExponent, toDecimalString, type CurrencyCode, type Money } from './money';
-import type { Locale, NumberingSystem } from './locales';
-import { LOCALE_DESCRIPTORS } from './locales';
-import { isolate } from './bidi';
+import { minorUnitExponent, toDecimalString, type CurrencyCode, type Money } from './money.ts';
+import type { Locale, NumberingSystem } from './locales.ts';
+import { LOCALE_DESCRIPTORS } from './locales.ts';
+import { isolate } from './bidi.ts';
 
 /** Everything the app renders is rendered in Egypt's timezone by default. */
 export const DISPLAY_TIME_ZONE = 'Africa/Cairo';

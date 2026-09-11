@@ -10,7 +10,7 @@
  * a client component still has one import to reach for.
  */
 
-import type { Direction } from './locales';
+import type { Direction } from './locales.ts';
 
 /**
  * Pick between a start-side and end-side value without writing a ternary on

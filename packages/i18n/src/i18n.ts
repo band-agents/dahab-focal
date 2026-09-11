@@ -23,15 +23,17 @@ import {
   resolveLocale,
   type Locale,
   type NumberingSystem,
-} from './locales';
+} from './locales.ts';
 
-import deDE from '../messages/de-DE.json';
-import enGB from '../messages/en-GB.json';
-import esES from '../messages/es-ES.json';
-import frFR from '../messages/fr-FR.json';
-import itIT from '../messages/it-IT.json';
-import arEG from '../messages/ar-EG.json';
-import ruRU from '../messages/ru-RU.json';
+// The `with { type: 'json' }` attribute is required by Node's own ESM loader
+// (apps/api runs on raw node, not a bundler) and is a no-op everywhere else.
+import deDE from '../messages/de-DE.json' with { type: 'json' };
+import enGB from '../messages/en-GB.json' with { type: 'json' };
+import esES from '../messages/es-ES.json' with { type: 'json' };
+import frFR from '../messages/fr-FR.json' with { type: 'json' };
+import itIT from '../messages/it-IT.json' with { type: 'json' };
+import arEG from '../messages/ar-EG.json' with { type: 'json' };
+import ruRU from '../messages/ru-RU.json' with { type: 'json' };
 
 export const DEFAULT_NAMESPACE = 'common';
 

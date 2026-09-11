@@ -18,7 +18,7 @@ import {
   issueAccessToken,
   issueRefreshToken,
   newSessionId,
-} from '../auth/tokens';
+} from '../auth/tokens.ts';
 import {
   OTP_RESEND_COOLDOWN_SECONDS,
   OTP_TTL_SECONDS,
@@ -26,8 +26,8 @@ import {
   hashOtp,
   normalisePhone,
   resolveOtpTransport,
-} from '../auth/otp';
-import { publicProcedure, router, sessionProcedure } from '../trpc';
+} from '../auth/otp.ts';
+import { publicProcedure, router, sessionProcedure } from '../trpc.ts';
 
 /**
  * Auth scaffolding.

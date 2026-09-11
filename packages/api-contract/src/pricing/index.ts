@@ -7,7 +7,7 @@ export {
   daysAhead,
   hoursUntil,
   totalHeadcount,
-} from './compute';
+} from './compute.ts';
 
 export {
   PARTICIPANT_RULES,
@@ -39,4 +39,4 @@ export {
   type RentalUnitBasis,
   type RuleCondition,
   type SelectedOption,
-} from './types';
+} from './types.ts';
