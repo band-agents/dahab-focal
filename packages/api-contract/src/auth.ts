@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { currencySchema, localeSchema, numberingSystemSchema, userIdSchema, vendorIdSchema } from './common';
+import { currencySchema, localeSchema, numberingSystemSchema, userIdSchema, vendorIdSchema } from './common.ts';
 
 /**
  * Identity, roles and the permission matrix.
@@ -26,6 +26,19 @@ export const permissionSchema = z.enum([
   'booking.cancelOwn',
   'booking.readVendor',
   'booking.manageVendor',
+  /**
+   * Every booking on the platform, not only one vendor's. Named the same way
+   * as `vendor.readAny` and `user.readAny` because it is the same idea: the
+   * vendor-scoped form answers "mine", this one answers "everyone's", and the
+   * console's bookings, money and cancellation screens all need the second.
+   */
+  'booking.readAny',
+  /**
+   * The safety record across every operator. Separate from the booking
+   * permissions because an incident outlives the booking it came from, and
+   * reading one is a different act from reading a manifest.
+   */
+  'incident.readAny',
   'vendor.readOwn',
   'vendor.writeOwn',
   'vendor.readAny',
