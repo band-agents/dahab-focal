@@ -1,0 +1,17 @@
+/* Self-hosted Baloo 2, Rubik and Baloo Bhaijaan 2, one @font-face per script.
+   Served from public/fonts by scripts/copy-fonts.mjs. */
+@import '../../packages/tokens/src/generated/fonts.css';
+
+/* The token custom properties (light + Night Dive), generated from tokens.json. */
+@import '../../packages/tokens/src/generated/tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* The page ground the viewer paints behind the app. */
+html,
+body,
+#root {
+  background-color: var(--color-bg);
+}

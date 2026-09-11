@@ -526,5 +526,56 @@
       "forbidden": "This account does not hold the permission this screen needs.",
       "unauthorized": "This console has no valid session."
     }
+  },
+  "vendor": {
+    "tabs": {
+      "today": "Today",
+      "bookings": "Bookings",
+      "services": "Services",
+      "more": "More"
+    },
+    "today": {
+      "greeting": "Morning, {name}.",
+      "subtitle": "Three departures. One needs a decision before the wind picks up.",
+      "conditions": "Dahab now",
+      "next": "Next four hours",
+      "manifest": "Manifest",
+      "seats": "{used} of {total}",
+      "billed": "{capacity} aboard · {chargeable} billed",
+      "guide": "Guide {name}",
+      "nothing": "Nothing else today."
+    },
+    "outstanding": {
+      "waivers": "{count, plural, =0 {All waivers signed} one {# waiver outstanding} other {# waivers outstanding}}",
+      "certifications": "{count, plural, =0 {Certifications check out} one {# certification short} other {# certifications short}}",
+      "pickups": "{count, plural, =0 {Everyone collected} one {# not collected} other {# not collected}}"
+    },
+    "person": {
+      "certShort": "Short of the minimum for this site",
+      "noWaiver": "Waiver not signed",
+      "medical": "Medical note — read before the briefing",
+      "notPickedUp": "Not collected",
+      "collected": "Collected",
+      "noCert": "No certification needed"
+    },
+    "wind": {
+      "title": "Wind above your limit",
+      "body": "{forecast} kt forecast against your {limit} kt limit. Cancelling reaches the transfer that feeds it and opens the refunds.",
+      "review": "See what cancelling touches"
+    },
+    "offline": {
+      "title": "Ready for the Blue Hole road",
+      "body": "Signal drops most mornings between Assalah and the rim. {vouchers} vouchers, {points} meeting points and {manifests} manifests are on this phone."
+    },
+    "role": {
+      "owner": "Owner",
+      "staff": "Guide",
+      "staffLimit": "Money, pricing and staff are the owner’s. Ask {name}."
+    },
+    "action": {
+      "checkIn": "Check in",
+      "openManifest": "Open manifest",
+      "message": "Message everyone"
+    }
   }
 }

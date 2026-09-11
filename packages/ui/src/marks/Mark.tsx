@@ -63,8 +63,13 @@ function Glyph({ glyph, size = 24, noFlip = false, label }: GlyphProps) {
       {...(label === undefined ? null : { accessibilityLabel: label })}
       {...(mirrored ? { style: { transform: [{ scaleX: -1 as const }] } } : null)}
     >
+      {/*
+        A transform string rather than translateX/translateY props: the web
+        build of react-native-svg passes those straight through to the DOM,
+        where React rejects them as unknown attributes.
+      */}
       {glyph.shape === '' ? null : (
-        <G translateX={SHAPE_OFFSET} translateY={SHAPE_OFFSET}>
+        <G transform={`translate(${SHAPE_OFFSET} ${SHAPE_OFFSET})`}>
           <Path d={glyph.shape} fill={tint} />
         </G>
       )}

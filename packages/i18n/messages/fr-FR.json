@@ -28,7 +28,8 @@
       "admin.provider.wise",
       "app.name",
       "gallery.stateFocus",
-      "price.total"
+      "price.total",
+      "vendor.today.guide"
     ]
   },
   "app": {
@@ -552,6 +553,57 @@
       "noDatabase": "L'API fonctionne mais aucune base de données n'est configurée.",
       "forbidden": "Ce compte ne détient pas la permission dont cet écran a besoin.",
       "unauthorized": "Cette console n'a pas de session valide."
+    }
+  },
+  "vendor": {
+    "tabs": {
+      "today": "Aujourd'hui",
+      "bookings": "Réservations",
+      "services": "Prestations",
+      "more": "Plus"
+    },
+    "today": {
+      "greeting": "Bonjour, {name}.",
+      "subtitle": "Trois départs. Un demande une décision avant que le vent forcisse.",
+      "conditions": "Dahab maintenant",
+      "next": "Quatre prochaines heures",
+      "manifest": "Liste des participants",
+      "seats": "{used} sur {total}",
+      "billed": "{capacity} à bord · {chargeable} facturés",
+      "guide": "Guide {name}",
+      "nothing": "Rien d’autre aujourd’hui."
+    },
+    "outstanding": {
+      "waivers": "{count, plural, =0 {Toutes les décharges signées} one {# décharge manquante} other {# décharges manquantes}}",
+      "certifications": "{count, plural, =0 {Niveaux conformes} one {# niveau insuffisant} other {# niveaux insuffisants}}",
+      "pickups": "{count, plural, =0 {Tout le monde récupéré} one {# non récupéré} other {# non récupérés}}"
+    },
+    "person": {
+      "certShort": "En dessous du minimum pour ce site",
+      "noWaiver": "Décharge non signée",
+      "medical": "Note médicale — à lire avant le briefing",
+      "notPickedUp": "Non récupéré",
+      "collected": "Récupéré",
+      "noCert": "Aucun niveau requis"
+    },
+    "wind": {
+      "title": "Vent au-dessus de votre limite",
+      "body": "{forecast} nd prévus contre votre limite de {limit} nd. Annuler atteint le transfert associé et ouvre les remboursements.",
+      "review": "Voir ce que l’annulation touche"
+    },
+    "offline": {
+      "title": "Prêt pour la route du Blue Hole",
+      "body": "Entre Assalah et le bord, le réseau tombe presque chaque matin. {vouchers} bons, {points} points de rendez-vous et {manifests} listes sont sur ce téléphone."
+    },
+    "role": {
+      "owner": "Propriétaire",
+      "staff": "Moniteur",
+      "staffLimit": "Finances, tarifs et équipe sont au propriétaire. Demandez à {name}."
+    },
+    "action": {
+      "checkIn": "Pointer",
+      "openManifest": "Ouvrir la liste",
+      "message": "Écrire à tous"
     }
   }
 }

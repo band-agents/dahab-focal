@@ -17,7 +17,9 @@
       "admin.provider.paypal",
       "admin.provider.wise",
       "admin.trust.moderation",
-      "app.name"
+      "app.name",
+      "vendor.role.staff",
+      "vendor.today.guide"
     ]
   },
   "app": {
@@ -541,6 +543,57 @@
       "noDatabase": "Die API läuft, hat aber keine Datenbank konfiguriert.",
       "forbidden": "Dieses Konto hat die Berechtigung nicht, die dieser Bildschirm braucht.",
       "unauthorized": "Diese Konsole hat keine gültige Sitzung."
+    }
+  },
+  "vendor": {
+    "tabs": {
+      "today": "Heute",
+      "bookings": "Buchungen",
+      "services": "Leistungen",
+      "more": "Mehr"
+    },
+    "today": {
+      "greeting": "Morgen, {name}.",
+      "subtitle": "Drei Abfahrten. Eine braucht eine Entscheidung, bevor der Wind auffrischt.",
+      "conditions": "Dahab jetzt",
+      "next": "Nächste vier Stunden",
+      "manifest": "Teilnehmerliste",
+      "seats": "{used} von {total}",
+      "billed": "{capacity} an Bord · {chargeable} berechnet",
+      "guide": "Guide {name}",
+      "nothing": "Heute sonst nichts."
+    },
+    "outstanding": {
+      "waivers": "{count, plural, =0 {Alle Erklärungen unterschrieben} one {# Erklärung offen} other {# Erklärungen offen}}",
+      "certifications": "{count, plural, =0 {Brevets in Ordnung} one {# Brevet reicht nicht} other {# Brevets reichen nicht}}",
+      "pickups": "{count, plural, =0 {Alle abgeholt} one {# nicht abgeholt} other {# nicht abgeholt}}"
+    },
+    "person": {
+      "certShort": "Unter dem Minimum für diesen Platz",
+      "noWaiver": "Erklärung nicht unterschrieben",
+      "medical": "Ärztlicher Hinweis — vor dem Briefing lesen",
+      "notPickedUp": "Nicht abgeholt",
+      "collected": "Abgeholt",
+      "noCert": "Kein Brevet nötig"
+    },
+    "wind": {
+      "title": "Wind über deinem Limit",
+      "body": "{forecast} kn erwartet bei deinem Limit von {limit} kn. Eine Absage erreicht den Zubringer und eröffnet die Erstattungen.",
+      "review": "Folgen der Absage ansehen"
+    },
+    "offline": {
+      "title": "Bereit für die Blue-Hole-Piste",
+      "body": "Zwischen Assalah und dem Rand fällt morgens meist das Netz aus. {vouchers} Voucher, {points} Treffpunkte und {manifests} Listen liegen auf diesem Handy."
+    },
+    "role": {
+      "owner": "Inhaber",
+      "staff": "Guide",
+      "staffLimit": "Finanzen, Preise und Team gehören dem Inhaber. Frag {name}."
+    },
+    "action": {
+      "checkIn": "Einchecken",
+      "openManifest": "Liste öffnen",
+      "message": "Alle anschreiben"
     }
   }
 }

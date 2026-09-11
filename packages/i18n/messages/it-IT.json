@@ -541,5 +541,56 @@
       "forbidden": "Questo account non ha il permesso richiesto da questa schermata.",
       "unauthorized": "Questa console non ha una sessione valida."
     }
+  },
+  "vendor": {
+    "tabs": {
+      "today": "Oggi",
+      "bookings": "Prenotazioni",
+      "services": "Servizi",
+      "more": "Altro"
+    },
+    "today": {
+      "greeting": "Buongiorno, {name}.",
+      "subtitle": "Tre partenze. Una richiede una decisione prima che rinforzi il vento.",
+      "conditions": "Dahab adesso",
+      "next": "Prossime quattro ore",
+      "manifest": "Elenco partecipanti",
+      "seats": "{used} su {total}",
+      "billed": "{capacity} a bordo · {chargeable} addebitati",
+      "guide": "Guida {name}",
+      "nothing": "Per oggi nient’altro."
+    },
+    "outstanding": {
+      "waivers": "{count, plural, =0 {Tutte le liberatorie firmate} one {# liberatoria mancante} other {# liberatorie mancanti}}",
+      "certifications": "{count, plural, =0 {Brevetti a posto} one {# brevetto insufficiente} other {# brevetti insufficienti}}",
+      "pickups": "{count, plural, =0 {Tutti raccolti} one {# non raccolto} other {# non raccolti}}"
+    },
+    "person": {
+      "certShort": "Sotto il minimo per questo sito",
+      "noWaiver": "Liberatoria non firmata",
+      "medical": "Nota medica — leggere prima del briefing",
+      "notPickedUp": "Non raccolto",
+      "collected": "Raccolto",
+      "noCert": "Nessun brevetto richiesto"
+    },
+    "wind": {
+      "title": "Vento oltre il tuo limite",
+      "body": "Previsti {forecast} kt contro il tuo limite di {limit} kt. Annullare tocca il transfer collegato e apre i rimborsi.",
+      "review": "Vedi cosa tocca l’annullamento"
+    },
+    "offline": {
+      "title": "Pronto per la strada del Blue Hole",
+      "body": "Tra Assalah e il bordo il segnale cade quasi ogni mattina. {vouchers} voucher, {points} punti d’incontro e {manifests} elenchi sono su questo telefono."
+    },
+    "role": {
+      "owner": "Titolare",
+      "staff": "Guida",
+      "staffLimit": "Contabilità, prezzi e personale sono del titolare. Chiedi a {name}."
+    },
+    "action": {
+      "checkIn": "Check-in",
+      "openManifest": "Apri elenco",
+      "message": "Scrivi a tutti"
+    }
   }
 }

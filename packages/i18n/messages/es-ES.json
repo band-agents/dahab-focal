@@ -544,5 +544,56 @@
       "forbidden": "Esta cuenta no tiene el permiso que necesita esta pantalla.",
       "unauthorized": "Esta consola no tiene una sesión válida."
     }
+  },
+  "vendor": {
+    "tabs": {
+      "today": "Hoy",
+      "bookings": "Reservas",
+      "services": "Servicios",
+      "more": "Más"
+    },
+    "today": {
+      "greeting": "Buenos días, {name}.",
+      "subtitle": "Tres salidas. Una necesita una decisión antes de que suba el viento.",
+      "conditions": "Dahab ahora",
+      "next": "Próximas cuatro horas",
+      "manifest": "Lista de participantes",
+      "seats": "{used} de {total}",
+      "billed": "{capacity} a bordo · {chargeable} cobrados",
+      "guide": "Guía {name}",
+      "nothing": "Nada más por hoy."
+    },
+    "outstanding": {
+      "waivers": "{count, plural, =0 {Todos los consentimientos firmados} one {# consentimiento pendiente} other {# consentimientos pendientes}}",
+      "certifications": "{count, plural, =0 {Titulaciones correctas} one {# titulación insuficiente} other {# titulaciones insuficientes}}",
+      "pickups": "{count, plural, =0 {Todos recogidos} one {# sin recoger} other {# sin recoger}}"
+    },
+    "person": {
+      "certShort": "Por debajo del mínimo para este punto",
+      "noWaiver": "Consentimiento sin firmar",
+      "medical": "Nota médica — leer antes del briefing",
+      "notPickedUp": "Sin recoger",
+      "collected": "Recogido",
+      "noCert": "No requiere titulación"
+    },
+    "wind": {
+      "title": "Viento por encima de tu límite",
+      "body": "Se prevén {forecast} kt frente a tu límite de {limit} kt. Cancelar alcanza al traslado que la alimenta y abre los reembolsos.",
+      "review": "Ver a qué afecta cancelar"
+    },
+    "offline": {
+      "title": "Listo para la pista del Blue Hole",
+      "body": "Entre Assalah y el borde el móvil se cae casi cada mañana. {vouchers} bonos, {points} puntos de encuentro y {manifests} listas están en este teléfono."
+    },
+    "role": {
+      "owner": "Propietario",
+      "staff": "Guía",
+      "staffLimit": "Finanzas, precios y equipo son del propietario. Pregunta a {name}."
+    },
+    "action": {
+      "checkIn": "Registrar",
+      "openManifest": "Abrir lista",
+      "message": "Escribir a todos"
+    }
   }
 }
