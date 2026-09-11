@@ -10,7 +10,8 @@
       "admin.provider.paymob",
       "admin.provider.paypal",
       "admin.provider.wise",
-      "app.name"
+      "app.name",
+      "traveler.discover.compareCategoryCount"
     ]
   },
   "app": {
@@ -655,5 +656,111 @@
     "earlyBird": "Раннее бронирование",
     "residentRate": "Тариф для резидентов",
     "groupOfFour": "Группа от четырёх"
+  },
+  "category": {
+    "diving": "Дайвинг",
+    "freediving": "Фридайвинг",
+    "snorkeling": "Снорклинг",
+    "boatSea": "Лодка и море",
+    "courses": "Курсы",
+    "kiteWatersports": "Кайт и водные виды спорта",
+    "foodCooking": "Еда и кулинария",
+    "rentals": "Прокат",
+    "desertSafari": "Пустыня и сафари",
+    "bedouinCulture": "Бедуины и культура",
+    "wellnessYoga": "Велнес и йога",
+    "transfers": "Трансферы"
+  },
+  "traveler": {
+    "tabs": {
+      "home": "Главная",
+      "discover": "Открыть",
+      "trips": "Поездки",
+      "account": "Профиль"
+    },
+    "notBuilt": {
+      "title": "Пока не реализовано",
+      "body": "Экран спроектирован, но ещё не запрограммирован — см. docs/HANDOVER.md. Пока работает только вкладка «Открыть»."
+    },
+    "discover": {
+      "title": "Откройте Дахаб",
+      "searchPlaceholder": "Дайвинг, пустыня, кайт — или спросите одной фразой",
+      "recent": "Недавние",
+      "categories": "Категории",
+      "parsedAs": "Понято как",
+      "notUsedYet": "Пока не учтено",
+      "unparsedAmbiguous": "«Два» может значить два погружения или два человека — нажмите, чтобы уточнить.",
+      "unparsedCertification": "О сертификации ничего не сказано, поэтому показаны все уровни.",
+      "resultsMatch": "{count, plural, one {# поездка подходит} few {# поездки подходят} many {# поездок подходят} other {# поездки подходят}}",
+      "showResults": "Показать {count}",
+      "mapView": "Карта",
+      "listView": "Список",
+      "compare": "Сравнить",
+      "compareCount": "{count, plural, one {# характеристика} few {# характеристики} many {# характеристик} other {# характеристики}}",
+      "compareCategoryCount": "{category} · {attributes}",
+      "askBahri": "Спросить Бахри",
+      "chipKind": {
+        "area": "Район",
+        "entry": "Вход",
+        "price": "Цена",
+        "backBefore": "Вернуться до"
+      }
+    },
+    "filters": {
+      "title": "Фильтры",
+      "clearAll": "Сбросить всё"
+    },
+    "filterField": {
+      "entry": "Вход в воду",
+      "depth": "Глубина",
+      "certification": "Сертификация",
+      "duration": "Длительность",
+      "price": "Цена",
+      "included": "Включено"
+    },
+    "sort": {
+      "title": "Сортировка",
+      "earliest": "Раньше по времени",
+      "priceAsc": "Цена, по возрастанию",
+      "rating": "Рейтинг",
+      "closest": "Ближе всего",
+      "fewestDivers": "Меньше дайверов на гида"
+    },
+    "hub": {
+      "tripsCount": "{count, plural, one {# поездка} few {# поездки} many {# поездок} other {# поездки}}",
+      "operatorsCount": "{count, plural, one {# оператор} few {# оператора} many {# операторов} other {# оператора}}",
+      "summary": "{trips} · {operators} · берег и лодка",
+      "sitesThisWeek": "Места на этой неделе",
+      "operatorsTitle": "Операторы",
+      "chip": {
+        "shoreEntry": "Вход с берега",
+        "boat": "Лодка",
+        "nightDive": "Ночное погружение",
+        "nitrox": "Нитрокс",
+        "course": "Курс"
+      },
+      "noFly": "Ваш рейс в {weekday} в {time}. Всё, что забронировано менее чем за 24 часа до этого, попадает в окно запрета полётов после многодневного дайвинга."
+    },
+    "site": {
+      "depthProfile": "Профиль глубины",
+      "saddle": "Седловина",
+      "arch": "Арка",
+      "floor": "Дно",
+      "gateTitle": "{name} требует технической сертификации",
+      "gateBody": "У вас {certification} и {dives, plural, one {# зафиксированное погружение} few {# зафиксированных погружения} many {# зафиксированных погружений} other {# зафиксированных погружения}}. {name} требует тримикс или полный сертификат кейв/техно-дайвинга плюс 100 зафиксированных погружений.",
+      "gateCta": "Что для этого нужно",
+      "tripsHere": "{count, plural, one {# поездка посещает это место} few {# поездки посещают это место} many {# поездок посещают это место} other {# поездки посещают это место}}",
+      "seeTrips": "Смотреть поездки",
+      "meters": "{value, number} м"
+    },
+    "ask": {
+      "title": "Спросить Бахри",
+      "subtitle": "Ответы из данных операторов, а не мнения",
+      "placeholder": "Спросите о Дахабе",
+      "notConnected": "Бахри ещё не подключён к настоящему движку ответов — это пример из дизайна.",
+      "suggestShowBoth": "Показать оба варианта",
+      "suggestWhatsNotIncluded": "Что не включено?",
+      "suggestFreedivingInstead": "Фридайвинг вместо этого"
+    }
   }
 }

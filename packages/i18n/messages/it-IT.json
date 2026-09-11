@@ -16,7 +16,12 @@
       "admin.provider.paypal",
       "admin.provider.wise",
       "app.name",
-      "gallery.stateFocus"
+      "gallery.stateFocus",
+      "traveler.tabs.home",
+      "traveler.tabs.account",
+      "traveler.hub.chip.nitrox",
+      "traveler.discover.compareCategoryCount",
+      "traveler.site.meters"
     ]
   },
   "app": {
@@ -661,5 +666,111 @@
     "earlyBird": "Prenotazione anticipata",
     "residentRate": "Tariffa residenti",
     "groupOfFour": "Gruppo da quattro"
+  },
+  "category": {
+    "diving": "Immersioni",
+    "freediving": "Apnea",
+    "snorkeling": "Snorkeling",
+    "boatSea": "Barca e mare",
+    "courses": "Corsi",
+    "kiteWatersports": "Kite e sport acquatici",
+    "foodCooking": "Cibo e cucina",
+    "rentals": "Noleggio",
+    "desertSafari": "Deserto e safari",
+    "bedouinCulture": "Beduini e cultura",
+    "wellnessYoga": "Benessere e yoga",
+    "transfers": "Trasferimenti"
+  },
+  "traveler": {
+    "tabs": {
+      "home": "Home",
+      "discover": "Scopri",
+      "trips": "Viaggi",
+      "account": "Account"
+    },
+    "notBuilt": {
+      "title": "Non ancora realizzato",
+      "body": "Questa schermata è progettata ma non ancora sviluppata — vedi docs/HANDOVER.md. Scopri è l'unica schermata funzionante per ora."
+    },
+    "discover": {
+      "title": "Scopri Dahab",
+      "searchPlaceholder": "Immersioni, deserto, kite — o chiedi con una frase",
+      "recent": "Recenti",
+      "categories": "Categorie",
+      "parsedAs": "Interpretato come",
+      "notUsedYet": "Non ancora usato",
+      "unparsedAmbiguous": "“Due” potrebbe significare due immersioni o due persone — tocca per scegliere.",
+      "unparsedCertification": "Non è stato detto nulla sul brevetto, quindi sono mostrati tutti i livelli.",
+      "resultsMatch": "{count, plural, one {# viaggio corrisponde} other {# viaggi corrispondono}}",
+      "showResults": "Mostra {count}",
+      "mapView": "Mappa",
+      "listView": "Elenco",
+      "compare": "Confronta",
+      "compareCount": "{count, plural, one {# attributo} other {# attributi}}",
+      "compareCategoryCount": "{category} · {attributes}",
+      "askBahri": "Chiedi a Bahri",
+      "chipKind": {
+        "area": "Zona",
+        "entry": "Ingresso",
+        "price": "Prezzo",
+        "backBefore": "Rientro entro"
+      }
+    },
+    "filters": {
+      "title": "Filtri",
+      "clearAll": "Cancella tutto"
+    },
+    "filterField": {
+      "entry": "Ingresso",
+      "depth": "Profondità",
+      "certification": "Brevetto",
+      "duration": "Durata",
+      "price": "Prezzo",
+      "included": "Incluso"
+    },
+    "sort": {
+      "title": "Ordina",
+      "earliest": "Partenza più presto",
+      "priceAsc": "Prezzo, dal più basso",
+      "rating": "Valutazione",
+      "closest": "Più vicino a te",
+      "fewestDivers": "Meno subacquei per guida"
+    },
+    "hub": {
+      "tripsCount": "{count, plural, one {# viaggio} other {# viaggi}}",
+      "operatorsCount": "{count, plural, one {# operatore} other {# operatori}}",
+      "summary": "{trips} · {operators} · da riva e in barca",
+      "sitesThisWeek": "Siti questa settimana",
+      "operatorsTitle": "Operatori",
+      "chip": {
+        "shoreEntry": "Ingresso da riva",
+        "boat": "Barca",
+        "nightDive": "Immersione notturna",
+        "nitrox": "Nitrox",
+        "course": "Corso"
+      },
+      "noFly": "Il tuo volo è {weekday} alle {time}. Tutto ciò che viene prenotato meno di 24 ore prima rientra nella finestra di divieto di volo dopo immersioni su più giorni."
+    },
+    "site": {
+      "depthProfile": "Profilo di profondità",
+      "saddle": "Sella",
+      "arch": "Arco",
+      "floor": "Fondale",
+      "gateTitle": "{name} richiede un brevetto tecnico",
+      "gateBody": "Hai {certification} con {dives, plural, one {# immersione registrata} other {# immersioni registrate}}. {name} richiede trimix o un brevetto completo cave/tech più 100 immersioni registrate.",
+      "gateCta": "Cosa serve",
+      "tripsHere": "{count, plural, one {# viaggio visita questo sito} other {# viaggi visitano questo sito}}",
+      "seeTrips": "Vedi i viaggi",
+      "meters": "{value, number} m"
+    },
+    "ask": {
+      "title": "Chiedi a Bahri",
+      "subtitle": "Risposte dalle schede degli operatori, non opinioni",
+      "placeholder": "Chiedi qualcosa su Dahab",
+      "notConnected": "Bahri non è ancora collegato a un vero motore di risposte — questa conversazione è un esempio tratto dal design.",
+      "suggestShowBoth": "Mostra entrambi",
+      "suggestWhatsNotIncluded": "Cosa non è incluso?",
+      "suggestFreedivingInstead": "Apnea invece"
+    }
   }
 }

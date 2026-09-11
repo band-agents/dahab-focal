@@ -21,7 +21,12 @@
       "vendor.more.staff",
       "vendor.pricing.simulator",
       "vendor.role.staff",
-      "vendor.today.guide"
+      "vendor.today.guide",
+      "category.transfers",
+      "traveler.site.arch",
+      "traveler.hub.chip.nitrox",
+      "traveler.discover.compareCategoryCount",
+      "traveler.site.meters"
     ]
   },
   "app": {
@@ -666,5 +671,111 @@
     "earlyBird": "Frühbucher",
     "residentRate": "Ansässigen-Tarif",
     "groupOfFour": "Gruppe ab vier"
+  },
+  "category": {
+    "diving": "Tauchen",
+    "freediving": "Freitauchen",
+    "snorkeling": "Schnorcheln",
+    "boatSea": "Boot & Meer",
+    "courses": "Kurse",
+    "kiteWatersports": "Kite & Wassersport",
+    "foodCooking": "Essen & Kochen",
+    "rentals": "Verleih",
+    "desertSafari": "Wüste & Safari",
+    "bedouinCulture": "Beduinen & Kultur",
+    "wellnessYoga": "Wellness & Yoga",
+    "transfers": "Transfers"
+  },
+  "traveler": {
+    "tabs": {
+      "home": "Start",
+      "discover": "Entdecken",
+      "trips": "Reisen",
+      "account": "Konto"
+    },
+    "notBuilt": {
+      "title": "Noch nicht gebaut",
+      "body": "Dieser Tab ist entworfen, aber noch nicht programmiert — siehe docs/HANDOVER.md. Entdecken ist bisher der einzige funktionierende Screen."
+    },
+    "discover": {
+      "title": "Dahab entdecken",
+      "searchPlaceholder": "Tauchen, Wüste, Kite — oder frag in einem Satz",
+      "recent": "Zuletzt gesucht",
+      "categories": "Kategorien",
+      "parsedAs": "Verstanden als",
+      "notUsedYet": "Noch nicht verwendet",
+      "unparsedAmbiguous": "„Zwei“ kann zwei Tauchgänge oder zwei Personen heißen — tippen zum Festlegen.",
+      "unparsedCertification": "Zur Zertifizierung wurde nichts gesagt, daher werden alle Stufen gezeigt.",
+      "resultsMatch": "{count, plural, one {# Tour passt} other {# Touren passen}}",
+      "showResults": "{count} anzeigen",
+      "mapView": "Karte",
+      "listView": "Liste",
+      "compare": "Vergleichen",
+      "compareCount": "{count, plural, one {# Merkmal} other {# Merkmale}}",
+      "compareCategoryCount": "{category} · {attributes}",
+      "askBahri": "Bahri fragen",
+      "chipKind": {
+        "area": "Gebiet",
+        "entry": "Einstieg",
+        "price": "Preis",
+        "backBefore": "Zurück vor"
+      }
+    },
+    "filters": {
+      "title": "Filter",
+      "clearAll": "Alles löschen"
+    },
+    "filterField": {
+      "entry": "Einstieg",
+      "depth": "Tiefe",
+      "certification": "Zertifizierung",
+      "duration": "Dauer",
+      "price": "Preis",
+      "included": "Inklusive"
+    },
+    "sort": {
+      "title": "Sortieren",
+      "earliest": "Früheste Startzeit",
+      "priceAsc": "Preis, aufsteigend",
+      "rating": "Bewertung",
+      "closest": "Nächstgelegen",
+      "fewestDivers": "Wenigste Taucher pro Guide"
+    },
+    "hub": {
+      "tripsCount": "{count, plural, one {# Tour} other {# Touren}}",
+      "operatorsCount": "{count, plural, one {# Anbieter} other {# Anbieter}}",
+      "summary": "{trips} · {operators} · Ufer und Boot",
+      "sitesThisWeek": "Plätze diese Woche",
+      "operatorsTitle": "Anbieter",
+      "chip": {
+        "shoreEntry": "Ufereinstieg",
+        "boat": "Boot",
+        "nightDive": "Nachttauchgang",
+        "nitrox": "Nitrox",
+        "course": "Kurs"
+      },
+      "noFly": "Du fliegst am {weekday} um {time}. Was weniger als 24 Stunden davor gebucht wird, liegt im Flugverbotsfenster für mehrtägiges Tauchen."
+    },
+    "site": {
+      "depthProfile": "Tiefenprofil",
+      "saddle": "Sattel",
+      "arch": "Arch",
+      "floor": "Grund",
+      "gateTitle": "{name} verlangt eine technische Zertifizierung",
+      "gateBody": "Du hast {certification} mit {dives, plural, one {# geloggtem Tauchgang} other {# geloggten Tauchgängen}}. {name} verlangt Trimix oder ein volles Cave/Tech-Brevet plus 100 geloggte Tauchgänge.",
+      "gateCta": "Was dazu fehlt",
+      "tripsHere": "{count, plural, one {# Tour besucht diesen Platz} other {# Touren besuchen diesen Platz}}",
+      "seeTrips": "Touren ansehen",
+      "meters": "{value, number} m"
+    },
+    "ask": {
+      "title": "Bahri fragen",
+      "subtitle": "Antworten aus Anbieter-Angaben, keine Meinungen",
+      "placeholder": "Frag etwas über Dahab",
+      "notConnected": "Bahri ist noch nicht an eine echte Antwort-Engine angeschlossen — dieser Thread ist ein Beispiel aus dem Design.",
+      "suggestShowBoth": "Beide anzeigen",
+      "suggestWhatsNotIncluded": "Was ist nicht inklusive?",
+      "suggestFreedivingInstead": "Stattdessen Freitauchen"
+    }
   }
 }

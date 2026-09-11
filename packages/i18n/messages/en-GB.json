@@ -646,5 +646,111 @@
     "earlyBird": "Early bird",
     "residentRate": "Resident rate",
     "groupOfFour": "Group of four or more"
+  },
+  "category": {
+    "diving": "Diving",
+    "freediving": "Freediving",
+    "snorkeling": "Snorkelling",
+    "boatSea": "Boat & sea",
+    "courses": "Courses",
+    "kiteWatersports": "Kite & watersports",
+    "foodCooking": "Food & cooking",
+    "rentals": "Rentals",
+    "desertSafari": "Desert & safari",
+    "bedouinCulture": "Bedouin & culture",
+    "wellnessYoga": "Wellness & yoga",
+    "transfers": "Transfers"
+  },
+  "traveler": {
+    "tabs": {
+      "home": "Home",
+      "discover": "Discover",
+      "trips": "Trips",
+      "account": "Account"
+    },
+    "notBuilt": {
+      "title": "Not built yet",
+      "body": "This tab is designed but not coded — see docs/HANDOVER.md. Discover is the one working screen so far."
+    },
+    "discover": {
+      "title": "Discover Dahab",
+      "searchPlaceholder": "Dives, desert, kite — or ask in a sentence",
+      "recent": "Recent",
+      "categories": "Categories",
+      "parsedAs": "Read as",
+      "notUsedYet": "Not used yet",
+      "unparsedAmbiguous": "“Two” could mean two dives or two people — tap to choose.",
+      "unparsedCertification": "Nothing said about certification, so all levels are shown.",
+      "resultsMatch": "{count, plural, one {# trip matches} other {# trips match}}",
+      "showResults": "Show {count}",
+      "mapView": "Map",
+      "listView": "List",
+      "compare": "Compare",
+      "compareCount": "{count, plural, one {# attribute} other {# attributes}}",
+      "compareCategoryCount": "{category} · {attributes}",
+      "askBahri": "Ask Bahri",
+      "chipKind": {
+        "area": "Area",
+        "entry": "Entry",
+        "price": "Price",
+        "backBefore": "Back before"
+      }
+    },
+    "filters": {
+      "title": "Filters",
+      "clearAll": "Clear all"
+    },
+    "filterField": {
+      "entry": "Entry",
+      "depth": "Depth",
+      "certification": "Certification",
+      "duration": "Duration",
+      "price": "Price",
+      "included": "Included"
+    },
+    "sort": {
+      "title": "Sort",
+      "earliest": "Earliest start",
+      "priceAsc": "Price, low to high",
+      "rating": "Rating",
+      "closest": "Closest to you",
+      "fewestDivers": "Fewest divers per guide"
+    },
+    "hub": {
+      "tripsCount": "{count, plural, one {# trip} other {# trips}}",
+      "operatorsCount": "{count, plural, one {# operator} other {# operators}}",
+      "summary": "{trips} · {operators} · shore and boat",
+      "sitesThisWeek": "Sites this week",
+      "operatorsTitle": "Operators",
+      "chip": {
+        "shoreEntry": "Shore entry",
+        "boat": "Boat",
+        "nightDive": "Night dive",
+        "nitrox": "Nitrox",
+        "course": "Course"
+      },
+      "noFly": "You fly {weekday}, {time}. Anything booked less than 24 hours before that sits inside the no-fly window for multi-day diving."
+    },
+    "site": {
+      "depthProfile": "Depth profile",
+      "saddle": "Saddle",
+      "arch": "Arch",
+      "floor": "Floor",
+      "gateTitle": "{name} needs technical certification",
+      "gateBody": "You hold {certification} with {dives, plural, one {# logged dive} other {# logged dives}}. {name} asks for trimix or a full cave/tech ticket plus 100 logged dives.",
+      "gateCta": "What it takes",
+      "tripsHere": "{count, plural, one {# trip visits this site} other {# trips visit this site}}",
+      "seeTrips": "See trips",
+      "meters": "{value, number} m"
+    },
+    "ask": {
+      "title": "Ask Bahri",
+      "subtitle": "Answers from operator listings, not opinions",
+      "placeholder": "Ask about Dahab",
+      "notConnected": "Bahri is not wired to a real answer engine yet — this thread is a worked example from the design.",
+      "suggestShowBoth": "Show the two of them",
+      "suggestWhatsNotIncluded": "What is not included?",
+      "suggestFreedivingInstead": "Freediving instead"
+    }
   }
 }

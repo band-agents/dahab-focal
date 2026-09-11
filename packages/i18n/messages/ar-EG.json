@@ -4,7 +4,8 @@
     "source": false,
     "needsTranslation": [],
     "identicalToSource": [
-      "app.name"
+      "app.name",
+      "traveler.discover.compareCategoryCount"
     ]
   },
   "app": {
@@ -649,5 +650,111 @@
     "earlyBird": "حجز مبكر",
     "residentRate": "سعر المقيمين",
     "groupOfFour": "مجموعة من أربعة أو أكتر"
+  },
+  "category": {
+    "diving": "غوص",
+    "freediving": "غوص حر",
+    "snorkeling": "سنوركل",
+    "boatSea": "قوارب وبحر",
+    "courses": "دورات",
+    "kiteWatersports": "كايت ورياضات مائية",
+    "foodCooking": "طعام وطبخ",
+    "rentals": "تأجير",
+    "desertSafari": "صحراء وسفاري",
+    "bedouinCulture": "بدو وثقافة",
+    "wellnessYoga": "صحة ويوجا",
+    "transfers": "مواصلات"
+  },
+  "traveler": {
+    "tabs": {
+      "home": "الرئيسية",
+      "discover": "استكشف",
+      "trips": "رحلاتي",
+      "account": "حسابي"
+    },
+    "notBuilt": {
+      "title": "لسه معملناهوش",
+      "body": "الشاشة دي متصممة بس لسه مش متبرمجة — شوف docs/HANDOVER.md. استكشف هي الشاشة الوحيدة الشغالة دلوقتي."
+    },
+    "discover": {
+      "title": "اكتشف دهب",
+      "searchPlaceholder": "غوص، صحرا، كايت — أو اسأل بجملة",
+      "recent": "آخر البحث",
+      "categories": "الأقسام",
+      "parsedAs": "الفهم",
+      "notUsedYet": "لسه مش مستخدم",
+      "unparsedAmbiguous": "«غطستين» ممكن تعني غطستين أو فردين — اضغط للتحديد.",
+      "unparsedCertification": "مفيش كلام عن الشهادة، فبنعرض كل المستويات.",
+      "resultsMatch": "{count, plural, zero {مفيش رحلات مطابقة} one {رحلة واحدة مطابقة} two {رحلتان مطابقتان} few {# رحلات مطابقة} many {# رحلة مطابقة} other {# رحلة مطابقة}}",
+      "showResults": "اعرض {count}",
+      "mapView": "الخريطة",
+      "listView": "القائمة",
+      "compare": "قارن",
+      "compareCount": "{count, plural, zero {مفيش خصائص} one {خاصية واحدة} two {خاصيتان} few {# خصائص} many {# خاصية} other {# خاصية}}",
+      "compareCategoryCount": "{category} · {attributes}",
+      "askBahri": "اسأل بحري",
+      "chipKind": {
+        "area": "المنطقة",
+        "entry": "الدخول",
+        "price": "السعر",
+        "backBefore": "الرجوع قبل"
+      }
+    },
+    "filters": {
+      "title": "التصفية",
+      "clearAll": "مسح الكل"
+    },
+    "filterField": {
+      "entry": "الدخول",
+      "depth": "العمق",
+      "certification": "الشهادة",
+      "duration": "المدة",
+      "price": "السعر",
+      "included": "مشمول"
+    },
+    "sort": {
+      "title": "الترتيب",
+      "earliest": "الأقرب بدايةً",
+      "priceAsc": "السعر من الأقل",
+      "rating": "التقييم",
+      "closest": "الأقرب لك",
+      "fewestDivers": "أقل عدد لكل مرشد"
+    },
+    "hub": {
+      "tripsCount": "{count, plural, zero {مفيش رحلات} one {رحلة واحدة} two {رحلتان} few {# رحلات} many {# رحلة} other {# رحلة}}",
+      "operatorsCount": "{count, plural, zero {مفيش مراكز} one {مركز واحد} two {مركزان} few {# مراكز} many {# مركز} other {# مركز}}",
+      "summary": "{trips} · {operators} · من الشاطئ والقارب",
+      "sitesThisWeek": "مواقع الأسبوع",
+      "operatorsTitle": "المراكز",
+      "chip": {
+        "shoreEntry": "من الشاطئ",
+        "boat": "قارب",
+        "nightDive": "غوص ليلي",
+        "nitrox": "نيتروكس",
+        "course": "دورة"
+      },
+      "noFly": "رحلتك يوم {weekday} الساعة {time}. أي حجز قبلها بأقل من 24 ساعة يقع داخل نافذة منع الطيران بعد الغوص المتعدد الأيام."
+    },
+    "site": {
+      "depthProfile": "مقطع العمق",
+      "saddle": "السرج",
+      "arch": "القوس",
+      "floor": "القاع",
+      "gateTitle": "{name} يحتاج شهادة تقنية",
+      "gateBody": "معاك {certification} و{dives, plural, zero {مفيش غطسات مسجّلة} one {غطسة واحدة مسجّلة} two {غطستان مسجّلتان} few {# غطسات مسجّلة} many {# غطسة مسجّلة} other {# غطسة مسجّلة}}. {name} يطلب ترايميكس أو رخصة كهوف/تقني كاملة و100 غطسة مسجّلة.",
+      "gateCta": "المطلوب بالتفصيل",
+      "tripsHere": "{count, plural, zero {مفيش رحلات تزور الموقع} one {رحلة واحدة تزور الموقع} two {رحلتان تزوران الموقع} few {# رحلات تزور الموقع} many {# رحلة تزور الموقع} other {# رحلة تزور الموقع}}",
+      "seeTrips": "شوف الرحلات",
+      "meters": "{value, number} م"
+    },
+    "ask": {
+      "title": "اسأل بحري",
+      "subtitle": "إجابات من بيانات المراكز، مش آراء",
+      "placeholder": "اسأل عن دهب",
+      "notConnected": "بحري لسه مش متوصل بمحرك إجابات حقيقي — المحادثة دي مثال من التصميم.",
+      "suggestShowBoth": "اعرض الاتنين",
+      "suggestWhatsNotIncluded": "إيه اللي مش مشمول؟",
+      "suggestFreedivingInstead": "غوص حر بدالها"
+    }
   }
 }
