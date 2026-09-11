@@ -13,13 +13,13 @@ design import). This file continues from there.
 | Surface | State |
 | --- | --- |
 | `apps/admin` — Sky Eye console | Next.js 15, **8 screens**, 1 wired to the API |
-| `apps/vendor` — operator app | Expo, **4 screens**, Arabic-first, role-split |
+| `apps/vendor` — operator app | Expo, **5 screens**, Arabic-first, role-split |
 | `packages/ui-web` | Web component library, marks + 4 primitives |
 | `packages/ui` | The same library for React Native |
 | `packages/tokens` | Now also owns the 55 generated marks |
 | `apps/api` | Database handle + admin router (reads) |
 
-**215 tests across 11 packages.** `pnpm verify` and `pnpm shoot` both pass.
+**228 tests across 11 packages.** `pnpm verify` and `pnpm shoot` both pass.
 
 ### The admin console — `/[locale]` on port 4310
 
@@ -32,7 +32,11 @@ runtime toggle. Light and Night Dive both work.
 
 ### The vendor app — port 4320
 
-V01 Today · V02 Bookings · V03 Services · V05–V07 on More.
+V01 Today · V02 Bookings · V03 Services · V04 Pricing · V05–V07 on More.
+
+V04's simulator calls `computePrice()` from @dahab/api-contract — the same
+function the checkout and the comparison engine call — so what an operator
+sees is what a traveller is charged, with no second implementation to drift.
 
 Driven by URL parameters while there is no auth: `?role=vendorOwner|vendorStaff`,
 `?locale=`, `?theme=`. Arabic is the default, not English.
@@ -124,6 +128,13 @@ Unchanged from `docs/CANVAS-FIXES.md`, minus what section 09 settled:
 - Table row hover and selected states, and a dense-table type role below
   Small 13/20, are drawn as proposals rather than adopted.
 
+## What the i18n catalogue still owes
+
+501 keys across seven locales now, but the taxonomy namespaces FOUNDATION.md
+flagged are only partly closed. `participant.*` exists because the pricing
+engine emits it as a line label. Still missing: `attribute.diving.*`,
+`certLevel.*`, `diveSite.*`, `neighborhood.*`, `category.*` and `gas.*`.
+
 ---
 
 ## Suggested order from here
@@ -136,6 +147,6 @@ Unchanged from `docs/CANVAS-FIXES.md`, minus what section 09 settled:
    including its `DataProblemNotice`: an empty table when the API is down is a
    lie, and "nothing is expiring" is the one wrong answer that board must
    never give.
-5. **V04 Pricing**, the one vendor board not yet started. It needs the
-   priority-order UI that makes rule compounding visible, and it must call
-   `computePrice()` rather than reimplementing it.
+5. **The vendor app's own API wiring.** Like the console, it reads fixtures;
+   `booking.readVendor` and `payout.readOwn` procedures need writing so a
+   vendor session only ever sees its own rows.
