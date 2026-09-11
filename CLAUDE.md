@@ -4,11 +4,15 @@ A services marketplace for Dahab, South Sinai, Egypt. Experiences, not food: div
 freediving, snorkeling, desert safari, kitesurfing, wellness, Bedouin culture, boat
 trips, courses, rentals, transfers, photography.
 
-Three surfaces are planned: the traveler app (Expo), the vendor app (Expo), the admin
-dashboard (Next.js). The traveler app is designed (Board 03 Home approved) and the
-admin console **exists in code** — `apps/admin`, Next.js 15, its Today screen built
-against the real schema. All three share one design system, one token package, one
-i18n package and one API.
+Three surfaces: the traveler app (Expo, designed but not built — Board 03 Home is
+approved), the vendor app (`apps/vendor`, Expo, four screens), and the admin
+console (`apps/admin`, Next.js 15, eight screens). All three share one design
+system, one token package, one i18n package and one API.
+
+**Read `docs/SESSION-ADMIN-VENDOR.md` before touching either dashboard.** It
+records what is real, what is fixtures, and the handful of decisions — semantic
+tokens versus ramp steps, the three i18n entry points, bidi isolation — that are
+invisible until they break something.
 
 ## Non-negotiables
 
