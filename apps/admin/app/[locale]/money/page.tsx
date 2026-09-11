@@ -1,25 +1,36 @@
 import { formatCurrency, formatDate, formatNumber, money } from '@dahab/i18n/server';
-import { DataTable, Mark, Panel, StatusPill } from '@dahab/ui-web';
+import { DataTable, Illo, Panel, StatusPill } from '@dahab/ui-web';
 import type { Column, MarkName, StatusTone } from '@dahab/ui-web';
 
 import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
+import { DataProblemNotice } from '@/components/DataProblemNotice';
+import { api, load } from '@/lib/api';
 import { translator } from '@/lib/i18n';
-import { FX, LEDGER, PAYMENTS, PAYOUTS, RATE_SCALE, entryBalance } from '@/lib/money';
-import type { LedgerEntry, Payment, PaymentStatus, Payout, PayoutStatus } from '@/lib/money';
 
 /**
  * A06 · Money.
  *
  * The ledger is the part that had to be got right. It is double-entry and
  * append-only, corrected by REVERSAL rather than by edit — so this screen has
- * no edit affordance on an entry at all, shows each entry's legs summing to
- * zero, and links a reversal to the entry it reverses in both directions.
+ * no edit affordance on an entry at all, and shows each event's legs summing
+ * to zero rather than asserting that they do.
+ *
+ * Balances lead, because a balance here is a SUM over an account and nothing
+ * else. The eight accounts together come to zero, which is the single number
+ * that says the books are whole; if it ever is not zero, this screen is where
+ * that becomes visible.
  *
  * Payouts state gross, commission, fees and net as four figures rather than
- * one, because an operator querying a payout is querying exactly that gap.
+ * one, because an operator querying a payout is querying exactly that gap —
+ * and all four are read back off the ledger rather than stored beside it.
  */
 
-const PAYMENT_TONE: Record<PaymentStatus, StatusTone> = {
+type Balance = Awaited<ReturnType<typeof api.admin.ledgerBalances.query>>[number];
+type Payment = Awaited<ReturnType<typeof api.admin.payments.query>>[number];
+type Payout = Awaited<ReturnType<typeof api.admin.payouts.query>>[number];
+type LedgerEvent = Awaited<ReturnType<typeof api.admin.ledger.query>>[number];
+
+const PAYMENT_TONE: Record<string, StatusTone> = {
   initiated: 'neutral',
   pending: 'warning',
   authorized: 'info',
@@ -31,7 +42,7 @@ const PAYMENT_TONE: Record<PaymentStatus, StatusTone> = {
   chargeback: 'danger',
 };
 
-const PAYOUT_TONE: Record<PayoutStatus, StatusTone> = {
+const PAYOUT_TONE: Record<string, StatusTone> = {
   scheduled: 'info',
   processing: 'warning',
   paid: 'success',
@@ -48,22 +59,76 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
   const t = translator(locale);
   const context = { locale } as const;
 
-  const cash = (amount: { amountMinor: number; currency: 'EGP' }) =>
-    formatCurrency(money(amount.amountMinor, amount.currency), context);
+  const [balances, payouts, ledger, payments] = await Promise.all([
+    load(() => api.admin.ledgerBalances.query()),
+    load(() => api.admin.payouts.query()),
+    load(() => api.admin.ledger.query({ limit: 12 })),
+    load(() => api.admin.payments.query({ limit: 40 })),
+  ]);
+
+  const cash = (amountMinor: number, currency: Balance['currency']) =>
+    formatCurrency(money(amountMinor, currency), context);
+
+  // The whole-books figure. Every group was written balanced, so this is
+  // zero — and it is computed here rather than trusted, because the day it
+  // stops being zero is the day it matters most.
+  const wholeLedger = balances.ok
+    ? balances.data.reduce((total, row) => total + row.balanceMinor, 0)
+    : null;
+
+  const balanceColumns: readonly Column<Balance>[] = [
+    {
+      key: 'account',
+      header: t('admin.col5.account'),
+      cell: (row) => (
+        <span className="block">
+          <span className="block text-body text-text">{t(`admin.account.${row.account}`)}</span>
+          <span className="block font-mono text-caption text-text-muted">{row.account}</span>
+        </span>
+      ),
+    },
+    {
+      key: 'legs',
+      header: t('admin.col5.legs'),
+      numeric: true,
+      width: '8rem',
+      cell: (row) => formatNumber(row.legs, context),
+    },
+    {
+      key: 'balance',
+      header: t('admin.col5.balance'),
+      numeric: true,
+      width: '14rem',
+      cell: (row) => (
+        <span className="font-display tabular-nums text-text">
+          {cash(row.balanceMinor, row.currency)}
+        </span>
+      ),
+    },
+  ];
 
   const paymentColumns: readonly Column<Payment>[] = [
     {
       key: 'ref',
       header: t('admin.col4.ref'),
       width: '8rem',
-      cell: (row) => <span className="font-mono text-small text-text">{row.bookingRef}</span>,
+      cell: (row) => <span className="font-mono text-small text-text">{row.bookingReference}</span>,
     },
-    { key: 'traveler', header: t('admin.col4.traveler'), cell: (row) => row.traveler },
     {
       key: 'provider',
       header: t('admin.col5.provider'),
-      cell: (row) => t(`admin.provider.${row.provider}`),
-      width: '10rem',
+      cell: (row) => (
+        <span className="block">
+          <span className="block text-body text-text">{t(`admin.provider.${row.provider}`)}</span>
+          {row.providerReference === null ? null : (
+            // The provider's own reference, because reconciling against their
+            // statement is the only reason this row is on the screen.
+            <span className="block font-mono text-caption text-text-muted">
+              {row.providerReference}
+            </span>
+          )}
+        </span>
+      ),
     },
     {
       key: 'at',
@@ -76,7 +141,10 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
       header: t('admin.col.status'),
       width: '13rem',
       cell: (row) => (
-        <StatusPill tone={PAYMENT_TONE[row.status]} mark={toneMark(PAYMENT_TONE[row.status])}>
+        <StatusPill
+          tone={PAYMENT_TONE[row.status] ?? 'neutral'}
+          mark={toneMark(PAYMENT_TONE[row.status] ?? 'neutral')}
+        >
           {t(`admin.paymentStatus.${row.status}`)}
         </StatusPill>
       ),
@@ -86,43 +154,70 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
       header: t('admin.col4.total'),
       numeric: true,
       width: '10rem',
-      cell: (row) => cash(row.amount),
+      cell: (row) => cash(row.amountMinor, row.currency),
     },
   ];
 
   const payoutColumns: readonly Column<Payout>[] = [
-    { key: 'vendor', header: t('admin.col.vendor'), cell: (row) => row.vendor, width: '14rem' },
+    { key: 'vendor', header: t('admin.col.vendor'), cell: (row) => row.vendorName, width: '14rem' },
     {
       key: 'provider',
       header: t('admin.col5.provider'),
       cell: (row) => t(`admin.provider.${row.provider}`),
-      width: '10rem',
+      width: '9rem',
     },
     {
-      key: 'due',
-      header: t('admin.col5.due'),
-      cell: (row) => formatDate(new Date(`${row.due}T00:00:00Z`), context, 'date'),
-      width: '11rem',
+      key: 'period',
+      header: t('admin.money.period'),
+      width: '13rem',
+      cell: (row) => (
+        <span className="text-small text-text-muted">
+          {formatDate(new Date(row.periodStart), context, 'dateShort')} —{' '}
+          {formatDate(new Date(row.periodEnd), context, 'dateShort')}
+        </span>
+      ),
     },
     {
       key: 'status',
       header: t('admin.col.status'),
       width: '11rem',
       cell: (row) => (
-        <StatusPill tone={PAYOUT_TONE[row.status]} mark={toneMark(PAYOUT_TONE[row.status])}>
+        <StatusPill
+          tone={PAYOUT_TONE[row.status] ?? 'neutral'}
+          mark={toneMark(PAYOUT_TONE[row.status] ?? 'neutral')}
+        >
           {t(`admin.payoutStatus.${row.status}`)}
         </StatusPill>
       ),
     },
-    { key: 'gross', header: t('admin.money.gross'), numeric: true, cell: (row) => cash(row.gross) },
+    {
+      key: 'gross',
+      header: t('admin.money.gross'),
+      numeric: true,
+      cell: (row) => cash(row.grossMinor, row.currency),
+    },
     {
       key: 'commission',
       header: t('admin.money.commission'),
       numeric: true,
-      cell: (row) => cash(row.commission),
+      cell: (row) => cash(row.commissionMinor, row.currency),
     },
-    { key: 'fees', header: t('admin.money.fees'), numeric: true, cell: (row) => cash(row.fees) },
-    { key: 'net', header: t('admin.money.net'), numeric: true, cell: (row) => cash(row.net) },
+    {
+      key: 'fees',
+      header: t('admin.money.fees'),
+      numeric: true,
+      cell: (row) => cash(row.feesMinor, row.currency),
+    },
+    {
+      key: 'net',
+      header: t('admin.money.net'),
+      numeric: true,
+      cell: (row) => (
+        <span className="font-display tabular-nums text-text">
+          {cash(row.netMinor, row.currency)}
+        </span>
+      ),
+    },
   ];
 
   return (
@@ -132,95 +227,146 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
       title={t('admin.money.title')}
       subtitle={t('admin.money.subtitle')}
       headerEnd={
+        // No exchange-rate feed is wired up, so no rate is shown. A stale or
+        // invented EUR/EGP rate on the money screen would be quoted at a
+        // counter in Masbat within a week.
         <span className="flex flex-col items-end rounded-lg bg-info-surface px-4 py-2">
           <span className="text-caption text-text-muted">{t('admin.money.fxTitle')}</span>
-          <span className="font-display text-h3 tabular-nums text-text">
-            {FX.pair} {formatNumber(FX.rateScaled / RATE_SCALE, context, {
-              minimumFractionDigits: 1,
-              maximumFractionDigits: 2,
-            })}
-          </span>
+          <span className="text-small text-text">{t('admin.money.noFxSource')}</span>
         </span>
       }
     >
       <div className="flex flex-col gap-8">
-        <Panel title={t('admin.money.payouts')} mark="shell" flush>
-          <p className="px-6 pb-3 text-small text-text-muted">{t('admin.money.payoutsSub')}</p>
-          <DataTable
-            columns={payoutColumns}
-            rows={PAYOUTS}
-            rowKey={(row) => row.id}
-            density="compact"
-            caption={t('admin.money.payouts')}
-          />
-        </Panel>
+        {!balances.ok ? (
+          <DataProblemNotice problem={balances.problem} t={t} title={t('admin.money.balances')} />
+        ) : (
+          <Panel
+            title={t('admin.money.balances')}
+            mark="compass"
+            flush
+            action={
+              <StatusPill
+                tone={wholeLedger === 0 ? 'success' : 'danger'}
+                mark={wholeLedger === 0 ? 'eco' : 'sos'}
+              >
+                {wholeLedger === 0 ? t('admin.money.balanced') : t('admin.money.unbalanced')}
+              </StatusPill>
+            }
+          >
+            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.money.balancesSub')}</p>
+            <DataTable
+              columns={balanceColumns}
+              rows={balances.data}
+              rowKey={(row) => row.account}
+              density="compact"
+              caption={t('admin.money.balances')}
+              empty={<p className="text-body text-text-muted">{t('admin.money.noLedger')}</p>}
+            />
+          </Panel>
+        )}
 
-        <Panel title={t('admin.money.ledger')} mark="weave" flush>
-          <p className="px-6 pb-4 text-small text-text-muted">{t('admin.money.ledgerSub')}</p>
-          <div className="flex flex-col">
-            {LEDGER.map((entry: LedgerEntry) => {
-              const balance = entryBalance(entry);
-              return (
-                <article key={entry.id} className="border-t border-border px-6 py-4">
-                  <header className="flex flex-wrap items-baseline justify-between gap-3">
-                    <span className="flex items-baseline gap-3">
-                      <span className="font-mono text-small text-text">{entry.id}</span>
-                      <span className="text-body text-text">{entry.narrative}</span>
-                    </span>
-                    <span className="flex items-center gap-3">
-                      <span className="text-small text-text-muted">
-                        {formatDate(new Date(entry.at), context, 'dateTime')}
-                      </span>
-                      {/* Balance is shown, not assumed. A ledger that says it
-                          balances without proving it is worth nothing. */}
-                      <StatusPill
-                        tone={balance === 0 ? 'success' : 'danger'}
-                        mark={balance === 0 ? 'eco' : 'sos'}
-                      >
-                        {balance === 0 ? t('admin.money.balanced') : t('admin.money.unbalanced')}
-                      </StatusPill>
-                    </span>
-                  </header>
+        {!payouts.ok ? (
+          <DataProblemNotice problem={payouts.problem} t={t} title={t('admin.money.payouts')} />
+        ) : (
+          <Panel title={t('admin.money.payouts')} mark="shell" flush>
+            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.money.payoutsSub')}</p>
+            <DataTable
+              columns={payoutColumns}
+              rows={payouts.data}
+              rowKey={(row) => row.id}
+              density="compact"
+              caption={t('admin.money.payouts')}
+              empty={<p className="text-body text-text-muted">{t('admin.money.noPayouts')}</p>}
+            />
+          </Panel>
+        )}
 
-                  {entry.reverses === undefined && entry.reversedBy === undefined ? null : (
-                    <p className="mt-2 flex items-center gap-2 text-small text-info-text">
-                      <Mark name="compass" size={16} noFlip />
-                      {entry.reverses === undefined
-                        ? t('admin.money.reversedBy', { id: entry.reversedBy })
-                        : t('admin.money.reverses', { id: entry.reverses })}
-                    </p>
-                  )}
+        {!ledger.ok ? (
+          <DataProblemNotice problem={ledger.problem} t={t} title={t('admin.money.ledger')} />
+        ) : (
+          <Panel title={t('admin.money.ledger')} mark="weave" flush>
+            <p className="px-6 pb-4 text-small text-text-muted">{t('admin.money.ledgerSub')}</p>
+            {ledger.data.length === 0 ? (
+              <div className="flex items-center gap-4 px-6 pb-6">
+                <Illo name="coralFan" size={56} />
+                <p className="text-body text-text-muted">{t('admin.money.noLedger')}</p>
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                {ledger.data.map((event) => (
+                  <LedgerCard key={event.entryGroupId} event={event} t={t} context={context} />
+                ))}
+              </div>
+            )}
+          </Panel>
+        )}
 
-                  <ul className="mt-3 flex flex-col gap-1">
-                    {entry.legs.map((leg) => (
-                      <li
-                        key={leg.id}
-                        className="flex items-baseline justify-between gap-4 rounded-sm bg-bg px-3 py-2"
-                      >
-                        <span className="text-small text-text">
-                          {t(`admin.account.${leg.account}`)}
-                        </span>
-                        <span className="font-display text-small tabular-nums text-text">
-                          {cash({ amountMinor: leg.amountMinor, currency: 'EGP' })}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              );
-            })}
-          </div>
-        </Panel>
-
-        <Panel title={t('admin.money.payments')} mark="pass" flush>
-          <DataTable
-            columns={paymentColumns}
-            rows={PAYMENTS}
-            rowKey={(row) => row.id}
-            caption={t('admin.money.payments')}
-          />
-        </Panel>
+        {!payments.ok ? (
+          <DataProblemNotice problem={payments.problem} t={t} title={t('admin.money.payments')} />
+        ) : (
+          <Panel title={t('admin.money.payments')} mark="pass" flush>
+            <DataTable
+              columns={paymentColumns}
+              rows={payments.data}
+              rowKey={(row) => row.id}
+              caption={t('admin.money.payments')}
+              empty={<p className="text-body text-text-muted">{t('admin.money.noPayments')}</p>}
+            />
+          </Panel>
+        )}
       </div>
     </ConsolePage>
+  );
+}
+
+function LedgerCard({
+  event,
+  t,
+  context,
+}: {
+  event: LedgerEvent;
+  t: ReturnType<typeof translator>;
+  context: { locale: ReturnType<typeof resolveLocale> };
+}) {
+  const balance = event.legs.reduce((total, leg) => total + leg.amountMinor, 0);
+
+  return (
+    <article className="border-t border-border px-6 py-4">
+      <header className="flex flex-wrap items-baseline justify-between gap-3">
+        <span className="flex items-baseline gap-3">
+          {/* The group id, shortened. It is a UUID v7, so the leading bytes
+              still sort by time and are enough to find the row. */}
+          <span className="font-mono text-small text-text">{event.entryGroupId.slice(0, 8)}</span>
+          <span className="text-body text-text">{t(`admin.event.${event.eventKind}`)}</span>
+          {event.bookingReference === null ? null : (
+            <span className="font-mono text-small text-text-muted">{event.bookingReference}</span>
+          )}
+        </span>
+        <span className="flex items-center gap-3">
+          <span className="text-small text-text-muted">
+            {formatDate(new Date(event.occurredAt), context, 'dateTime')}
+          </span>
+          {/* Balance is shown, not assumed. A ledger that says it balances
+              without proving it is worth nothing. */}
+          <StatusPill tone={balance === 0 ? 'success' : 'danger'} mark={balance === 0 ? 'eco' : 'sos'}>
+            {balance === 0 ? t('admin.money.balanced') : t('admin.money.unbalanced')}
+          </StatusPill>
+        </span>
+      </header>
+
+      <ul className="mt-3 flex flex-col gap-1">
+        {event.legs.map((leg) => (
+          <li
+            key={leg.id}
+            className="flex items-baseline justify-between gap-4 rounded-sm bg-bg px-3 py-2"
+          >
+            <span className="text-small text-text">{t(`admin.account.${leg.account}`)}</span>
+            <span className="font-display text-small tabular-nums text-text">
+              {formatCurrency(money(leg.amountMinor, leg.currency), context)}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </article>
   );
 }

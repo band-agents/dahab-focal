@@ -35,6 +35,18 @@ export const SECTIONS: readonly Section[] = [
  * one is ever removed or gated behind a flag. */
 export const BUILT = new Set(SECTIONS.map((section) => section.key));
 
+/**
+ * The route for a section named by key, for links that are not the rail.
+ *
+ * A "view all" on one screen points at another section, and pointing at it by
+ * key rather than by a hand-written path means a moved section moves both.
+ */
+export function sectionHref(locale: Locale, key: string): Route {
+  const section = SECTIONS.find((candidate) => candidate.key === key);
+  if (section === undefined) throw new Error(`No console section named "${key}"`);
+  return hrefFor(locale, section);
+}
+
 export function hrefFor(locale: Locale, section: Section): Route {
   const href = section.path === '' ? `/${locale}` : `/${locale}/${section.path}`;
   // typedRoutes cannot see through the locale segment, but the paths come from
