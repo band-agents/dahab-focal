@@ -5,6 +5,7 @@ import type { Column } from '@dahab/ui-web';
 import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
 import { api, load } from '@/lib/api';
+import { BANDS, BAND_LABEL, bandFor } from '@/lib/expiry';
 import { translator } from '@/lib/i18n';
 
 /**
@@ -23,41 +24,12 @@ import { translator } from '@/lib/i18n';
  * answer this particular screen must never give.
  */
 
-type Band = 'expired' | 'within7' | 'within30' | 'within90';
-
-const BANDS: readonly Band[] = ['expired', 'within7', 'within30', 'within90'];
-
-const BAND_LABEL: Record<Band, string> = {
-  expired: 'admin.expiry.expired',
-  within7: 'admin.expiry.within7',
-  within30: 'admin.expiry.within30',
-  within90: 'admin.expiry.within90',
-};
-
 /**
  * Inferred from the API rather than restated here. A local interface would be
  * a second copy of the contract, and the two would drift the first time a
  * column moved.
  */
 type ExpiringDocument = Awaited<ReturnType<typeof api.admin.expiring.query>>[number];
-
-const MS_PER_DAY = 86_400_000;
-
-/**
- * Which band a date falls in, measured in whole UTC days. Egypt observes DST,
- * so nothing here does arithmetic in local time.
- */
-function bandFor(expiresOn: string | null, now: Date): Band | null {
-  if (expiresOn === null) return null;
-  const due = Date.parse(`${expiresOn}T00:00:00Z`);
-  const today = Date.parse(`${now.toISOString().slice(0, 10)}T00:00:00Z`);
-  const days = Math.round((due - today) / MS_PER_DAY);
-  if (days < 0) return 'expired';
-  if (days <= 7) return 'within7';
-  if (days <= 30) return 'within30';
-  if (days <= 90) return 'within90';
-  return null;
-}
 
 export default async function ExpiryPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: raw } = await params;
