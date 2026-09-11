@@ -49,16 +49,11 @@ const documentSchema = z.object({
   type: z.string(),
   status: z.enum(['pending', 'inReview', 'verified', 'rejected', 'expired']),
   expiresOn: z.string().nullable(),
-  /**
-   * SCHEMA GAP: `vendor_documents` records the document number and the date
-   * it was issued, but not the issuing BODY — which the console's verification
-   * queue wants to show ("South Sinai Governorate", "CDWS"). Returned as null
-   * until the column exists rather than derived from the type, which would be
-   * a guess dressed as data.
-   */
   issuer: z.string().nullable(),
   documentNumber: z.string().nullable(),
   issuedOn: z.string().nullable(),
+  /** Whether a lapse stops the operator trading, not merely warns them. */
+  blocksPublishing: z.boolean(),
 });
 
 export const adminRouter = router({
@@ -131,6 +126,8 @@ export const adminRouter = router({
           expiresOn: schema.vendorDocuments.expiresOn,
           documentNumber: schema.vendorDocuments.documentNumber,
           issuedOn: schema.vendorDocuments.issuedOn,
+          issuer: schema.vendorDocuments.issuer,
+          blocksPublishing: schema.vendorDocuments.blocksPublishing,
         })
         .from(schema.vendorDocuments)
         .innerJoin(schema.vendors, eq(schema.vendors.id, schema.vendorDocuments.vendorId))
@@ -169,6 +166,8 @@ export const adminRouter = router({
           expiresOn: schema.vendorDocuments.expiresOn,
           documentNumber: schema.vendorDocuments.documentNumber,
           issuedOn: schema.vendorDocuments.issuedOn,
+          issuer: schema.vendorDocuments.issuer,
+          blocksPublishing: schema.vendorDocuments.blocksPublishing,
         })
         .from(schema.vendorDocuments)
         .innerJoin(schema.vendors, eq(schema.vendors.id, schema.vendorDocuments.vendorId))
@@ -258,13 +257,7 @@ export const adminRouter = router({
           actor: z.string().nullable(),
           action: z.string(),
           entity: z.string(),
-          /**
-           * SCHEMA GAP: `audit_log` carries beforeJson/afterJson but no
-           * dedicated reason column, and the console's design requires a
-           * consequential action to record why. Read out of afterJson where a
-           * writer put one there, null otherwise — and the column is worth
-           * adding rather than relying on that convention.
-           */
+          /** Why the actor did it. The counterweight to admin holding every permission. */
           reason: z.string().nullable(),
         }),
       ),
@@ -283,7 +276,7 @@ export const adminRouter = router({
         actor: row.actorLabel ?? row.actorUserId,
         action: row.action,
         entity: `${row.entityTable}:${row.entityId}`,
-        reason: typeof row.afterJson?.['reason'] === 'string' ? row.afterJson['reason'] : null,
+        reason: row.reason,
       }));
     }),
 });
@@ -297,6 +290,8 @@ function toDocument(row: {
   expiresOn: string | null;
   documentNumber: string | null;
   issuedOn: string | null;
+  issuer: string | null;
+  blocksPublishing: boolean;
 }) {
   return {
     id: row.id,
@@ -305,8 +300,9 @@ function toDocument(row: {
     type: row.type,
     status: row.status,
     expiresOn: row.expiresOn,
-    issuer: null,
+    issuer: row.issuer,
     documentNumber: row.documentNumber,
     issuedOn: row.issuedOn,
+    blocksPublishing: row.blocksPublishing,
   };
 }

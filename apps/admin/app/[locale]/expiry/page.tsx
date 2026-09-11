@@ -59,19 +59,6 @@ function bandFor(expiresOn: string | null, now: Date): Band | null {
   return null;
 }
 
-/**
- * Which lapses stop an operator running. The db does not model this, so it is
- * derived from the document type here and flagged: it belongs on
- * `vendor_document_type` as a property, not in a console's head.
- */
-const BLOCKING_TYPES = new Set([
-  'operatingPermit',
-  'cdwsLicence',
-  'publicLiabilityInsurance',
-  'boatLicence',
-  'vehicleLicence',
-]);
-
 export default async function ExpiryPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: raw } = await params;
   const locale = resolveLocale(raw);
@@ -94,6 +81,9 @@ export default async function ExpiryPage({ params }: { params: Promise<{ locale:
       cell: (row) => (
         <span className="block">
           <span className="block text-body text-text">{t(`admin.docType.${row.type}`)}</span>
+          {row.issuer === null ? null : (
+            <span className="block text-small text-text-muted">{row.issuer}</span>
+          )}
           {row.documentNumber === null ? null : (
             <span className="block font-mono text-caption text-text-muted">
               {row.documentNumber}
@@ -116,7 +106,7 @@ export default async function ExpiryPage({ params }: { params: Promise<{ locale:
       header: t('admin.col.status'),
       width: '16rem',
       cell: (row) =>
-        BLOCKING_TYPES.has(row.type) ? (
+        row.blocksPublishing ? (
           <StatusPill tone="danger" mark="sos">
             {t('admin.expiry.blocks')}
           </StatusPill>
@@ -158,7 +148,7 @@ export default async function ExpiryPage({ params }: { params: Promise<{ locale:
                   </div>
                 ) : (
                   <>
-                    {rows.some((row) => BLOCKING_TYPES.has(row.type)) ? (
+                    {rows.some((row) => row.blocksPublishing) ? (
                       <p className="flex items-center gap-2 px-6 pb-3 text-small text-text-muted">
                         <Mark name="noFly" size={16} />
                         {t('admin.expiryPage.blocksNote')}
