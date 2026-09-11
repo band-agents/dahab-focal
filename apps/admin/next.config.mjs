@@ -18,7 +18,5 @@ export default {
   async redirects() {
     return [{ source: '/', destination: '/en-GB', permanent: false }];
   },
-  experimental: {
-    typedRoutes: true,
-  },
+  typedRoutes: true,
 };
