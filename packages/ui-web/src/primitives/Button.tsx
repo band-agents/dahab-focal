@@ -12,7 +12,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 import { Mark } from '../marks/Mark';
-import type { MarkName } from '../marks/data';
+import type { MarkName } from '@dahab/tokens/marks';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 

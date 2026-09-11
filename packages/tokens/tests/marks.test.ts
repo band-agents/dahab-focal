@@ -3,8 +3,8 @@ import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
 
-import { CATEGORY_MARKS, ILLOS, MARKS } from '@dahab/tokens/marks';
-import type { MarkGlyph } from '@dahab/tokens/marks';
+import { CATEGORY_MARKS, ILLOS, MARKS } from '../src/marks';
+import type { MarkGlyph } from '../src/marks';
 
 /**
  * The marks are generated from the design board, so these tests guard the
@@ -15,7 +15,7 @@ import type { MarkGlyph } from '@dahab/tokens/marks';
 
 const tokens = JSON.parse(
   readFileSync(
-    fileURLToPath(new URL('../../tokens/tokens.json', import.meta.url)),
+    fileURLToPath(new URL('../tokens.json', import.meta.url)),
     'utf8',
   ),
 ) as { color: Record<string, Record<string, { value: string }>> };
@@ -93,7 +93,7 @@ describe('tints are tokens, never hexes', () => {
 
   it('keeps the generated module free of hex literals', () => {
     const source = readFileSync(
-      fileURLToPath(new URL('../src/marks/data.ts', import.meta.url)),
+      fileURLToPath(new URL('../src/marks.ts', import.meta.url)),
       'utf8',
     );
     expect(source).not.toMatch(/#[0-9a-fA-F]{6}\b/);

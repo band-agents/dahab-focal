@@ -8,7 +8,7 @@
 import type { ReactNode } from 'react';
 
 import { Mark } from '../marks/Mark';
-import type { MarkName } from '../marks/data';
+import type { MarkName } from '@dahab/tokens/marks';
 
 export interface PanelProps {
   readonly children: ReactNode;
