@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
 
-import { createDatabase, type Database } from '../client';
+import { createDatabase, type Database } from '../client.ts';
 import {
   attributeDefinitions,
   categories,
@@ -8,9 +8,9 @@ import {
   neighborhoods,
   users,
   vendors,
-} from '../schema/index';
-import { CATEGORY_ATTRIBUTES } from './attributes';
-import { CATEGORIES, DIVE_SITES, NEIGHBORHOODS, VENDORS } from './dahab';
+} from '../schema/index.ts';
+import { CATEGORY_ATTRIBUTES } from './attributes.ts';
+import { CATEGORIES, DIVE_SITES, NEIGHBORHOODS, VENDORS } from './dahab.ts';
 
 /**
  * `pnpm db:seed`.

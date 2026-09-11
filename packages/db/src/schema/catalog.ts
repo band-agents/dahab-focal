@@ -15,7 +15,7 @@ import {
   type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 
-import { vendors } from './vendors';
+import { vendors } from './vendors.ts';
 import {
   attributeDataTypeEnum,
   deletedAt,
@@ -23,7 +23,7 @@ import {
   primaryId,
   serviceStatusEnum,
   timestamps,
-} from './_shared';
+} from './_shared.ts';
 
 /**
  * CATALOG.

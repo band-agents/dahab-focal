@@ -22,7 +22,7 @@ import {
   themeEnum,
   timestamps,
   verificationStatusEnum,
-} from './_shared';
+} from './_shared.ts';
 
 /** IDENTITY — who the traveler is, and what they are qualified to do. */
 

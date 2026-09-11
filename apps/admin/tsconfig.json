@@ -1,6 +1,7 @@
 {
   "extends": "@dahab/config/tsconfig/next.json",
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "paths": {
       "@/*": ["./*"]
     }

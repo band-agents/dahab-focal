@@ -15,10 +15,10 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-import { services } from './catalog';
-import { resources } from './vendors';
-import { serviceVariants } from './options';
-import { primaryId, timestamps } from './_shared';
+import { services } from './catalog.ts';
+import { resources } from './vendors.ts';
+import { serviceVariants } from './options.ts';
+import { primaryId, timestamps } from './_shared.ts';
 
 /**
  * AVAILABILITY.

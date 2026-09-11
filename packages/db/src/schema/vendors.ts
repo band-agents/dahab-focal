@@ -14,14 +14,14 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-import { users } from './identity';
+import { users } from './identity.ts';
 import {
   deletedAt,
   geographyPoint,
   primaryId,
   timestamps,
   verificationStatusEnum,
-} from './_shared';
+} from './_shared.ts';
 
 /**
  * VENDORS — the operators, their people, their kit, and every document that

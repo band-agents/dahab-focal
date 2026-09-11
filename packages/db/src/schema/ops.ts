@@ -13,10 +13,10 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-import { bookings } from './booking';
-import { users } from './identity';
-import { vendors } from './vendors';
-import { moneyAmount, moneyCurrency, primaryId, timestamps } from './_shared';
+import { bookings } from './booking.ts';
+import { users } from './identity.ts';
+import { vendors } from './vendors.ts';
+import { moneyAmount, moneyCurrency, primaryId, timestamps } from './_shared.ts';
 
 /** OPS — the things that go wrong, and the record of who did what. */
 
