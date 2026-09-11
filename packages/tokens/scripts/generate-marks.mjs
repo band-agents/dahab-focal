@@ -112,8 +112,9 @@ const out = `/**
  *
  * Construction, which the <Mark> component enforces: a 100-unit viewBox, the
  * silhouette filled in its family tint and offset +4/+4 down-right, and the
- * ink-line path stroked over it. Abstract marks (sea, wind, weave, reef, depth,
- * coral fan) carry no silhouette, so their \`shape\` is empty.
+ * ink-line path stroked over it. Abstract marks (sea, wind, reef, depth, palm,
+ * offline, coral fan) carry no silhouette, so their \`shape\` is empty.
+ * \`weave\` is NOT abstract: it is the Bedouin divider, a filled diamond.
  */
 
 /** A shape token name; resolves to \`var(--color-<name>)\`. */

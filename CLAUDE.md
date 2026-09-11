@@ -9,6 +9,10 @@ approved), the vendor app (`apps/vendor`, Expo, four screens), and the admin
 console (`apps/admin`, Next.js 15, eight screens). All three share one design
 system, one token package, one i18n package and one API.
 
+**New here? Read `docs/HANDOVER.md` first.** It is the whole project in one
+file — history, architecture, the exact design values, every bug already
+produced, what is real versus fixtures, and the one open blocker.
+
 **Read `docs/SESSION-ADMIN-VENDOR.md` before touching either dashboard.** It
 records what is real, what is fixtures, and the handful of decisions — semantic
 tokens versus ramp steps, the three i18n entry points, bidi isolation — that are
