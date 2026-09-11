@@ -20,7 +20,9 @@ const API_URL = process.env['DAHAB_API_URL'] ?? 'http://127.0.0.1:4000';
 export const api: TRPCClient<AppRouter> = createTRPCClient<AppRouter>({
   links: [
     httpBatchLink({
-      url: `${API_URL}/trpc`,
+      // The standalone adapter in apps/api serves procedures at the root, so
+      // `health` is `/health` and stays a usable uptime URL. No `/trpc` prefix.
+      url: API_URL,
       headers: () => {
         const token = process.env['DAHAB_ADMIN_TOKEN'];
         return token === undefined ? {} : { authorization: `Bearer ${token}` };
