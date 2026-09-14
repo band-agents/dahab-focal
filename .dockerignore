@@ -1,0 +1,29 @@
+# Everything the image builds for itself, or must never contain.
+node_modules
+**/node_modules
+.git
+.turbo
+**/.turbo
+**/.next
+**/.expo
+**/dist
+**/build
+**/coverage
+**/*.tsbuildinfo
+
+# Secrets. `.env` is gitignored too, but a Dockerfile copies from the working
+# directory rather than from git — so it has to be excluded here as well or a
+# local .env is baked into a published image.
+.env
+.env.*
+!.env.example
+
+# Not needed to run the API.
+apps/admin
+apps/gallery
+apps/traveler
+apps/vendor
+packages/tokens
+packages/ui
+packages/ui-web
+docs
