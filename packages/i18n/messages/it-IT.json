@@ -9,12 +9,14 @@
       "admin.col5.provider",
       "admin.cond.wind",
       "admin.console",
+      "admin.documentReview.of",
       "admin.provider.fawry",
       "admin.provider.instapay",
       "admin.provider.kashier",
       "admin.provider.paymob",
       "admin.provider.paypal",
       "admin.provider.wise",
+      "admin.serviceReview.of",
       "admin.signIn.email",
       "admin.signIn.password",
       "app.name",
@@ -378,7 +380,8 @@
       "seats": "{used} di {total} posti",
       "chargeableNote": "Neonati e istruttori accompagnatori occupano un posto senza essere addebitati: lista e fattura non coincidono mai.",
       "noRisk": "Nessuna partenza supera il limite di vento dell’operatore.",
-      "none": "Ancora nessuna prenotazione."
+      "none": "Ancora nessuna prenotazione.",
+      "noneTomorrow": "Domani non esce nulla."
     },
     "cascade": {
       "bookings": "Prenotazioni annullate",
@@ -605,7 +608,37 @@
       "noSelfServe": "Gli account li crea un amministratore della piattaforma. Non c’è registrazione."
     },
     "signOut": "Esci",
-    "signedInAs": "Accesso come {email}"
+    "signedInAs": "Accesso come {email}",
+    "review": {
+      "reason": "Motivo",
+      "reasonHint": "Registrato a tuo nome. Un rifiuto arriva all’operatore per intero.",
+      "close": "Non ora",
+      "outcome": {
+        "done": "Fatto, e registrato nel log di audit.",
+        "conflict": "Qualcun altro è arrivato prima. La tabella qui sotto è aggiornata.",
+        "refused": "Questo account non può farlo.",
+        "failed": "Non è andata a buon fine. Nulla è stato modificato."
+      }
+    },
+    "documentReview": {
+      "title": "Esamina questo documento",
+      "verify": "Verifica",
+      "reject": "Rifiuta",
+      "of": "{type} · {vendor}"
+    },
+    "serviceReview": {
+      "title": "Esamina questo annuncio",
+      "publish": "Pubblica",
+      "reject": "Rifiuta",
+      "of": "{title} · {vendor}",
+      "missing": "{count, plural, =0 {Tutti gli attributi confrontabili sono compilati} one {# attributo confrontabile mancante} other {# attributi confrontabili mancanti}}"
+    },
+    "cancelReview": {
+      "title": "Annulla questa partenza",
+      "confirm": "Annulla la partenza",
+      "warning": "Rimborsa {refunds, plural, one {# prenotazione} other {# prenotazioni}} e ne libera {releases, plural, one {# altra} other {# altre}}. Da qui non si torna indietro.",
+      "reasonHint": "Registrato a tuo nome, e inviato all’operatore e a tutti i prenotati."
+    }
   },
   "vendor": {
     "tabs": {

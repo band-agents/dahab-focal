@@ -4,6 +4,8 @@
     "source": false,
     "needsTranslation": [],
     "identicalToSource": [
+      "admin.documentReview.of",
+      "admin.serviceReview.of",
       "app.name",
       "traveler.discover.compareCategoryCount"
     ]
@@ -349,7 +351,8 @@
       "seats": "{used} من {total} مقعد",
       "chargeableNote": "الرضّع والمدربون المرافقون بياخدوا مقعد من غير ما يتحاسبوا، فكشف الركاب والفاتورة عمرهم ما بيتطابقوا.",
       "noRisk": "مفيش رحلة فوق حد الرياح بتاع المشغّل.",
-      "none": "مفيش حجوزات لسه."
+      "none": "مفيش حجوزات لسه.",
+      "noneTomorrow": "مفيش أي رحلة بكرة."
     },
     "cascade": {
       "bookings": "حجوزات هتتلغي",
@@ -576,7 +579,37 @@
       "noSelfServe": "الحسابات بيعملها مسؤول المنصة. مفيش تسجيل ذاتي."
     },
     "signOut": "خروج",
-    "signedInAs": "داخل باسم {email}"
+    "signedInAs": "داخل باسم {email}",
+    "review": {
+      "reason": "السبب",
+      "reasonHint": "بيتسجّل باسمك. والرفض بيوصل للمركز بنصّه.",
+      "close": "مش دلوقتي",
+      "outcome": {
+        "done": "تمام، واتسجّل في سجل التدقيق.",
+        "conflict": "حد تاني سبقك. اللوحة تحت محدّثة.",
+        "refused": "الحساب ده مش مسموح له بده.",
+        "failed": "العملية مامشيتش. مفيش حاجة اتغيّرت."
+      }
+    },
+    "documentReview": {
+      "title": "راجع الورقة دي",
+      "verify": "اعتماد",
+      "reject": "رفض",
+      "of": "{type} · {vendor}"
+    },
+    "serviceReview": {
+      "title": "راجع الخدمة دي",
+      "publish": "نشر",
+      "reject": "رفض",
+      "of": "{title} · {vendor}",
+      "missing": "{count, plural, =0 {كل الخصائص المقارَنة متملّية} zero {كل الخصائص المقارَنة متملّية} one {خاصية مقارَنة واحدة ناقصة} two {خاصيتين مقارَنة ناقصين} few {# خصائص مقارَنة ناقصة} many {# خاصية مقارَنة ناقصة} other {# خاصية مقارَنة ناقصة}}"
+    },
+    "cancelReview": {
+      "title": "إلغاء الرحلة دي",
+      "confirm": "ألغِ الرحلة",
+      "warning": "ده هيرجّع فلوس {refunds, plural, zero {# حجز} one {حجز واحد} two {حجزين} few {# حجوزات} many {# حجز} other {# حجز}} ويفكّ {releases, plural, zero {# كمان} one {واحد كمان} two {اتنين كمان} few {# كمان} many {# كمان} other {# كمان}}. ومش هينفع يترجع من هنا.",
+      "reasonHint": "بيتسجّل باسمك، وبيوصل للمركز ولكل اللي حاجزين."
+    }
   },
   "vendor": {
     "tabs": {

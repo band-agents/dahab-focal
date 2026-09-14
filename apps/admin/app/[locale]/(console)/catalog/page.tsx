@@ -1,9 +1,14 @@
-import { formatDate, formatNumber } from '@dahab/i18n/server';
-import { Button, DataTable, Illo, Mark, Panel, StatusPill } from '@dahab/ui-web';
+import Link from 'next/link';
+import type { Route } from 'next';
+
+import { formatDate, formatNumber, isolate } from '@dahab/i18n/server';
+import { DataTable, Illo, Mark, Panel, StatusPill } from '@dahab/ui-web';
 import type { Column, StatusTone } from '@dahab/ui-web';
 
 import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
+import { OutcomeNotice, ReviewPanel } from '@/components/ReviewPanel';
+import { reviewService } from '@/lib/actions';
 import { api, load } from '@/lib/api';
 import { translator } from '@/lib/i18n';
 
@@ -41,8 +46,15 @@ const SERVICE_TONE: Record<QueueItem['status'], StatusTone> = {
 /** The category whose attribute set this screen manages. */
 const DIVING = 'scuba-diving';
 
-export default async function CatalogPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function CatalogPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ review?: string; outcome?: string }>;
+}) {
   const { locale: raw } = await params;
+  const { review, outcome } = await searchParams;
   const locale = resolveLocale(raw);
   const t = translator(locale);
   const context = { locale } as const;
@@ -116,16 +128,22 @@ export default async function CatalogPage({ params }: { params: Promise<{ locale
       key: 'action',
       header: t('admin.action.review'),
       width: '9rem',
-      // Inert until the writes pass: publishing a listing is a decision with a
-      // reason and an audit row behind it, and a button that does none of
-      // those is worse than one that is not there yet.
-      cell: () => (
-        <Button variant="secondary" disabled>
+      // A link. Publishing is what puts a listing in front of travellers, so
+      // it happens in the review panel with a reason attached, never from a
+      // button sitting in a table row.
+      cell: (row) => (
+        <Link
+          href={`/${locale}/catalog?review=${row.id}` as Route}
+          className="inline-flex min-h-11 items-center rounded-input border border-border-strong bg-surface px-4 font-ui text-body text-text hover:bg-surface-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+        >
           {t('admin.action.review')}
-        </Button>
+        </Link>
       ),
     },
   ];
+
+  const reviewing =
+    queue.ok && review !== undefined ? queue.data.find((row) => row.id === review) : undefined;
 
   const attributeColumns: readonly Column<Attribute>[] = [
     {
@@ -228,6 +246,42 @@ export default async function CatalogPage({ params }: { params: Promise<{ locale
           <Mark name="compass" size={20} noFlip className="mt-1 shrink-0" />
           {t('admin.catalog.dataAsData')}
         </p>
+
+        {outcome === undefined ? null : <OutcomeNotice outcome={outcome} t={t} />}
+
+        {reviewing === undefined ? null : (
+          <ReviewPanel
+            t={t}
+            title={t('admin.serviceReview.title')}
+            mark="compass"
+            summary={
+              <span className="block">
+                <span className="block font-display text-h3 text-text">
+                  {t('admin.serviceReview.of', {
+                    title: isolate(reviewing.title),
+                    vendor: isolate(reviewing.vendorName),
+                  })}
+                </span>
+                {/*
+                  The unanswered comparable count is the one fact that should
+                  change a decision here: a listing published with gaps is a
+                  listing that cannot be compared, which is the product's
+                  whole premise.
+                */}
+                <span className="mt-1 block text-small text-text-muted">
+                  {t('admin.serviceReview.missing', { count: reviewing.missingComparable })}
+                </span>
+              </span>
+            }
+            action={reviewService}
+            hidden={{ locale, serviceId: reviewing.id }}
+            approve={{ value: 'published', label: t('admin.serviceReview.publish'), mark: 'eco' }}
+            reject={{ value: 'rejected', label: t('admin.serviceReview.reject'), mark: 'sos' }}
+            reasonLabel={t('admin.review.reason')}
+            reasonHint={t('admin.review.reasonHint')}
+            closeHref={`/${locale}/catalog` as Route}
+          />
+        )}
 
         {!queue.ok ? (
           <DataProblemNotice problem={queue.problem} t={t} title={t('admin.catalog.queue')} />

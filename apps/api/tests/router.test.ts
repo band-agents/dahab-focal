@@ -221,3 +221,74 @@ describe('the console sign-in', () => {
     await expect(caller.auth.signOut()).resolves.toEqual({ ok: true });
   });
 });
+
+describe('the console writes are scoped to the platform, not to a vendor', () => {
+  /**
+   * The bug this pins: `catalog.publish` and `booking.manageVendor` are held
+   * by vendor owners over their own catalogue and their own boats. Gating the
+   * console's review queue and its weather cancellation on those would have
+   * let any owner publish any operator's listing and cancel any operator's
+   * departure. The `*Any` forms exist for exactly that distinction.
+   */
+  const vendorOwner = () =>
+    createCaller(
+      createTestContext({
+        session: session({ roles: ['vendorOwner'], vendorId: '018f3a4b-0000-7000-8000-00000000000a' as never }),
+      }),
+    );
+
+  it('refuses a vendor owner the review queue', async () => {
+    await expect(
+      vendorOwner().admin.reviewService({
+        serviceId: '018f3a4b-0000-7000-8000-0000000000ff',
+        decision: 'published',
+        reason: 'Looks fine to me.',
+      }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+  });
+
+  it('refuses a vendor owner the cancellation cascade', async () => {
+    await expect(
+      vendorOwner().admin.cancelDeparture({
+        slotId: '018f3a4b-0000-7000-8000-0000000000fe',
+        reason: 'Wind is up this morning.',
+      }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+  });
+
+  it('refuses a vendor owner the verification queue', async () => {
+    await expect(
+      vendorOwner().admin.reviewDocument({
+        documentId: '018f3a4b-0000-7000-8000-0000000000fd',
+        decision: 'verified',
+        reason: 'Checked the register.',
+      }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+  });
+
+  it('requires a reason long enough to be a sentence', async () => {
+    // An admin holds every permission; recording why is the counterweight.
+    // A one-word reason in an audit log is the same as no audit log.
+    const admin = createCaller(createTestContext({ session: session({ roles: ['admin'] }) }));
+    await expect(
+      admin.admin.reviewDocument({
+        documentId: '018f3a4b-0000-7000-8000-0000000000fd',
+        decision: 'rejected',
+        reason: 'no',
+      }),
+    ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
+  });
+
+  it('reaches the database check only once the permission and the reason pass', async () => {
+    // Which is also how we know the order is right: authorisation and
+    // validation before anything touches a row.
+    const admin = createCaller(createTestContext({ session: session({ roles: ['admin'] }) }));
+    await expect(
+      admin.admin.reviewDocument({
+        documentId: '018f3a4b-0000-7000-8000-0000000000fd',
+        decision: 'rejected',
+        reason: 'The scan is unreadable below the fold.',
+      }),
+    ).rejects.toMatchObject({ code: 'PRECONDITION_FAILED' });
+  });
+});

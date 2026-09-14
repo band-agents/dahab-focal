@@ -10,6 +10,7 @@
       "admin.col5.actor",
       "admin.cond.wind",
       "admin.console",
+      "admin.documentReview.of",
       "admin.party.instructor",
       "admin.provider.fawry",
       "admin.provider.instapay",
@@ -17,24 +18,25 @@
       "admin.provider.paymob",
       "admin.provider.paypal",
       "admin.provider.wise",
+      "admin.serviceReview.of",
       "app.name",
+      "diveSite.blueHole",
+      "diveSite.eelGarden",
+      "diveSite.elCanyon",
+      "diveSite.gabrElBint",
+      "diveSite.lighthouse",
+      "diveSite.rasAbuGalum",
+      "diveSite.theArch",
+      "diveSite.theBells",
+      "diveSite.theIslands",
+      "diveSite.threePools",
+      "diveSite.ummSid",
       "gallery.stateError",
       "price.total",
-      "vendor.pricing.total",
-      "traveler.hub.chip.nitrox",
       "traveler.discover.compareCategoryCount",
+      "traveler.hub.chip.nitrox",
       "traveler.site.meters",
-      "diveSite.blueHole",
-      "diveSite.theBells",
-      "diveSite.theArch",
-      "diveSite.elCanyon",
-      "diveSite.threePools",
-      "diveSite.eelGarden",
-      "diveSite.lighthouse",
-      "diveSite.gabrElBint",
-      "diveSite.rasAbuGalum",
-      "diveSite.theIslands",
-      "diveSite.ummSid"
+      "vendor.pricing.total"
     ]
   },
   "app": {
@@ -378,7 +380,8 @@
       "seats": "{used} de {total} plazas",
       "chargeableNote": "Los bebés y los instructores acompañantes ocupan plaza sin cobrarse, así que la lista y la factura nunca coinciden.",
       "noRisk": "Ninguna salida supera el límite de viento del operador.",
-      "none": "Aún no hay reservas."
+      "none": "Aún no hay reservas.",
+      "noneTomorrow": "Mañana no sale nada."
     },
     "cascade": {
       "bookings": "Reservas canceladas",
@@ -605,7 +608,37 @@
       "noSelfServe": "Las cuentas las crea un administrador de la plataforma. No hay registro."
     },
     "signOut": "Salir",
-    "signedInAs": "Sesión iniciada como {email}"
+    "signedInAs": "Sesión iniciada como {email}",
+    "review": {
+      "reason": "Motivo",
+      "reasonHint": "Se registra a tu nombre. Un rechazo le llega íntegro al operador.",
+      "close": "Ahora no",
+      "outcome": {
+        "done": "Hecho, y anotado en el registro de auditoría.",
+        "conflict": "Alguien se te adelantó. La tabla de abajo ya está al día.",
+        "refused": "Esta cuenta no puede hacer eso.",
+        "failed": "No salió adelante. No se cambió nada."
+      }
+    },
+    "documentReview": {
+      "title": "Revisar este documento",
+      "verify": "Verificar",
+      "reject": "Rechazar",
+      "of": "{type} · {vendor}"
+    },
+    "serviceReview": {
+      "title": "Revisar esta ficha",
+      "publish": "Publicar",
+      "reject": "Rechazar",
+      "of": "{title} · {vendor}",
+      "missing": "{count, plural, =0 {Todos los atributos comparables están completos} one {# atributo comparable sin completar} other {# atributos comparables sin completar}}"
+    },
+    "cancelReview": {
+      "title": "Cancelar esta salida",
+      "confirm": "Cancelar la salida",
+      "warning": "Esto reembolsa {refunds, plural, one {# reserva} other {# reservas}} y libera {releases, plural, one {# más} other {# más}}. Desde aquí no tiene vuelta atrás.",
+      "reasonHint": "Se registra a tu nombre y se envía al operador y a todas las personas con reserva."
+    }
   },
   "vendor": {
     "tabs": {

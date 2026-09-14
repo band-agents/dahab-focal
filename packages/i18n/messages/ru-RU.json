@@ -4,12 +4,14 @@
     "source": false,
     "needsTranslation": [],
     "identicalToSource": [
+      "admin.documentReview.of",
       "admin.provider.fawry",
       "admin.provider.instapay",
       "admin.provider.kashier",
       "admin.provider.paymob",
       "admin.provider.paypal",
       "admin.provider.wise",
+      "admin.serviceReview.of",
       "app.name",
       "traveler.discover.compareCategoryCount"
     ]
@@ -355,7 +357,8 @@
       "seats": "{used} из {total} мест",
       "chargeableNote": "Младенцы и сопровождающие инструкторы занимают место, но не оплачиваются, поэтому список и счёт никогда не совпадают.",
       "noRisk": "Ни один выход не превышает ветровой предел оператора.",
-      "none": "Бронирований пока нет."
+      "none": "Бронирований пока нет.",
+      "noneTomorrow": "Завтра выходов нет."
     },
     "cascade": {
       "bookings": "Отменено броней",
@@ -582,7 +585,37 @@
       "noSelfServe": "Учётные записи создаёт администратор платформы. Самостоятельной регистрации нет."
     },
     "signOut": "Выйти",
-    "signedInAs": "Вы вошли как {email}"
+    "signedInAs": "Вы вошли как {email}",
+    "review": {
+      "reason": "Причина",
+      "reasonHint": "Записывается на ваше имя. Отказ отправляется оператору целиком.",
+      "close": "Не сейчас",
+      "outcome": {
+        "done": "Готово, записано в журнал аудита.",
+        "conflict": "Кто-то успел раньше. Таблица ниже уже обновлена.",
+        "refused": "У этой учётной записи нет такого права.",
+        "failed": "Не прошло. Ничего не изменилось."
+      }
+    },
+    "documentReview": {
+      "title": "Проверить документ",
+      "verify": "Подтвердить",
+      "reject": "Отклонить",
+      "of": "{type} · {vendor}"
+    },
+    "serviceReview": {
+      "title": "Проверить объявление",
+      "publish": "Опубликовать",
+      "reject": "Отклонить",
+      "of": "{title} · {vendor}",
+      "missing": "{count, plural, =0 {Все сравнимые характеристики заполнены} one {# сравнимая характеристика не заполнена} few {# сравнимые характеристики не заполнены} many {# сравнимых характеристик не заполнено} other {# сравнимых характеристик не заполнено}}"
+    },
+    "cancelReview": {
+      "title": "Отменить выход",
+      "confirm": "Отменить выход",
+      "warning": "Будет возвращена оплата по {refunds, plural, one {# брони} few {# броням} many {# броням} other {# броням}} и освобождено ещё {releases, plural, one {#} few {#} many {#} other {#}}. Отсюда это не отменить.",
+      "reasonHint": "Записывается на ваше имя и отправляется оператору и всем, кто забронировал."
+    }
   },
   "vendor": {
     "tabs": {

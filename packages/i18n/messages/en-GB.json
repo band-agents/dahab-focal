@@ -345,7 +345,8 @@
       "seats": "{used} of {total} seats",
       "chargeableNote": "Infants and accompanying instructors hold a seat without being charged, so the manifest and the invoice never match.",
       "noRisk": "No departure is above its operator’s wind limit.",
-      "none": "No bookings yet."
+      "none": "No bookings yet.",
+      "noneTomorrow": "Nothing is going out tomorrow."
     },
     "cascade": {
       "bookings": "Bookings cancelled",
@@ -572,7 +573,37 @@
       "noSelfServe": "Accounts are created by a platform administrator. There is no sign-up."
     },
     "signOut": "Sign out",
-    "signedInAs": "Signed in as {email}"
+    "signedInAs": "Signed in as {email}",
+    "review": {
+      "reason": "Reason",
+      "reasonHint": "Recorded against your name. A rejection is sent to the operator in full.",
+      "close": "Not now",
+      "outcome": {
+        "done": "Done, and recorded in the audit log.",
+        "conflict": "Someone else got there first. The board below is up to date.",
+        "refused": "This account is not allowed to do that.",
+        "failed": "That did not go through. Nothing was changed."
+      }
+    },
+    "documentReview": {
+      "title": "Review this document",
+      "verify": "Verify",
+      "reject": "Reject",
+      "of": "{type} · {vendor}"
+    },
+    "serviceReview": {
+      "title": "Review this listing",
+      "publish": "Publish",
+      "reject": "Reject",
+      "of": "{title} · {vendor}",
+      "missing": "{count, plural, =0 {Every comparable attribute answered} one {# comparable attribute unanswered} other {# comparable attributes unanswered}}"
+    },
+    "cancelReview": {
+      "title": "Cancel this departure",
+      "confirm": "Cancel the departure",
+      "warning": "This refunds {refunds, plural, one {# booking} other {# bookings}} and releases {releases, plural, one {# more} other {# more}}. It cannot be undone from here.",
+      "reasonHint": "Recorded against your name, and sent to the operator and everyone booked."
+    }
   },
   "vendor": {
     "tabs": {

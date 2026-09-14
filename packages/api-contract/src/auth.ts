@@ -21,6 +21,15 @@ export const permissionSchema = z.enum([
   'catalog.read',
   'catalog.write',
   'catalog.publish',
+  /**
+   * Publish or reject **anyone's** listing, from the console's review queue.
+   *
+   * Separate from `catalog.publish`, which a vendor owner holds over their own
+   * catalogue. Gating the console's review on the vendor-scoped one would have
+   * let any owner publish any operator's service — the same distinction as
+   * `vendor.readOwn` against `vendor.readAny`, and for the same reason.
+   */
+  'catalog.publishAny',
   'booking.createOwn',
   'booking.readOwn',
   'booking.cancelOwn',
@@ -33,6 +42,13 @@ export const permissionSchema = z.enum([
    * console's bookings, money and cancellation screens all need the second.
    */
   'booking.readAny',
+  /**
+   * Cancel or amend **anyone's** departure. The platform-side counterpart to
+   * `booking.manageVendor`: a weather cancellation run from the console
+   * reaches an operator's boat, so it cannot be gated on the permission that
+   * operator holds over their own.
+   */
+  'booking.manageAny',
   /**
    * The safety record across every operator. Separate from the booking
    * permissions because an incident outlives the booking it came from, and

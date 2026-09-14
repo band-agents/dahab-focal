@@ -16,6 +16,7 @@
       "admin.col5.site",
       "admin.console",
       "admin.dataType.date",
+      "admin.documentReview.of",
       "admin.expiry.count",
       "admin.money.commission",
       "admin.money.net",
@@ -26,26 +27,27 @@
       "admin.provider.paymob",
       "admin.provider.paypal",
       "admin.provider.wise",
+      "admin.serviceReview.of",
       "app.name",
+      "diveSite.blueHole",
+      "diveSite.eelGarden",
+      "diveSite.elCanyon",
+      "diveSite.gabrElBint",
+      "diveSite.lighthouse",
+      "diveSite.rasAbuGalum",
+      "diveSite.theArch",
+      "diveSite.theBells",
+      "diveSite.theIslands",
+      "diveSite.threePools",
+      "diveSite.ummSid",
       "gallery.stateFocus",
       "price.total",
-      "vendor.pricing.total",
-      "vendor.today.guide",
-      "traveler.hub.chip.nitrox",
       "traveler.discover.compareCategoryCount",
       "traveler.filterField.certification",
+      "traveler.hub.chip.nitrox",
       "traveler.site.meters",
-      "diveSite.blueHole",
-      "diveSite.theBells",
-      "diveSite.theArch",
-      "diveSite.elCanyon",
-      "diveSite.threePools",
-      "diveSite.eelGarden",
-      "diveSite.lighthouse",
-      "diveSite.gabrElBint",
-      "diveSite.rasAbuGalum",
-      "diveSite.theIslands",
-      "diveSite.ummSid"
+      "vendor.pricing.total",
+      "vendor.today.guide"
     ]
   },
   "app": {
@@ -389,7 +391,8 @@
       "seats": "{used} sur {total} places",
       "chargeableNote": "Les nourrissons et les moniteurs accompagnants occupent une place sans être facturés : la liste et la facture ne coïncident jamais.",
       "noRisk": "Aucun départ ne dépasse la limite de vent de l’opérateur.",
-      "none": "Aucune réservation pour l’instant."
+      "none": "Aucune réservation pour l’instant.",
+      "noneTomorrow": "Rien ne part demain."
     },
     "cascade": {
       "bookings": "Réservations annulées",
@@ -616,7 +619,37 @@
       "noSelfServe": "Les comptes sont créés par un administrateur de la plateforme. Il n’y a pas d’inscription."
     },
     "signOut": "Se déconnecter",
-    "signedInAs": "Connecté en tant que {email}"
+    "signedInAs": "Connecté en tant que {email}",
+    "review": {
+      "reason": "Motif",
+      "reasonHint": "Enregistré à votre nom. Un refus est transmis intégralement à l’opérateur.",
+      "close": "Pas maintenant",
+      "outcome": {
+        "done": "Fait, et consigné dans le journal d’audit.",
+        "conflict": "Quelqu’un est passé avant vous. Le tableau ci-dessous est à jour.",
+        "refused": "Ce compte n’a pas le droit de faire cela.",
+        "failed": "Cela n’a pas abouti. Rien n’a été modifié."
+      }
+    },
+    "documentReview": {
+      "title": "Examiner ce document",
+      "verify": "Valider",
+      "reject": "Refuser",
+      "of": "{type} · {vendor}"
+    },
+    "serviceReview": {
+      "title": "Examiner cette annonce",
+      "publish": "Publier",
+      "reject": "Refuser",
+      "of": "{title} · {vendor}",
+      "missing": "{count, plural, =0 {Tous les attributs comparables sont renseignés} one {# attribut comparable non renseigné} other {# attributs comparables non renseignés}}"
+    },
+    "cancelReview": {
+      "title": "Annuler ce départ",
+      "confirm": "Annuler le départ",
+      "warning": "Cela rembourse {refunds, plural, one {# réservation} other {# réservations}} et en libère {releases, plural, one {# autre} other {# autres}}. C’est irréversible depuis ici.",
+      "reasonHint": "Enregistré à votre nom, et transmis à l’opérateur et à toutes les personnes inscrites."
+    }
   },
   "vendor": {
     "tabs": {

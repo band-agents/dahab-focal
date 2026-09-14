@@ -9,6 +9,7 @@ import { LOCALES, SOURCE_LOCALE } from '@dahab/i18n';
 import type { CurrencyCode } from '@dahab/i18n';
 
 import { requirePermission, router } from '../trpc.ts';
+import { adminWritesRouter } from './admin-writes.ts';
 import type { Context } from '../context.ts';
 
 /**
@@ -1525,6 +1526,11 @@ export const adminRouter = router({
         };
       });
     }),
+
+  // The writes live in their own file: every one of them requires a reason,
+  // runs in a transaction and leaves an audit row, and keeping those three
+  // rules in one place is what stops a fourth write being added without them.
+  ...adminWritesRouter,
 });
 
 // --- Shared shapes and small helpers -------------------------------------

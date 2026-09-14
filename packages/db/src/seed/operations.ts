@@ -47,23 +47,18 @@ export type SeedBookingStatus =
   | 'refunded'
   | 'disputed';
 
-/** Egypt keeps a 12% take rate. Basis points, so it never becomes a float. */
-export const TAKE_RATE_BASIS_POINTS = 1200;
-
-/** What the payment providers keep. Also basis points, also never a float. */
-export const PAYMENT_FEE_BASIS_POINTS = 250;
-
-const BASIS_POINTS = 10_000;
-
-/** The platform's cut of a gross amount, rounded to whole piastres. */
-export function commissionMinor(grossMinor: number): number {
-  return Math.round((grossMinor * TAKE_RATE_BASIS_POINTS) / BASIS_POINTS);
-}
-
-/** The provider's cut of a captured amount, rounded to whole piastres. */
-export function paymentFeeMinor(grossMinor: number): number {
-  return Math.round((grossMinor * PAYMENT_FEE_BASIS_POINTS) / BASIS_POINTS);
-}
+/**
+ * The take rate and the provider fee moved to @dahab/api-contract, where the
+ * refund path and the money screen read the same constants. Re-exported here
+ * so every call site in the seed keeps working and there is still exactly one
+ * definition.
+ */
+export {
+  PAYMENT_FEE_BASIS_POINTS,
+  TAKE_RATE_BASIS_POINTS,
+  commissionMinor,
+  paymentFeeMinor,
+} from '@dahab/api-contract';
 
 // --- Cairo wall clock -----------------------------------------------------
 

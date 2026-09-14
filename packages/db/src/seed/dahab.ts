@@ -354,7 +354,15 @@ export const SEED_TODAY = new Date();
  */
 export function inDays(days: number): string {
   const date = new Date(SEED_TODAY.getTime() + days * 86_400_000);
-  return date.toISOString().slice(0, 10);
+  // The Cairo calendar day, not the UTC one.
+  //
+  // `local_date` is a Cairo date and every board filters it against a Cairo
+  // date. `toISOString()` gives the UTC day, which between 22:00 UTC and
+  // midnight is the *previous* Cairo day — so seeding late in the evening
+  // wrote the whole operating week one day early and the console's "today"
+  // showed yesterday's boats. `en-CA` formats as YYYY-MM-DD, which is the
+  // shape the column holds.
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo' }).format(date);
 }
 
 export interface SeedVendorDocument {

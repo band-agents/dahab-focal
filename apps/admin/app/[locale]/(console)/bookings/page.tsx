@@ -7,6 +7,8 @@ import type { Column, MarkName, StatusTone } from '@dahab/ui-web';
 
 import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
+import { OutcomeNotice } from '@/components/ReviewPanel';
+import { cancelDeparture } from '@/lib/actions';
 import { api, load } from '@/lib/api';
 import { translator } from '@/lib/i18n';
 import { sectionHref } from '@/lib/nav';
@@ -82,10 +84,10 @@ export default async function BookingsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ slot?: string }>;
+  searchParams: Promise<{ slot?: string; outcome?: string }>;
 }) {
   const { locale: raw } = await params;
-  const { slot: requestedSlot } = await searchParams;
+  const { slot: requestedSlot, outcome } = await searchParams;
   const locale = resolveLocale(raw);
   const t = translator(locale);
   const context = { locale } as const;
@@ -187,6 +189,8 @@ export default async function BookingsPage({
       subtitle={t('admin.bookings.subtitle')}
     >
       <div className="flex flex-col gap-8">
+        {outcome === undefined ? null : <OutcomeNotice outcome={outcome} t={t} />}
+
         {/*
           Not a warning panel. The design's version was headed "wind above
           this operator's limit", and no forecast reaches this console — so
@@ -228,7 +232,7 @@ export default async function BookingsPage({
             ) : upcoming.data.length === 0 ? (
               <div className="mt-4 flex items-center gap-4">
                 <Illo name="dhow" size={56} />
-                <p className="text-body text-text-muted">{t('admin.today.noDepartures')}</p>
+                <p className="text-body text-text-muted">{t('admin.bookings.noneTomorrow')}</p>
               </div>
             ) : (
               <>
@@ -377,17 +381,51 @@ function Cascade({
         {t('admin.cascade.releasedNote')}
       </p>
 
-      <div className="mt-5 flex items-center gap-3">
-        {/* Inert until the writes pass. A cancellation moves money and
-            messages people; a button that does neither would be a lie about
-            what this screen can do. */}
-        <Button variant="primary" mark="wind" disabled>
-          {t('admin.bookings.commit')}
-        </Button>
-        <Button variant="secondary" disabled>
-          {t('admin.bookings.keep')}
-        </Button>
-      </div>
+      {/*
+        The reason sits inside the same form as the commit, below the cascade
+        it is a reason for. An operator types it having just read what the
+        cancellation touches, which is the order that makes the sentence worth
+        keeping — and the one that ends up in the audit log and in the refund.
+      */}
+      <form action={cancelDeparture} className="mt-5 flex flex-col gap-4">
+        <input type="hidden" name="locale" value={context.locale} />
+        <input type="hidden" name="slotId" value={preview.slot.id} />
+
+        <p className="flex items-start gap-2 rounded-lg bg-warning-surface p-4 font-ui text-small text-warning-text">
+          <Mark name="sos" size={20} className="mt-0.5 shrink-0" />
+          {t('admin.cancelReview.warning', {
+            refunds: preview.refunds.length,
+            releases: preview.releases.length,
+          })}
+        </p>
+
+        <label className="flex flex-col gap-2">
+          <span className="font-ui text-small text-text">{t('admin.review.reason')}</span>
+          <textarea
+            name="reason"
+            required
+            minLength={8}
+            maxLength={2000}
+            rows={3}
+            className="w-full rounded-input border border-border-strong bg-surface p-4 font-ui text-body text-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+          />
+          <span className="text-caption text-text-muted">
+            {t('admin.cancelReview.reasonHint')}
+          </span>
+        </label>
+
+        <div className="flex items-center gap-3">
+          <Button type="submit" variant="primary" mark="wind">
+            {t('admin.bookings.commit')}
+          </Button>
+          <Link
+            href={sectionHref(context.locale, 'bookings')}
+            className="inline-flex min-h-11 items-center rounded-input px-4 font-ui text-body text-text-link focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+          >
+            {t('admin.bookings.keep')}
+          </Link>
+        </div>
+      </form>
     </>
   );
 }

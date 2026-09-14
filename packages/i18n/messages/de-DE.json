@@ -10,34 +10,36 @@
       "admin.cond.windLabel",
       "admin.console",
       "admin.dataType.text",
+      "admin.documentReview.of",
       "admin.provider.fawry",
       "admin.provider.instapay",
       "admin.provider.kashier",
       "admin.provider.paymob",
       "admin.provider.paypal",
       "admin.provider.wise",
+      "admin.serviceReview.of",
       "admin.trust.moderation",
       "app.name",
+      "category.transfers",
+      "diveSite.blueHole",
+      "diveSite.eelGarden",
+      "diveSite.elCanyon",
+      "diveSite.gabrElBint",
+      "diveSite.lighthouse",
+      "diveSite.rasAbuGalum",
+      "diveSite.theArch",
+      "diveSite.theBells",
+      "diveSite.theIslands",
+      "diveSite.threePools",
+      "diveSite.ummSid",
+      "traveler.discover.compareCategoryCount",
+      "traveler.hub.chip.nitrox",
+      "traveler.site.arch",
+      "traveler.site.meters",
       "vendor.more.staff",
       "vendor.pricing.simulator",
       "vendor.role.staff",
-      "vendor.today.guide",
-      "category.transfers",
-      "traveler.site.arch",
-      "traveler.hub.chip.nitrox",
-      "traveler.discover.compareCategoryCount",
-      "traveler.site.meters",
-      "diveSite.blueHole",
-      "diveSite.theBells",
-      "diveSite.theArch",
-      "diveSite.elCanyon",
-      "diveSite.threePools",
-      "diveSite.eelGarden",
-      "diveSite.lighthouse",
-      "diveSite.gabrElBint",
-      "diveSite.rasAbuGalum",
-      "diveSite.theIslands",
-      "diveSite.ummSid"
+      "vendor.today.guide"
     ]
   },
   "app": {
@@ -381,7 +383,8 @@
       "seats": "{used} von {total} Plätzen",
       "chargeableNote": "Kleinkinder und begleitende Guides belegen einen Platz, ohne berechnet zu werden — Teilnehmerliste und Rechnung stimmen daher nie überein.",
       "noRisk": "Keine Abfahrt liegt über dem Windlimit des Betreibers.",
-      "none": "Noch keine Buchungen."
+      "none": "Noch keine Buchungen.",
+      "noneTomorrow": "Morgen fährt nichts raus."
     },
     "cascade": {
       "bookings": "Stornierte Buchungen",
@@ -608,7 +611,37 @@
       "noSelfServe": "Konten legt eine Plattform-Administration an. Eine Selbstregistrierung gibt es nicht."
     },
     "signOut": "Abmelden",
-    "signedInAs": "Angemeldet als {email}"
+    "signedInAs": "Angemeldet als {email}",
+    "review": {
+      "reason": "Grund",
+      "reasonHint": "Wird unter Ihrem Namen festgehalten. Eine Ablehnung geht vollständig an den Betrieb.",
+      "close": "Jetzt nicht",
+      "outcome": {
+        "done": "Erledigt und im Prüfprotokoll festgehalten.",
+        "conflict": "Jemand war schneller. Die Tabelle unten ist aktuell.",
+        "refused": "Dieses Konto darf das nicht.",
+        "failed": "Das ist nicht durchgegangen. Es wurde nichts geändert."
+      }
+    },
+    "documentReview": {
+      "title": "Dieses Dokument prüfen",
+      "verify": "Bestätigen",
+      "reject": "Ablehnen",
+      "of": "{type} · {vendor}"
+    },
+    "serviceReview": {
+      "title": "Dieses Angebot prüfen",
+      "publish": "Veröffentlichen",
+      "reject": "Ablehnen",
+      "of": "{title} · {vendor}",
+      "missing": "{count, plural, =0 {Alle vergleichbaren Merkmale sind ausgefüllt} one {# vergleichbares Merkmal fehlt} other {# vergleichbare Merkmale fehlen}}"
+    },
+    "cancelReview": {
+      "title": "Diese Ausfahrt absagen",
+      "confirm": "Ausfahrt absagen",
+      "warning": "Das erstattet {refunds, plural, one {# Buchung} other {# Buchungen}} und gibt {releases, plural, one {# weitere} other {# weitere}} frei. Von hier aus ist das endgültig.",
+      "reasonHint": "Wird unter Ihrem Namen festgehalten und an den Betrieb sowie alle Gebuchten gesendet."
+    }
   },
   "vendor": {
     "tabs": {

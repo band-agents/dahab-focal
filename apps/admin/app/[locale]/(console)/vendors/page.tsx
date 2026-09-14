@@ -1,9 +1,14 @@
-import { formatDate, formatNumber } from '@dahab/i18n/server';
-import { Button, DataTable, Illo, Mark, Panel, StatusPill } from '@dahab/ui-web';
+import Link from 'next/link';
+import type { Route } from 'next';
+
+import { formatDate, formatNumber, isolate } from '@dahab/i18n/server';
+import { DataTable, Illo, Mark, Panel, StatusPill } from '@dahab/ui-web';
 import type { Column, StatusTone } from '@dahab/ui-web';
 
 import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
+import { OutcomeNotice, ReviewPanel } from '@/components/ReviewPanel';
+import { reviewDocument } from '@/lib/actions';
 import { api, load } from '@/lib/api';
 import { translator } from '@/lib/i18n';
 
@@ -43,8 +48,15 @@ const VERIFY_TONE: Record<QueueDocument['status'], StatusTone> = {
 /** Rating lives in hundredths so it never touches the float path. */
 const RATING_SCALE = 100;
 
-export default async function VendorsPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function VendorsPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ review?: string; outcome?: string }>;
+}) {
   const { locale: raw } = await params;
+  const { review, outcome } = await searchParams;
   const locale = resolveLocale(raw);
   const t = translator(locale);
   const context = { locale } as const;
@@ -160,16 +172,22 @@ export default async function VendorsPage({ params }: { params: Promise<{ locale
       // one table are ambiguous to read and worse to navigate by screen reader.
       header: t('admin.action.review'),
       width: '9rem',
-      // Inert until the writes pass: a verification carries a reason, a
-      // confirmation and an audit row, and a button that silently does none of
-      // those is worse than one that does not exist yet.
-      cell: () => (
-        <Button variant="secondary" disabled>
+      // A link, not a button that acts. Opening the review panel is the whole
+      // job of this control — the decision, its reason and its audit row
+      // happen one screen further in, deliberately.
+      cell: (row) => (
+        <Link
+          href={`/${locale}/vendors?review=${row.id}` as Route}
+          className="inline-flex min-h-11 items-center rounded-input border border-border-strong bg-surface px-4 font-ui text-body text-text hover:bg-surface-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+        >
           {t('admin.action.review')}
-        </Button>
+        </Link>
       ),
     },
   ];
+
+  const reviewing =
+    queue.ok && review !== undefined ? queue.data.find((row) => row.id === review) : undefined;
 
   return (
     <ConsolePage
@@ -189,6 +207,43 @@ export default async function VendorsPage({ params }: { params: Promise<{ locale
       }
     >
       <div className="flex flex-col gap-8">
+        {outcome === undefined ? null : <OutcomeNotice outcome={outcome} t={t} />}
+
+        {reviewing === undefined ? null : (
+          <ReviewPanel
+            t={t}
+            title={t('admin.documentReview.title')}
+            mark="firstAid"
+            summary={
+              <span className="block">
+                <span className="block font-display text-h3 text-text">
+                  {t('admin.documentReview.of', {
+                    type: t(`admin.docType.${reviewing.type}`),
+                    // A Latin operator name inside an Arabic sentence walks to
+                    // the wrong end of the line without this.
+                    vendor: isolate(reviewing.vendorName),
+                  })}
+                </span>
+                {reviewing.issuer === null ? null : (
+                  <span className="mt-1 block text-small text-text-muted">{reviewing.issuer}</span>
+                )}
+                {reviewing.expiresOn === null ? null : (
+                  <span className="block text-small text-text-muted">
+                    {formatDate(new Date(reviewing.expiresOn), context, 'date')}
+                  </span>
+                )}
+              </span>
+            }
+            action={reviewDocument}
+            hidden={{ locale, documentId: reviewing.id }}
+            approve={{ value: 'verified', label: t('admin.documentReview.verify'), mark: 'eco' }}
+            reject={{ value: 'rejected', label: t('admin.documentReview.reject'), mark: 'sos' }}
+            reasonLabel={t('admin.review.reason')}
+            reasonHint={t('admin.review.reasonHint')}
+            closeHref={`/${locale}/vendors` as Route}
+          />
+        )}
+
         {!queue.ok ? (
           <DataProblemNotice problem={queue.problem} t={t} title={t('admin.vendors.queue')} />
         ) : (
