@@ -1,3 +1,5 @@
+import { TRPCError } from '@trpc/server';
+
 import { createDatabase, type Database } from '@dahab/db';
 
 import { logger } from './logger.ts';
@@ -29,6 +31,24 @@ export function getDatabase(): Database | null {
     logger.warn('database unavailable', { reason: failure });
     return null;
   }
+}
+
+/**
+ * A procedure that needs the database says so honestly.
+ *
+ * `PRECONDITION_FAILED` rather than a 500, because "the database is not
+ * configured" and "the query blew up" are different facts, and the console
+ * renders them as different notices.
+ */
+export function requireDatabase(db: Database | null): Database {
+  if (db === null) {
+    throw new TRPCError({
+      code: 'PRECONDITION_FAILED',
+      message:
+        'The database is not configured. Set DATABASE_URL and run `pnpm db:migrate && pnpm db:seed`.',
+    });
+  }
+  return db;
 }
 
 /** For the health check: reachable, absent, or not yet asked. */

@@ -171,3 +171,53 @@ describe('catalog reads are wired but empty', () => {
     ).rejects.toThrow();
   });
 });
+
+describe('the console sign-in', () => {
+  it('says the database is missing rather than throwing a connection error', async () => {
+    // A 500 here reads as "the sign-in is broken"; PRECONDITION_FAILED reads
+    // as "nothing is configured yet", and the console renders them as two
+    // different notices.
+    const caller = createCaller(createTestContext());
+    await expect(
+      caller.auth.passwordSignIn({ email: 'someone@example.com', password: 'whatever-it-is' }),
+    ).rejects.toMatchObject({ code: 'PRECONDITION_FAILED' });
+  });
+
+  it('refuses a refresh with no database the same way', async () => {
+    const caller = createCaller(createTestContext());
+    await expect(caller.auth.refresh({ refreshToken: 'anything' })).rejects.toMatchObject({
+      code: 'PRECONDITION_FAILED',
+    });
+  });
+
+  it('never returns a stack to the caller', async () => {
+    // A stack names file paths, package versions and the shape of the query
+    // that failed. tRPC strips it outside development on its own; this pins
+    // it, because the one place it leaks is a misconfigured NODE_ENV on a
+    // live deploy and nothing else would notice.
+    const caller = createCaller(createTestContext());
+    try {
+      await caller.auth.session();
+      expect.unreachable('auth.session with no session must throw');
+    } catch (error) {
+      const shape = appRouter._def._config.errorFormatter({
+        error: error as never,
+        shape: { message: '', code: -32001, data: { stack: 'leaked' } } as never,
+        ctx: createTestContext(),
+        type: 'query',
+        path: 'auth.session',
+        input: undefined,
+      } as never) as { data: Record<string, unknown> };
+      expect(shape.data).not.toHaveProperty('stack');
+    }
+  });
+
+  it('signs out cleanly when there is no session row to revoke', async () => {
+    // A guest session is never persisted, so there is nothing to revoke —
+    // and signing out of one is still a success, not an error.
+    const caller = createCaller(
+      createTestContext({ session: session({ isGuest: true, roles: ['guest'] }) }),
+    );
+    await expect(caller.auth.signOut()).resolves.toEqual({ ok: true });
+  });
+});

@@ -151,6 +151,34 @@ export const emailStartSchema = z
   })
   .strict();
 
+/**
+ * The console's sign-in.
+ *
+ * Staff only. Travellers sign in by one-time code and never hold a password,
+ * so this is not a second route into the same door — it is the only route
+ * into a different one, the surface with no phone in the loop.
+ *
+ * Length is the only rule. Composition requirements — a digit, a symbol, a
+ * capital — measurably push people towards `Password1!` and towards reuse,
+ * which is why NIST dropped them.
+ */
+export const MIN_PASSWORD_LENGTH = 12;
+
+export const passwordSignInSchema = z
+  .object({
+    email: z.string().email().max(320),
+    /** Never logged, never echoed back, never put in a URL. */
+    password: z.string().min(1).max(512),
+  })
+  .strict();
+
+export const passwordSetSchema = z
+  .object({
+    email: z.string().email().max(320),
+    password: z.string().min(MIN_PASSWORD_LENGTH).max(512),
+  })
+  .strict();
+
 export const oauthProviderSchema = z.enum(['apple', 'google']);
 
 export const oauthCallbackSchema = z

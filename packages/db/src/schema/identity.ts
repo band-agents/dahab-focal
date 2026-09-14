@@ -3,6 +3,7 @@ import {
   boolean,
   date,
   index,
+  integer,
   jsonb,
   pgTable,
   text,
@@ -42,6 +43,28 @@ export const users = pgTable(
      * sign-in. Until then the row exists with no contact details at all.
      */
     isGuest: boolean('is_guest').notNull().default(false),
+    /**
+     * scrypt, with the salt and cost parameters encoded in the string itself
+     * so they can be raised later without a migration.
+     *
+     * Null for every traveller, which is nearly every row: the apps sign in
+     * by one-time code and no traveller ever has a password to lose. It is
+     * set only for console staff, because the console is the one surface
+     * with no phone in the loop and it faces the open internet.
+     */
+    passwordHash: varchar('password_hash', { length: 255 }),
+    passwordUpdatedAt: timestamp('password_updated_at', {
+      withTimezone: true,
+      mode: 'date',
+    }),
+    /**
+     * Reset on success, incremented on failure, and read with `lockedUntil`.
+     * A password form on a public URL with no throttle is a password form
+     * that will be brute-forced; the counter is what makes the lockout
+     * possible.
+     */
+    failedSignInCount: integer('failed_sign_in_count').notNull().default(0),
+    lockedUntil: timestamp('locked_until', { withTimezone: true, mode: 'date' }),
     ...timestamps,
     deletedAt: deletedAt(),
   },
