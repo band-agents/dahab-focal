@@ -3,6 +3,8 @@ import type { TRPCClient } from '@trpc/client';
 
 import type { AppRouter } from '@dahab/api/router';
 
+import { accessToken } from './session';
+
 /**
  * The console's client for the one API.
  *
@@ -11,11 +13,15 @@ import type { AppRouter } from '@dahab/api/router';
  * boundary real: if a query is slow or a permission is wrong, the console
  * finds out the same way the traveler app would.
  *
- * Calls run in server components, so the session token travels from the
- * console's own service credentials rather than from a browser.
+ * Calls run in server components and carry **the signed-in operator's own
+ * token**, read from the request's cookie. There is deliberately no service
+ * credential to fall back on: a long-lived admin token in an environment
+ * variable is the same "anyone who reaches this is in" problem the sign-in
+ * exists to close, only harder to notice and impossible to revoke per person.
+ * A call with no session is a 401, which is the truthful answer.
  */
 
-const API_URL = process.env['DAHAB_API_URL'] ?? 'http://127.0.0.1:4000';
+export const API_URL = process.env['DAHAB_API_URL'] ?? 'http://127.0.0.1:4000';
 
 export const api: TRPCClient<AppRouter> = createTRPCClient<AppRouter>({
   links: [
@@ -23,9 +29,9 @@ export const api: TRPCClient<AppRouter> = createTRPCClient<AppRouter>({
       // The standalone adapter in apps/api serves procedures at the root, so
       // `health` is `/health` and stays a usable uptime URL. No `/trpc` prefix.
       url: API_URL,
-      headers: () => {
-        const token = process.env['DAHAB_ADMIN_TOKEN'];
-        return token === undefined ? {} : { authorization: `Bearer ${token}` };
+      headers: async () => {
+        const token = await accessToken();
+        return token === null ? {} : { authorization: `Bearer ${token}` };
       },
     }),
   ],

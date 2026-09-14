@@ -15,24 +15,26 @@
       "admin.provider.paymob",
       "admin.provider.paypal",
       "admin.provider.wise",
+      "admin.signIn.email",
+      "admin.signIn.password",
       "app.name",
-      "gallery.stateFocus",
-      "traveler.tabs.home",
-      "traveler.tabs.account",
-      "traveler.hub.chip.nitrox",
-      "traveler.discover.compareCategoryCount",
-      "traveler.site.meters",
       "diveSite.blueHole",
-      "diveSite.theBells",
-      "diveSite.theArch",
-      "diveSite.elCanyon",
-      "diveSite.threePools",
       "diveSite.eelGarden",
-      "diveSite.lighthouse",
+      "diveSite.elCanyon",
       "diveSite.gabrElBint",
+      "diveSite.lighthouse",
       "diveSite.rasAbuGalum",
+      "diveSite.theArch",
+      "diveSite.theBells",
       "diveSite.theIslands",
-      "diveSite.ummSid"
+      "diveSite.threePools",
+      "diveSite.ummSid",
+      "gallery.stateFocus",
+      "traveler.discover.compareCategoryCount",
+      "traveler.hub.chip.nitrox",
+      "traveler.site.meters",
+      "traveler.tabs.account",
+      "traveler.tabs.home"
     ]
   },
   "app": {
@@ -591,7 +593,19 @@
       "paymentFeeCharged": "Commissione del provider",
       "refundIssued": "Rimborso emesso",
       "payoutPaid": "Liquidazione pagata"
-    }
+    },
+    "signIn": {
+      "title": "Accedi",
+      "subtitle": "La console è per il personale della piattaforma.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Accedi",
+      "invalid": "Questa email e questa password non corrispondono a nessun account.",
+      "unreachable": "L’API non ha risposto. Non dipende dalla password — riprova tra poco.",
+      "noSelfServe": "Gli account li crea un amministratore della piattaforma. Non c’è registrazione."
+    },
+    "signOut": "Esci",
+    "signedInAs": "Accesso come {email}"
   },
   "vendor": {
     "tabs": {

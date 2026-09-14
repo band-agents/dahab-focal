@@ -593,7 +593,19 @@
       "paymentFeeCharged": "Comisión del proveedor",
       "refundIssued": "Reembolso emitido",
       "payoutPaid": "Liquidación pagada"
-    }
+    },
+    "signIn": {
+      "title": "Iniciar sesión",
+      "subtitle": "La consola es para el personal de la plataforma.",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "submit": "Entrar",
+      "invalid": "Ese correo y esa contraseña no coinciden con ninguna cuenta.",
+      "unreachable": "La API no respondió. No es tu contraseña — inténtalo de nuevo en un momento.",
+      "noSelfServe": "Las cuentas las crea un administrador de la plataforma. No hay registro."
+    },
+    "signOut": "Salir",
+    "signedInAs": "Sesión iniciada como {email}"
   },
   "vendor": {
     "tabs": {

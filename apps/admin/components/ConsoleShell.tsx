@@ -1,10 +1,14 @@
-import { isLocale, type Locale } from '@dahab/i18n/server';
+import { isLocale, isolate, type Locale } from '@dahab/i18n/server';
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
 
+import { Button } from '@dahab/ui-web';
+
+import { signOut } from '@/app/[locale]/sign-in/actions';
 import { Shell } from '@/components/Shell';
 import { BUILT, SECTIONS, hrefFor } from '@/lib/nav';
 import { translator, type Translate } from '@/lib/i18n';
+import { viewer } from '@/lib/viewer';
 
 /**
  * Every screen mounts the same shell with the same rail, so the nav is defined
@@ -24,7 +28,7 @@ export interface ConsolePageProps {
   readonly headerEnd?: ReactNode;
 }
 
-export function ConsolePage({
+export async function ConsolePage({
   locale,
   current,
   title,
@@ -33,6 +37,7 @@ export function ConsolePage({
   headerEnd,
 }: ConsolePageProps) {
   const t: Translate = translator(locale);
+  const who = await viewer();
 
   const nav = SECTIONS.map((section) => ({
     key: section.key,
@@ -43,6 +48,26 @@ export function ConsolePage({
     pending: !BUILT.has(section.key),
   }));
 
+  const email = who.ok ? who.viewer.email : null;
+
+  const railEnd = (
+    <div className="border-t border-border pt-4">
+      {email === null ? null : (
+        <p className="px-3 pb-2 text-caption text-text-muted">
+          {/* An address is Latin inside an Arabic sentence; without isolation
+              the bidi algorithm moves its parts to the wrong end of the line. */}
+          {t('admin.signedInAs', { email: isolate(email) })}
+        </p>
+      )}
+      <form action={signOut}>
+        <input type="hidden" name="locale" value={locale} />
+        <Button type="submit" variant="ghost" mark="offline">
+          {t('admin.signOut')}
+        </Button>
+      </form>
+    </div>
+  );
+
   return (
     <Shell
       nav={nav}
@@ -51,6 +76,7 @@ export function ConsolePage({
       title={title}
       subtitle={subtitle}
       headerEnd={headerEnd}
+      railEnd={railEnd}
     >
       {children}
     </Shell>

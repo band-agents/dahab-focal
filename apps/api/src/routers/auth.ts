@@ -314,6 +314,13 @@ export const authRouter = router({
         permissions: z.array(z.string()),
         locale: z.string(),
         direction: z.enum(['ltr', 'rtl']),
+        /**
+         * Who the console says is signed in. Null for a guest, and null when
+         * the row has no address — a phone-only account is the normal case
+         * for a traveller, and the caller has to render that rather than an
+         * empty string that looks like a bug.
+         */
+        email: z.string().nullable(),
       }),
     )
     .query(async ({ ctx }) => {
@@ -336,11 +343,23 @@ export const authRouter = router({
       for (const role of session.roles) {
         for (const permission of PERMISSIONS_BY_ROLE[role]) permissions.add(permission);
       }
+
+      let email: string | null = null;
+      if (session.userId !== null && ctx.db !== null) {
+        const [row] = await ctx.db
+          .select({ email: schema.users.email })
+          .from(schema.users)
+          .where(eq(schema.users.id, session.userId))
+          .limit(1);
+        email = row?.email ?? null;
+      }
+
       return {
         session,
         permissions: [...permissions].sort(),
         locale: ctx.locale,
         direction: LOCALE_DESCRIPTORS[ctx.locale].direction,
+        email,
       };
     }),
 

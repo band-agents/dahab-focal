@@ -596,7 +596,19 @@
       "paymentFeeCharged": "Anbietergebühr",
       "refundIssued": "Rückerstattung ausgestellt",
       "payoutPaid": "Auszahlung erfolgt"
-    }
+    },
+    "signIn": {
+      "title": "Anmelden",
+      "subtitle": "Die Konsole ist für Plattform-Mitarbeitende.",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "submit": "Anmelden",
+      "invalid": "Diese E-Mail und dieses Passwort gehören zu keinem Konto.",
+      "unreachable": "Die API hat nicht geantwortet. Es liegt nicht am Passwort — versuchen Sie es gleich noch einmal.",
+      "noSelfServe": "Konten legt eine Plattform-Administration an. Eine Selbstregistrierung gibt es nicht."
+    },
+    "signOut": "Abmelden",
+    "signedInAs": "Angemeldet als {email}"
   },
   "vendor": {
     "tabs": {

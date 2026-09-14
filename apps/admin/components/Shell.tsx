@@ -34,8 +34,15 @@ export interface ShellProps {
   readonly title: string;
   readonly subtitle: string;
   readonly children: ReactNode;
-  /** Top-end of the header — the locale switcher and the signed-in operator. */
+  /** Top-end of the header — the locale switcher and per-screen controls. */
   readonly headerEnd?: ReactNode;
+  /**
+   * Foot of the rail: who is signed in, and the way out. It sits here rather
+   * than in the header so it is on every screen regardless of what that
+   * screen puts in `headerEnd`, and so signing out is never next to a control
+   * that commits something.
+   */
+  readonly railEnd?: ReactNode;
 }
 
 export function Shell({
@@ -46,12 +53,19 @@ export function Shell({
   subtitle,
   children,
   headerEnd,
+  railEnd,
 }: ShellProps) {
   return (
     <div className="flex min-h-screen bg-bg">
       <nav
         aria-label={consoleName}
-        className="flex w-[var(--admin-rail)] shrink-0 flex-col gap-8 border-e border-border bg-surface px-4 py-6"
+        /*
+          Sticky and its own scroller. Without this the rail is as tall as the
+          page, so on a long board the sign-out at its foot is a thousand
+          pixels below the fold — reachable only by scrolling past every row
+          you were reading.
+        */
+        className="sticky top-0 flex h-screen w-[var(--admin-rail)] shrink-0 flex-col gap-8 overflow-y-auto border-e border-border bg-surface px-4 py-6"
       >
         <div className="flex items-center gap-3 px-2">
           {/* `compass` reads as orientation without borrowing another product's eye. */}
@@ -92,6 +106,8 @@ export function Shell({
             </li>
           ))}
         </ul>
+
+        {railEnd === undefined ? null : <div className="mt-auto">{railEnd}</div>}
       </nav>
 
       <div className="flex min-w-0 flex-1 flex-col">

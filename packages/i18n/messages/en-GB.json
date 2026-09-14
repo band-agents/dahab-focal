@@ -560,7 +560,19 @@
       "paymentFeeCharged": "Provider fee",
       "refundIssued": "Refund issued",
       "payoutPaid": "Payout paid"
-    }
+    },
+    "signIn": {
+      "title": "Sign in",
+      "subtitle": "The console is for platform staff.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "invalid": "That email and password do not match an account.",
+      "unreachable": "The API did not answer. Nothing is wrong with your password — try again in a moment.",
+      "noSelfServe": "Accounts are created by a platform administrator. There is no sign-up."
+    },
+    "signOut": "Sign out",
+    "signedInAs": "Signed in as {email}"
   },
   "vendor": {
     "tabs": {

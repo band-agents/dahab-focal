@@ -604,7 +604,19 @@
       "paymentFeeCharged": "Frais du prestataire",
       "refundIssued": "Remboursement émis",
       "payoutPaid": "Versement effectué"
-    }
+    },
+    "signIn": {
+      "title": "Connexion",
+      "subtitle": "La console est réservée au personnel de la plateforme.",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "invalid": "Cet e-mail et ce mot de passe ne correspondent à aucun compte.",
+      "unreachable": "L’API n’a pas répondu. Le mot de passe n’est pas en cause — réessayez dans un instant.",
+      "noSelfServe": "Les comptes sont créés par un administrateur de la plateforme. Il n’y a pas d’inscription."
+    },
+    "signOut": "Se déconnecter",
+    "signedInAs": "Connecté en tant que {email}"
   },
   "vendor": {
     "tabs": {
