@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { formatCurrency, formatNumber, money } from '@dahab/i18n';
 import type { CurrencyCode } from '@dahab/i18n';
-import { Button, Card, Mark, StatusPill } from '@dahab/ui';
+import { Button, Card, Mark, StatusPill, useDisplayFontClass } from '@dahab/ui';
 
 import { PRESETS, rulesInPriorityOrder, simulate } from '../src/pricing';
+import { Screen } from '../src/Screen';
 import { useSession } from '../src/SessionProvider';
 import { isOwner } from '../src/session';
 
@@ -26,6 +27,7 @@ import { isOwner } from '../src/session';
  */
 export default function PricingScreen() {
   const { t } = useTranslation();
+  const display = useDisplayFontClass();
   const session = useSession();
   const context = { locale: session.locale } as const;
   const owner = isOwner(session.role);
@@ -33,15 +35,15 @@ export default function PricingScreen() {
 
   if (!owner) {
     return (
-      <ScrollView className="flex-1 bg-bg" contentContainerClassName="gap-6 px-5 pb-16 pt-14">
-        <Text className="font-display text-displayL text-text">{t('vendor.pricing.title')}</Text>
+      <Screen>
+        <Text className={`${display} text-displayL text-text`}>{t('vendor.pricing.title')}</Text>
         <View className="flex-row items-start gap-3 rounded-lg bg-info-surface p-4">
           <Mark name="chat" size={20} />
           <Text className="flex-1 font-ui text-small text-info-text">
             {t('vendor.role.staffLimitNoName')}
           </Text>
         </View>
-      </ScrollView>
+      </Screen>
     );
   }
 
@@ -51,9 +53,9 @@ export default function PricingScreen() {
     formatCurrency(money(value.amount, value.currency), context);
 
   return (
-    <ScrollView className="flex-1 bg-bg" contentContainerClassName="gap-6 px-5 pb-16 pt-14">
+    <Screen>
       <View>
-        <Text className="font-display text-displayL text-text">{t('vendor.pricing.title')}</Text>
+        <Text className={`${display} text-displayL text-text`}>{t('vendor.pricing.title')}</Text>
         <Text className="mt-1 font-ui text-body text-text-muted">
           {t('vendor.pricing.subtitle')}
         </Text>
@@ -67,7 +69,7 @@ export default function PricingScreen() {
               key={rule.id}
               className="flex-row items-center gap-3 rounded-lg bg-bg px-4 py-3"
             >
-              <Text className="font-display text-h3 tabular-nums text-text-muted">
+              <Text className={`${display} text-h3 tabular-nums text-text-muted`}>
                 {formatNumber(index + 1, context)}
               </Text>
               <Text className="flex-1 font-ui text-body text-text">{t(rule.labelKey)}</Text>
@@ -104,7 +106,7 @@ export default function PricingScreen() {
                 className="flex-row items-baseline justify-between border-b border-border py-2"
               >
                 <Text className="flex-1 font-ui text-body text-text">{t(line.labelKey)}</Text>
-                <Text className="font-display text-body tabular-nums text-text">
+                <Text className={`${display} text-body tabular-nums text-text`}>
                   {cash(line.amount)}
                 </Text>
               </View>
@@ -112,7 +114,7 @@ export default function PricingScreen() {
 
             <View className="mt-3 flex-row items-baseline justify-between">
               <Text className="font-ui text-h3 text-text">{t('vendor.pricing.total')}</Text>
-              <Text className="font-display text-h1 tabular-nums text-text">
+              <Text className={`${display} text-h1 tabular-nums text-text`}>
                 {cash(breakdown.total)}
               </Text>
             </View>
@@ -137,6 +139,6 @@ export default function PricingScreen() {
           </View>
         )}
       </Card>
-    </ScrollView>
+    </Screen>
   );
 }

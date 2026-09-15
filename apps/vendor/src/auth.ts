@@ -1,6 +1,13 @@
 import type { Locale } from '@dahab/i18n';
 import { SOURCE_LOCALE, isLocale } from '@dahab/i18n';
 
+import { API_URL } from './apiUrl';
+import { readRaw, removeRaw, writeRaw } from './store';
+
+// Re-exported so the rest of the app keeps one import for it; the resolution
+// itself — and why 127.0.0.1 is wrong on a phone — lives in ./apiUrl.
+export { API_URL };
+
 /**
  * Signing in to the operator app.
  *
@@ -8,13 +15,10 @@ import { SOURCE_LOCALE, isLocale } from '@dahab/i18n';
  * carries no client today, so adding one would be a dependency for two
  * requests. The API is where every rule lives; this only moves tokens.
  *
- * Credentials are held in `localStorage`. That is a real trade-off and worth
- * naming: it is readable by any script that gets onto the page, unlike the
- * console's httpOnly cookies. The console can use cookies because it renders
- * on a server; this app is a client that calls an API from the browser, and a
- * cookie it cannot read is a cookie it cannot send. When this ships to the
- * app stores the store moves to expo-secure-store, which is the keychain —
- * see the note in `docs/SESSION-ADMIN-VENDOR.md`.
+ * Where the credentials land is `./store` — the keychain on a phone,
+ * `localStorage` on the web, and the reasoning for the split is written
+ * there. Both reads are synchronous, which is what lets the session be read
+ * at module scope and the first paint already be Arabic.
  */
 
 export type VendorRole = 'vendorOwner' | 'vendorStaff';
@@ -33,18 +37,14 @@ export interface StoredSession {
 
 const KEY = 'dahab.vendor.session';
 
-export const API_URL =
-  process.env['EXPO_PUBLIC_DAHAB_API_URL'] ?? 'http://127.0.0.1:4000';
-
 /**
  * Read synchronously at module scope, the way the URL parameters were, so the
  * first paint is already in the right language and direction. An async read
  * here would mean a flash of English on an Arabic-first surface.
  */
 export function readStored(): StoredSession | null {
-  if (typeof localStorage === 'undefined') return null;
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = readRaw(KEY);
     if (raw === null) return null;
     const parsed = JSON.parse(raw) as Partial<StoredSession>;
     if (typeof parsed.accessToken !== 'string' || typeof parsed.refreshToken !== 'string') {
@@ -70,13 +70,11 @@ export function readStored(): StoredSession | null {
 }
 
 export function writeStored(value: StoredSession): void {
-  if (typeof localStorage === 'undefined') return;
-  localStorage.setItem(KEY, JSON.stringify(value));
+  writeRaw(KEY, JSON.stringify(value));
 }
 
 export function clearStored(): void {
-  if (typeof localStorage === 'undefined') return;
-  localStorage.removeItem(KEY);
+  removeRaw(KEY);
 }
 
 export type SignInResult =

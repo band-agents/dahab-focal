@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 import type { MarkName } from '@dahab/tokens/marks';
 
 import { Mark } from '../marks/Mark';
+import { useDisplayFontClass } from '../theme';
 
 /**
  * The card, and the row — the two containers a phone screen is made of.
@@ -26,6 +27,8 @@ export interface CardProps {
 }
 
 export function Card({ children, title, eyebrow, mark, trailing, surface }: CardProps) {
+  const display = useDisplayFontClass();
+
   const hasHeader = title !== undefined || eyebrow !== undefined || trailing !== undefined;
 
   return (
@@ -38,8 +41,12 @@ export function Card({ children, title, eyebrow, mark, trailing, surface }: Card
               {eyebrow === undefined ? null : (
                 <Text className="font-ui text-overline uppercase text-text-muted">{eyebrow}</Text>
               )}
+              {/* The display face for the script actually being drawn. Baloo 2
+                  carries no Arabic glyphs at all, so a hardcoded
+                  `font-display` on an Arabic title falls back to the system
+                  font on the web and draws nothing on a phone. */}
               {title === undefined ? null : (
-                <Text className="font-display text-h2 text-text">{title}</Text>
+                <Text className={`${display} text-h2 text-text`}>{title}</Text>
               )}
             </View>
           </View>

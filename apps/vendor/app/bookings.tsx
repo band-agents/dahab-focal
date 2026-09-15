@@ -1,13 +1,14 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { formatCurrency, formatDate, isolate, money } from '@dahab/i18n';
-import { Card, Row, StatusPill } from '@dahab/ui';
+import { Card, Row, StatusPill, useDisplayFontClass } from '@dahab/ui';
 import type { StatusTone } from '@dahab/ui';
 
 import { api } from '../src/api';
 import type { VendorBooking } from '../src/api';
 import { Loading, Problem } from '../src/Problem';
+import { Screen } from '../src/Screen';
 import { useSession } from '../src/SessionProvider';
 import { useApi } from '../src/useApi';
 
@@ -40,14 +41,15 @@ const TONE: Record<VendorBooking['status'], StatusTone> = {
 
 export default function BookingsScreen() {
   const { t } = useTranslation();
+  const display = useDisplayFontClass();
   const session = useSession();
   const context = { locale: session.locale } as const;
   const { query, reload } = useApi(() => api.bookings(session.locale), [session.locale]);
 
   return (
-    <ScrollView className="flex-1 bg-bg" contentContainerClassName="gap-6 px-5 pb-16 pt-14">
+    <Screen>
       <View>
-        <Text className="font-display text-displayL text-text">{t('vendor.bookings.title')}</Text>
+        <Text className={`${display} text-displayL text-text`}>{t('vendor.bookings.title')}</Text>
         <Text className="mt-1 font-ui text-body text-text-muted">
           {t('vendor.bookings.subtitle')}
         </Text>
@@ -60,7 +62,7 @@ export default function BookingsScreen() {
       ) : (
         <Sections bookings={query.data} context={context} />
       )}
-    </ScrollView>
+    </Screen>
   );
 }
 
@@ -72,6 +74,7 @@ function Sections({
   readonly context: { locale: ReturnType<typeof useSession>['locale'] };
 }) {
   const { t } = useTranslation();
+  const display = useDisplayFontClass();
 
   const waiting = bookings.filter((booking) => booking.status === 'awaitingVendor');
   const rest = bookings.filter((booking) => booking.status !== 'awaitingVendor');
@@ -90,7 +93,7 @@ function Sections({
               meta={`${booking.reference} · ${t('vendor.bookings.heads', { count: booking.heads })}`}
               mark="fin"
               trailing={
-                <Text className="font-display text-h3 tabular-nums text-text">
+                <Text className={`${display} text-h3 tabular-nums text-text`}>
                   {formatCurrency(
                     money(booking.total.amountMinor, booking.total.currency),
                     context,

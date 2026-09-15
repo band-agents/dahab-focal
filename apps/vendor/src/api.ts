@@ -87,40 +87,7 @@ export const api = {
   resources: () => read<Output<'resources'>>('vendor.resources'),
 };
 
-/**
- * Seats held versus heads billed.
- *
- * Mirrors PARTICIPANT_RULES in @dahab/api-contract: an infant and an
- * accompanying instructor are not charged but do take a place, which is why a
- * manifest and an invoice never agree — and why the boat's number is the
- * first one, not the second.
- */
-const CHARGEABLE: Readonly<Record<Participant['kind'], boolean>> = {
-  adult: true,
-  child: true,
-  student: true,
-  resident: true,
-  infant: false,
-  instructor: false,
-};
-
-export function seatCounts(participants: readonly Participant[]): {
-  capacity: number;
-  chargeable: number;
-} {
-  return {
-    capacity: participants.length,
-    chargeable: participants.filter((person) => CHARGEABLE[person.kind]).length,
-  };
-}
-
-/** What is still outstanding on a manifest, counted once for the header. */
-export function outstanding(departure: Departure): {
-  waivers: number;
-  medical: number;
-} {
-  return {
-    waivers: departure.participants.filter((person) => !person.waiverSigned).length,
-    medical: departure.participants.filter((person) => person.medicalFlag).length,
-  };
-}
+// The manifest arithmetic lives in ./manifest: it is pure, and keeping it
+// there means a test of it does not have to load the API's type graph.
+export { outstanding, seatCounts } from './manifest';
+export type { CountableParticipant, ParticipantKind } from './manifest';

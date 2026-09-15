@@ -1,12 +1,13 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { formatCurrency, formatDate, isolate, money } from '@dahab/i18n';
-import { Button, Card, Illo, Mark, Row, StatusPill } from '@dahab/ui';
+import { Button, Card, Illo, Mark, Row, StatusPill, useDisplayFontClass } from '@dahab/ui';
 
 import { api } from '../src/api';
 import type { Earnings, Resource, StaffMember } from '../src/api';
 import { Loading, Problem } from '../src/Problem';
+import { Screen } from '../src/Screen';
 import { useSession, useSessionState } from '../src/SessionProvider';
 import { isOwner } from '../src/session';
 import { useApi } from '../src/useApi';
@@ -25,6 +26,7 @@ import { useApi } from '../src/useApi';
  */
 export default function MoreScreen() {
   const { t } = useTranslation();
+  const display = useDisplayFontClass();
   const session = useSession();
   const { signOut } = useSessionState();
   const context = { locale: session.locale } as const;
@@ -41,9 +43,9 @@ export default function MoreScreen() {
     formatCurrency(money(amount.amountMinor, amount.currency), context);
 
   return (
-    <ScrollView className="flex-1 bg-bg" contentContainerClassName="gap-6 px-5 pb-16 pt-14">
+    <Screen>
       <View>
-        <Text className="font-display text-displayL text-text">{t('vendor.more.title')}</Text>
+        <Text className={`${display} text-displayL text-text`}>{t('vendor.more.title')}</Text>
         <Text className="mt-1 font-ui text-body text-text-muted">
           {session.vendorName === null
             ? t(owner ? 'vendor.role.owner' : 'vendor.role.staff')
@@ -141,7 +143,7 @@ export default function MoreScreen() {
           {t('vendor.more.signOut')}
         </Button>
       </View>
-    </ScrollView>
+    </Screen>
   );
 }
 
@@ -162,6 +164,7 @@ function Money({
   readonly context: Context;
 }) {
   const { t } = useTranslation();
+  const display = useDisplayFontClass();
   return (
     <>
       <View className="mt-4 gap-2">
@@ -176,7 +179,7 @@ function Money({
             className="flex-row items-baseline justify-between rounded-sm bg-bg px-3 py-2"
           >
             <Text className="font-ui text-body text-text">{line.label}</Text>
-            <Text className="font-display text-body tabular-nums text-text">{line.value}</Text>
+            <Text className={`${display} text-body tabular-nums text-text`}>{line.value}</Text>
           </View>
         ))}
       </View>

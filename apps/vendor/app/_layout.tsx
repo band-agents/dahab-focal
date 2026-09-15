@@ -1,6 +1,8 @@
 import '../global.css';
 
 import { Tabs } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { I18nextProvider } from 'react-i18next';
 
 import { colors } from '@dahab/tokens/theme';
@@ -33,17 +35,26 @@ export default function RootLayout() {
   const theme = themeFromUrl();
 
   return (
-    <I18nextProvider i18n={i18n}>
-      <ThemeProvider
-        theme={theme}
-        direction={directionOf(locale)}
-        script={locale === 'ar-EG' ? 'arabic' : 'latin'}
-      >
-        <SessionProvider>
-          <Shell theme={theme} />
-        </SessionProvider>
-      </ThemeProvider>
-    </I18nextProvider>
+    <SafeAreaProvider>
+      <I18nextProvider i18n={i18n}>
+        <ThemeProvider
+          theme={theme}
+          direction={directionOf(locale)}
+          script={locale === 'ar-EG' ? 'arabic' : 'latin'}
+        >
+          {/*
+            The clock and the battery, in ink on cream or cream on the night
+            ground. `auto` would read the OS setting, which is the wrong
+            source: this app's theme comes from its own tokens, and on a phone
+            set to dark with the app in light the icons would vanish.
+          */}
+          <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+          <SessionProvider>
+            <Shell theme={theme} />
+          </SessionProvider>
+        </ThemeProvider>
+      </I18nextProvider>
+    </SafeAreaProvider>
   );
 }
 

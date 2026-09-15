@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { outstanding, seatCounts } from '../src/api';
-import type { Departure, Participant } from '../src/api';
+import { outstanding, seatCounts } from '../src/manifest';
+import type { CountableParticipant, ParticipantKind } from '../src/manifest';
 
 /**
  * The manifest arithmetic a boat's headcount depends on.
@@ -16,29 +16,15 @@ import type { Departure, Participant } from '../src/api';
  * @dahab/api-contract states, and the pricing engine applies.
  */
 
-function person(kind: Participant['kind'], overrides: Partial<Participant> = {}): Participant {
-  return {
-    id: `p-${kind}`,
-    name: 'Test Diver',
-    kind,
-    certification: null,
-    waiverSigned: true,
-    medicalFlag: false,
-    ...overrides,
-  };
+function person(
+  kind: ParticipantKind,
+  overrides: Partial<CountableParticipant> = {},
+): CountableParticipant {
+  return { kind, waiverSigned: true, medicalFlag: false, ...overrides };
 }
 
-function departure(participants: readonly Participant[]): Departure {
-  return {
-    id: 'slot-1',
-    startsAt: '2026-09-15T06:30:00.000Z',
-    serviceTitle: 'Two shore dives · The Bells to the Blue Hole',
-    categorySlug: 'scuba-diving',
-    siteNameKeys: ['diveSite.theBells'],
-    capacity: 8,
-    isCancelled: false,
-    participants: [...participants],
-  };
+function departure(participants: readonly CountableParticipant[]) {
+  return { participants: [...participants] };
 }
 
 describe('seats held versus seats billed', () => {

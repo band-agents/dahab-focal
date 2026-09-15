@@ -1,13 +1,14 @@
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { formatCurrency, money } from '@dahab/i18n';
-import { Button, Card, Mark, StatusPill } from '@dahab/ui';
+import { Button, Card, Mark, StatusPill, useDisplayFontClass } from '@dahab/ui';
 import type { StatusTone } from '@dahab/ui';
 
 import { api } from '../src/api';
 import type { VendorService } from '../src/api';
 import { Loading, Problem } from '../src/Problem';
+import { Screen } from '../src/Screen';
 import { useSession } from '../src/SessionProvider';
 import { isOwner } from '../src/session';
 import { useApi } from '../src/useApi';
@@ -40,14 +41,15 @@ const TONE: Record<VendorService['status'], StatusTone> = {
 
 export default function ServicesScreen() {
   const { t } = useTranslation();
+  const display = useDisplayFontClass();
   const session = useSession();
   const owner = isOwner(session.role);
   const { query, reload } = useApi(() => api.services(session.locale), [session.locale]);
 
   return (
-    <ScrollView className="flex-1 bg-bg" contentContainerClassName="gap-6 px-5 pb-16 pt-14">
+    <Screen>
       <View>
-        <Text className="font-display text-displayL text-text">{t('vendor.services.title')}</Text>
+        <Text className={`${display} text-displayL text-text`}>{t('vendor.services.title')}</Text>
         <Text className="mt-1 font-ui text-body text-text-muted">
           {t('vendor.services.subtitle')}
         </Text>
@@ -73,7 +75,7 @@ export default function ServicesScreen() {
           <ServiceCard key={service.id} service={service} owner={owner} />
         ))
       )}
-    </ScrollView>
+    </Screen>
   );
 }
 
@@ -85,6 +87,7 @@ function ServiceCard({
   readonly owner: boolean;
 }) {
   const { t } = useTranslation();
+  const display = useDisplayFontClass();
   const session = useSession();
   const context = { locale: session.locale } as const;
   const ready = service.missingComparable === 0;
@@ -109,7 +112,7 @@ function ServiceCard({
             {t('vendor.services.unpriced')}
           </Text>
         ) : (
-          <Text className="font-display text-h2 tabular-nums text-text">
+          <Text className={`${display} text-h2 tabular-nums text-text`}>
             {formatCurrency(
               money(service.fromPrice.amountMinor, service.fromPrice.currency),
               context,

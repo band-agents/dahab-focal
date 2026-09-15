@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { ScrollView, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Mark } from '@dahab/ui';
+import { Button, Mark, useDisplayFontClass } from '@dahab/ui';
 
 import { signIn } from './auth';
+import { Pane } from './Screen';
 import { useSessionState } from './SessionProvider';
 
 /**
@@ -20,6 +21,7 @@ import { useSessionState } from './SessionProvider';
  */
 export function SignInScreen() {
   const { t } = useTranslation();
+  const display = useDisplayFontClass();
   const { signedIn } = useSessionState();
 
   const [email, setEmail] = useState('');
@@ -38,17 +40,13 @@ export function SignInScreen() {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-bg"
-      contentContainerClassName="gap-6 px-5 pb-16 pt-20"
-      keyboardShouldPersistTaps="handled"
-    >
+    <Pane>
       <View className="flex-row items-center gap-3">
         <View className="size-12 items-center justify-center rounded-md bg-info-surface">
           <Mark name="compass" size={26} noFlip />
         </View>
         <View className="flex-1">
-          <Text className="font-display text-h3 text-text">{t('vendor.signIn.brand')}</Text>
+          <Text className={`${display} text-h3 text-text`}>{t('vendor.signIn.brand')}</Text>
           <Text className="font-ui text-caption text-text-muted">
             {t('vendor.signIn.brandSub')}
           </Text>
@@ -56,7 +54,7 @@ export function SignInScreen() {
       </View>
 
       <View>
-        <Text className="font-display text-displayL text-text">{t('vendor.signIn.title')}</Text>
+        <Text className={`${display} text-displayL text-text`}>{t('vendor.signIn.title')}</Text>
         <Text className="mt-1 font-ui text-body text-text-muted">
           {t('vendor.signIn.subtitle')}
         </Text>
@@ -111,6 +109,6 @@ export function SignInScreen() {
       </View>
 
       <Text className="font-ui text-caption text-text-muted">{t('vendor.signIn.noSelfServe')}</Text>
-    </ScrollView>
+    </Pane>
   );
 }

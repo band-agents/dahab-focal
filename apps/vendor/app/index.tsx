@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { formatCurrency, formatDate, formatNumber, isolate, money } from '@dahab/i18n';
-import { Button, Card, CategoryMark, Illo, Mark, Row, StatusPill } from '@dahab/ui';
+import { Button, Card, CategoryMark, Illo, Mark, Row, StatusPill, useDisplayFontClass } from '@dahab/ui';
 import type { CategoryMarkName } from '@dahab/ui';
 
-import { api, outstanding, seatCounts } from '../src/api';
+import { api } from '../src/api';
+import { outstanding, seatCounts } from '../src/manifest';
 import type { Departure } from '../src/api';
 import { cancelDeparture, previewCancellation } from '../src/cancel';
 import type { CancellationPreview } from '../src/cancel';
 import { Loading, Problem } from '../src/Problem';
+import { Screen } from '../src/Screen';
 import { useSession } from '../src/SessionProvider';
 import { isOwner } from '../src/session';
 import { useApi } from '../src/useApi';
@@ -52,12 +54,13 @@ const CATEGORY_MARK: Readonly<Record<string, CategoryMarkName>> = {
 
 export default function TodayScreen() {
   const { t } = useTranslation();
+  const display = useDisplayFontClass();
   const session = useSession();
   const owner = isOwner(session.role);
   const { query, reload } = useApi(() => api.today(session.locale), [session.locale]);
 
   return (
-    <ScrollView className="flex-1 bg-bg" contentContainerClassName="gap-6 px-5 pb-16 pt-14">
+    <Screen>
       <View>
         <Text className="font-ui text-overline uppercase text-text-muted">
           {/* The operator's real name, or the role alone. A profile with no
@@ -66,7 +69,7 @@ export default function TodayScreen() {
             ? t(owner ? 'vendor.role.owner' : 'vendor.role.staff')
             : `${session.vendorName} · ${t(owner ? 'vendor.role.owner' : 'vendor.role.staff')}`}
         </Text>
-        <Text className="mt-1 font-display text-displayL text-text">
+        <Text className={`mt-1 ${display} text-displayL text-text`}>
           {session.displayName === null
             ? t('vendor.today.greetingAnon')
             : t('vendor.today.greeting', { name: isolate(session.displayName) })}
@@ -118,7 +121,7 @@ export default function TodayScreen() {
           </Text>
         </View>
       )}
-    </ScrollView>
+    </Screen>
   );
 }
 
@@ -130,6 +133,7 @@ function DepartureCard({
   readonly onChanged: () => void;
 }) {
   const { t } = useTranslation();
+  const display = useDisplayFontClass();
   const session = useSession();
   const context = { locale: session.locale } as const;
   const seats = seatCounts(departure.participants);
@@ -143,7 +147,7 @@ function DepartureCard({
       eyebrow={isolate(formatDate(new Date(departure.startsAt), context, 'time'))}
       title={departure.serviceTitle}
       trailing={
-        <Text className="font-display text-h2 tabular-nums text-text">
+        <Text className={`${display} text-h2 tabular-nums text-text`}>
           {t('vendor.today.seats', {
             used: formatNumber(seats.capacity, context),
             total: formatNumber(departure.capacity, context),
@@ -250,6 +254,7 @@ function CancelPanel({
   readonly onDone: () => void;
 }) {
   const { t } = useTranslation();
+  const display = useDisplayFontClass();
   const session = useSession();
   const context = { locale: session.locale } as const;
 
@@ -283,7 +288,7 @@ function CancelPanel({
 
   return (
     <View className="mt-4 gap-3 rounded-lg bg-warning-surface p-4">
-      <Text className="font-display text-h3 text-warning-text">{t('vendor.cancel.title')}</Text>
+      <Text className={`${display} text-h3 text-warning-text`}>{t('vendor.cancel.title')}</Text>
 
       {failed ? (
         <Text className="font-ui text-small text-danger-text">{t('vendor.cancel.failed')}</Text>
@@ -299,7 +304,7 @@ function CancelPanel({
             })}
           </Text>
           {preview.refundTotalMinor === 0 ? null : (
-            <Text className="font-display text-h2 tabular-nums text-warning-text">
+            <Text className={`${display} text-h2 tabular-nums text-warning-text`}>
               {formatCurrency(money(preview.refundTotalMinor, preview.currency), context)}
             </Text>
           )}

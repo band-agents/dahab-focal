@@ -12,15 +12,27 @@ import type { StoredSession } from '../src/auth';
  * front of somebody who does not run it.
  */
 
+/**
+ * The store is mocked, not `localStorage`.
+ *
+ * Credentials go to the keychain on a phone and to `localStorage` on the web,
+ * and `src/store.ts` is the seam between them — it imports `react-native` and
+ * `expo-secure-store`, neither of which resolves under vitest. Mocking the
+ * seam tests the logic on both platforms at once; mocking `localStorage`
+ * would only ever have tested the web half.
+ */
 const store = new Map<string, string>();
+
+vi.mock('../src/store', () => ({
+  readRaw: (key: string) => store.get(key) ?? null,
+  writeRaw: (key: string, value: string) => void store.set(key, value),
+  removeRaw: (key: string) => void store.delete(key),
+}));
+
+vi.mock('../src/apiUrl', () => ({ API_URL: 'http://api.test' }));
 
 beforeEach(() => {
   store.clear();
-  vi.stubGlobal('localStorage', {
-    getItem: (key: string) => store.get(key) ?? null,
-    setItem: (key: string, value: string) => void store.set(key, value),
-    removeItem: (key: string) => void store.delete(key),
-  });
 });
 
 afterEach(() => {
