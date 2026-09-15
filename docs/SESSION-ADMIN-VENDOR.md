@@ -17,10 +17,10 @@ design import). This file continues from there.
 | `packages/ui-web` | Web component library, marks + 4 primitives |
 | `packages/ui` | The same library for React Native |
 | `packages/tokens` | Now also owns the 55 generated marks |
-| `apps/api` | Live Supabase Postgres + a 17-procedure admin router (reads) |
+| `apps/api` | Live Supabase Postgres, 21 admin reads + 3 writes, password sign-in |
 | `apps/traveler` — traveller app | Expo, Board 04 Discover, on fixtures |
 
-**228 tests across 12 packages.** `pnpm verify` and `pnpm shoot` both pass.
+**263 tests across 12 packages.** `pnpm verify` and `pnpm shoot` both pass.
 
 ### The admin console — `/[locale]` on port 4310
 
@@ -39,8 +39,14 @@ V04's simulator calls `computePrice()` from @dahab/api-contract — the same
 function the checkout and the comparison engine call — so what an operator
 sees is what a traveller is charged, with no second implementation to drift.
 
-Driven by URL parameters while there is no auth: `?role=vendorOwner|vendorStaff`,
-`?locale=`, `?theme=`. Arabic is the default, not English.
+Signed in with an email and a password, like the console. The role comes from
+the account's own `user_roles`, not from a query string — and a platform admin
+or a traveller is refused here, because neither has any business being shown
+one centre's manifest.
+
+`?locale=` and `?theme=` still read the URL, so the app can be opened in Night
+Dive or in German without an account for a screenshot or a translation check.
+Arabic is the default, not English.
 
 ---
 
@@ -64,26 +70,48 @@ is real Dahab except the travellers' names, which exist because a manifest
 with no names on it cannot be read — `packages/db/src/seed/operations.ts` says
 so in its header.
 
-**3. Three sources genuinely do not exist, and the screens say so.**
+**3. Two sources genuinely do not exist, and the screens say so.**
 
-No weather provider (A01's conditions strip and A05's risk banner), no
-exchange-rate feed (A06's header), and no writes — so A08's audit log is
-empty and explains why. Each of those is a sentence on the screen, not a
+No weather provider (A01's conditions strip and A05's risk banner) and no
+exchange-rate feed (A06's header). Each is a sentence on the screen, not a
 plausible number. A wind speed nobody measured, on the screen that decides
 whether a boat sails, is the most dangerous placeholder this product could
 carry.
 
-**4. Nothing writes, and nothing authenticates.**
+A08's audit log is no longer among them: it fills up as soon as anyone
+verifies a document or cancels a departure.
 
-Every admin procedure is a read. "Cancel the departure", "Confirm" and
-"Review" are `disabled`, not merely unwired. The writes each need a reason
-field, a confirmation and an audit row, which is its own pass rather than
-something to bolt on — and the cascade preview exists precisely so that
-committing one is a deliberate act.
+**4. Three things write. Everything else is still a read.**
 
-Anyone who opens either URL is in. The console authenticates to the API with a
-long-lived service token in `.env`; the OTP flow exists in `apps/api` and
-needs wiring.
+`reviewDocument`, `reviewService` and `cancelDeparture`. Each one requires a
+reason, runs in one transaction, and leaves an audit row with both sides of
+the change — which is why they live in `admin-writes.ts` rather than beside
+the reads, so a fourth cannot be added without those three rules.
+
+Each re-reads its row first and refuses with a CONFLICT if it has moved. Two
+admins on one queue is the normal case and the second must not silently undo
+the first.
+
+Not yet written: suspending an operator, moderating a review, resolving a
+dispute, reversing a ledger entry. Those screens still show state only.
+
+**5. Both surfaces have a front door, and there is no sign-up.**
+
+Staff sign in with an email and a password; `pnpm staff:create` makes an
+account and `--disable` takes one away. Travellers keep the one-time code
+path, which still needs its challenge table wired and an SMS gateway chosen.
+
+The console's protection is structural: the eight boards live in a
+`(console)` route group whose layout requires a session, so a new board added
+there is protected by existing. The middleware turns away anyone with no
+cookie; the layout asks the API who the caller is on every render, which is
+what makes revocation take effect at once.
+
+**There is no service credential any more.** `DAHAB_ADMIN_TOKEN` is gone from
+the call path — a long-lived admin token in an environment variable is the
+same "anyone who reaches this is in" problem, only harder to notice and
+impossible to revoke per person. Every call carries the operator's own token,
+which is what lets the audit log name them.
 
 ---
 
@@ -174,14 +202,30 @@ and a corrected ledger corrects the explanation with it.
 
 ## Suggested order from here
 
-1. **Auth**, so neither surface is open to anyone with the URL. It is now the
-   largest gap: the console shows real bookings, real money and real incident
-   reports to anyone who loads it.
-2. **The writes**, starting with document verification and the weather
-   cancellation — both already have their previews built, and both previews
-   are computed from the same rows a commit would touch.
-3. **A weather source**, which is the only thing between A05's preview and the
-   feature the screen was designed for.
-4. **The vendor app's own API wiring.** `booking.readVendor` and
-   `payout.readOwn` procedures need writing so a vendor session only ever sees
-   its own rows.
+1. **The vendor app's own API wiring.** It has a real login now and still
+   reads fixtures behind it, which is the most misleading combination in the
+   repo — a signed-in owner looking at someone else's invented week.
+   `booking.readVendor` and `payout.readOwn` need writing so a vendor session
+   only ever sees its own rows.
+2. **A weather source.** The only thing between A05's cancellation preview and
+   the feature the screen was designed for. Until then the screen says plainly
+   that nothing is flagged, which is the right answer but not the useful one.
+3. **The remaining writes** — suspend an operator, moderate a review, resolve
+   a dispute, reverse a ledger entry. The pattern is set in
+   `apps/api/src/routers/admin-writes.ts`; follow it rather than inventing a
+   second one.
+4. **Rate limiting in front of the API.** Sign-in has a per-account lockout,
+   but nothing limits by IP — and a hostel's shared connection is one IP and
+   forty travellers, so an IP limit needs designing rather than adding.
+5. **The traveller app.** `apps/traveler` has Board 04 Discover; boards 05–11
+   are written in `docs/DESIGN-PROMPT-BOARDS-04-11.md` but not yet run through
+   Claude Design, and nothing in the app reads the API.
+
+## Deploying
+
+`docs/DEPLOY.md`. The API is a container or a Render/Railway service; the
+console is Vercel with `DAHAB_API_URL` pointing at it. The API refuses to boot
+without `AUTH_SECRET`, without `DATABASE_URL` in production, or with
+`OTP_TRANSPORT=console` in production — a process that will not come up is a
+deploy that fails loudly, and one that comes up broken is an outage nobody is
+paged for.

@@ -1,6 +1,6 @@
 import { parseArgs } from 'node:util';
 import { createInterface } from 'node:readline/promises';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 
 import { MIN_PASSWORD_LENGTH, roleSchema, type Role } from '@dahab/api-contract';
 import { createDatabase, schema } from '@dahab/db';
@@ -27,6 +27,7 @@ const { values } = parseArgs({
     email: { type: 'string' },
     role: { type: 'string', default: 'admin' },
     vendor: { type: 'string' },
+    disable: { type: 'boolean', default: false },
   },
 });
 
@@ -37,7 +38,56 @@ function fail(message: string): never {
 
 const email = values.email?.trim().toLowerCase();
 if (email === undefined || !email.includes('@')) {
-  fail('Usage: pnpm staff:create --email you@example.com [--role admin] [--vendor <uuid>]');
+  fail(
+    'Usage: pnpm staff:create --email you@example.com [--role admin] [--vendor <uuid>]\n' +
+      '       pnpm staff:create --email them@example.com --disable',
+  );
+}
+
+/**
+ * Taking an account away.
+ *
+ * The password hash is cleared and every live session revoked — the account
+ * stops being a way in immediately, and `passwordSignIn` refuses it because a
+ * null hash can never match.
+ *
+ * The row itself stays. `audit_log.actor_user_id` references it, and deleting
+ * the actor would erase who verified which permit and who cancelled which
+ * boat. An audit log whose subjects can be deleted audits nothing — which is
+ * why Postgres refuses the delete, and why this is the operation that exists
+ * instead of one that forces it through.
+ */
+if (values.disable) {
+  const { db, close } = createDatabase();
+  try {
+    const [user] = await db
+      .select({ id: schema.users.id })
+      .from(schema.users)
+      .where(eq(schema.users.email, email))
+      .limit(1);
+
+    if (user === undefined) fail(`No account for ${email}.`);
+
+    const now = new Date();
+    await db
+      .update(schema.users)
+      .set({ passwordHash: null, passwordUpdatedAt: now, lockedUntil: null, updatedAt: now })
+      .where(eq(schema.users.id, user.id));
+
+    const revoked = await db
+      .update(schema.sessions)
+      .set({ revokedAt: now, updatedAt: now })
+      .where(and(eq(schema.sessions.userId, user.id), isNull(schema.sessions.revokedAt)))
+      .returning({ id: schema.sessions.id });
+
+    process.stdout.write(
+      `Disabled ${email}: password cleared, ${revoked.length} session(s) revoked.\n` +
+        'The row stays so the audit log still names them.\n',
+    );
+  } finally {
+    await close();
+  }
+  process.exit(0);
 }
 
 const parsedRole = roleSchema.safeParse(values.role);

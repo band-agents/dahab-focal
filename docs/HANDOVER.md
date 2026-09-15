@@ -21,9 +21,9 @@ Three surfaces, one design system, one token package, one i18n package, one API:
 | Surface | Package | State |
 | --- | --- | --- |
 | Traveller app | `apps/traveler` | **Empty directory.** Designed (Board 03 Home approved), never coded. |
-| Vendor / operator app | `apps/vendor` | Expo, 5 screens, Arabic-first, fixtures |
-| Admin console — "the Sky Eye" | `apps/admin` | Next.js 15, 8 screens, 1 wired to the API |
-| API | `apps/api` | Fastify + tRPC, reads only, no database connected |
+| Vendor / operator app | `apps/vendor` | Expo, 5 screens, Arabic-first, **password sign-in**, still on fixtures |
+| Admin console — "the Sky Eye" | `apps/admin` | Next.js 15, 8 screens, all on the API, **signed in**, 3 writes |
+| API | `apps/api` | tRPC on node:http, live Supabase, password auth, deployable |
 | Component gallery | `apps/gallery` | Exists to be screenshotted by the visual gate |
 
 The business model: vendors list services, travellers book, the platform takes
@@ -110,6 +110,15 @@ payments, a balanced double-entry ledger, payouts, reviews, incidents and
 disputes — and **all eight admin screens were moved off fixtures onto the
 API**. The fixture modules under `apps/admin/lib/` were deleted rather than
 left to rot.
+
+**Session 5 (2026-09-14 → 15).** The two gaps closed. Staff sign-in with
+scrypt passwords, persisted sessions with rotating refresh tokens and real
+revocation; the console behind a `(console)` route group that requires one;
+three writes — verify a document, publish a listing, cancel a departure — each
+with a reason, one transaction and an audit row; the operator app given the
+same login, with its role read from the account instead of from `?role=`;
+and deployment configuration for Render, Railway, Vercel and a container.
+Tests went 228 → 263.
 
 The user's standing instruction from this session, still in force:
 
@@ -364,6 +373,34 @@ Do not rediscover these.
 13. **A broken commit was pushed** — `git commit` was run in the same command
     as `pnpm verify`, so a failing `@dahab/ui-web` typecheck went out. Fixed in
     the next commit. **Read the gate's output before committing.**
+14. **Every route prerendered as static HTML.** The console built to SSG, so a
+    production deploy would have shipped build-time rows and no session check
+    at all. `export const dynamic = 'force-dynamic'` on the `(console)` layout.
+    Nothing failed; the build was green.
+15. **A `Date` interpolated into a raw drizzle `sql` template** reached
+    postgres-js as a JS object and 500'd every signed-in request. Use `gt()`,
+    which binds it as a parameter.
+16. **The seed dated its days in UTC, the console filters them in Cairo.**
+    `toISOString().slice(0,10)` is the UTC day; between 22:00 UTC and midnight
+    that is the *previous* Cairo day, so seeding in the evening wrote the
+    whole operating week one day early and A05 showed "nothing is going out"
+    on a board that had three boats.
+17. **Two console writes were gated on vendor-scoped permissions.**
+    `catalog.publish` and `booking.manageVendor` are held by vendor owners over
+    their own catalogue and their own boats, so any owner could have published
+    any operator's listing and cancelled any operator's departure. The
+    `*Any` forms exist for exactly that distinction.
+18. **A preflight `OPTIONS` reached tRPC and came back 415**, so every
+    cross-origin POST would have failed before it was sent — and tRPC writes
+    its own `Vary` last, replacing `Vary: Origin`. Both found by sending the
+    requests, neither visible in the code.
+19. **`isolate()` was handed `undefined`** from an API one deploy behind and
+    threw. A `=== null` guard does not catch `undefined`; normalise at the
+    boundary.
+20. **An audit log's actor cannot be deleted, and should not be.** Removing a
+    staff account hit a foreign key from `audit_log`. The right operation is
+    to clear the password and revoke the sessions — `staff:create --disable` —
+    not to force the delete through.
 
 ---
 
@@ -386,7 +423,7 @@ neighbourhoods and operators — with one exception stated in
 manifest with no names on it cannot be read, and they are the only fictional
 thing in the database.
 
-**3. Three things are genuinely absent, and the console says so rather than
+**3. Two things are genuinely absent, and the console says so rather than
 filling them in.**
 
 - **No weather source.** A01's conditions strip and A05's "wind above this
@@ -396,14 +433,37 @@ filling them in.**
   departure you pick instead of one a forecast picked.
 - **No exchange-rate feed.** A06's header says so. `exchange_rates` exists and
   is empty.
-- **No writes, so no audit log.** A08's audit panel is empty and explains why.
-  "Cancel the departure", "Review" and "Confirm" are `disabled`, not merely
-  unwired — a button that silently does nothing is worse than one that is not
-  there yet.
 
-**4. Nothing authenticates.** Anyone who opens either URL is in. The console
-talks to the API with a long-lived service token in `.env`
-(`DAHAB_ADMIN_TOKEN`). The OTP flow exists in `apps/api` and needs wiring.
+**4. Three things write; the rest is still read-only.** `reviewDocument`,
+`reviewService` and `cancelDeparture`, in
+`apps/api/src/routers/admin-writes.ts`. Each requires a reason, runs in one
+transaction and leaves an audit row with both sides — which is why they live
+apart from the reads, so a fourth cannot be added without those rules. Each
+re-reads its row and returns CONFLICT if it moved, because two admins on one
+queue is the normal case.
+
+A08's audit panel fills up as soon as any of them runs. Suspending an
+operator, moderating a review, resolving a dispute and reversing a ledger
+entry are **not** written yet.
+
+**5. Both surfaces authenticate, and there is no sign-up.** Staff sign in with
+an email and a password (scrypt, in `apps/api/src/auth/password.ts`);
+`pnpm staff:create` makes an account and `--disable` takes one away — clearing
+the hash and revoking the sessions rather than deleting the row, because
+`audit_log` references it and Postgres is right to refuse.
+
+The console's eight boards live in a `(console)` route group whose layout
+requires a session, so protection is structural rather than remembered. The
+operator app reads its role from the account, and refuses a platform admin or
+a traveller outright.
+
+**`DAHAB_ADMIN_TOKEN` is gone.** A long-lived admin token in an environment
+variable is the same "anyone who reaches this is in" problem, harder to notice
+and impossible to revoke per person. Every call carries the operator's own
+token, which is what lets the audit log name them.
+
+Travellers still have no way in: the one-time code path needs its challenge
+table wired and an SMS gateway chosen.
 
 The honest-failure pattern is the house style here. `apps/admin/lib/api.ts`
 classifies a failure as `unreachable` / `noDatabase` / `forbidden` /
@@ -456,6 +516,9 @@ pnpm dev      # everything
 pnpm --filter @dahab/admin dev    # port 4310
 pnpm --filter @dahab/vendor dev   # port 4320
 pnpm db:migrate && pnpm db:seed   # needs DATABASE_URL
+
+pnpm staff:create --email you@example.com --role admin
+pnpm staff:create --email them@example.com --disable
 ```
 
 **Both gates run at the end of every session. They are gates, not
@@ -492,25 +555,33 @@ fixture and requires it to fail, so weakening the gate breaks a test.
 
 ## 13. Suggested order from here
 
-1. **Auth**, so neither surface is open to anyone with the URL. It is now the
-   largest single gap: the console reads real bookings, real money and real
-   incident reports, and nothing checks who is looking.
-2. **The writes**, starting with document verification and the weather
-   cancellation — both already have their previews built and both previews are
-   computed from the same rows a commit would touch. Each write needs a reason
-   field, a confirmation and an audit row. `audit_log.reason` exists for this,
-   and A08's audit panel is waiting for the first one.
-3. **A weather source.** It is the only thing standing between A05's
-   cancellation preview and the feature the screen was designed for. Until
-   then the screen says plainly that nothing is flagged.
-4. **The vendor app's own API wiring** — `booking.readVendor` and
-   `payout.readOwn` need writing so a vendor session only ever sees its own
-   rows. The vendor app is still on fixtures; the admin console is not.
-5. **The traveller app.** `apps/traveler` has Board 04 Discover; boards 05–11
+1. **Deploy.** Everything is configured and nothing is deployed —
+   `docs/DEPLOY.md` has the order and says plainly that no host has been
+   pushed to yet. It needs accounts only the owner can create.
+2. **The vendor app's own API wiring** — `booking.readVendor` and
+   `payout.readOwn`, so a vendor session only ever sees its own rows. This is
+   now the most misleading thing in the repo: a real login in front of
+   fixtures means a signed-in owner is looking at somebody else's invented
+   week and has no way to tell.
+3. **A weather source.** The only thing standing between A05's cancellation
+   preview and the feature the screen was designed for. Until then the screen
+   says plainly that nothing is flagged.
+4. **The remaining writes** — suspend an operator, moderate a review, resolve
+   a dispute, reverse a ledger entry. The pattern is set in
+   `apps/api/src/routers/admin-writes.ts`; follow it rather than starting a
+   second one.
+5. **Rate limiting in front of the API.** Sign-in has a per-account lockout —
+   ten tries, fifteen minutes — but nothing limits requests by IP, and a
+   hostel's shared connection is one IP and forty travellers, so an IP limit
+   needs designing rather than adding.
+6. **Traveller sign-in.** The one-time code path is written but its challenge
+   table is not wired and no SMS gateway is chosen; the API refuses to start
+   in production while `OTP_TRANSPORT=console`.
+7. **The traveller app.** `apps/traveler` has Board 04 Discover; boards 05–11
    are written in `docs/DESIGN-PROMPT-BOARDS-04-11.md` but not yet run through
    Claude Design, and nothing in the app reads the API yet.
 
-**What the i18n catalogue still owes:** 625 keys × 7 locales = 4,375 messages
+**What the i18n catalogue still owes:** 672 keys × 7 locales = 4,704 messages
 today. `participant.*`, `category.*` and `diveSite.*` now exist because
 something renders them. Still missing: `attribute.diving.*`, `certLevel.*`,
 `neighborhood.*`, `gas.*` — every one of those is currently shown as its raw
