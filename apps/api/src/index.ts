@@ -3,6 +3,7 @@ import { createServer } from 'node:http';
 import { createHTTPHandler } from '@trpc/server/adapters/standalone';
 
 import { closeDatabase, probeDatabase } from './database.ts';
+import { isAllowedOrigin, parseOrigins } from './cors.ts';
 import { createContext } from './context.ts';
 import { logger } from './logger.ts';
 import { appRouter } from './routers/index.ts';
@@ -53,21 +54,15 @@ function requireEnvironment(): void {
 }
 
 /**
- * Cross-origin access, allowlisted and off by default.
+ * Cross-origin access, allowlisted.
  *
  * The admin console renders on a server and calls this from there, so it
- * needs no CORS at all. The browser surfaces will, and the wrong answer here
- * — `*` beside `Access-Control-Allow-Credentials` — is the one that lets any
- * page on the internet make authenticated calls with a visitor's cookie. So
- * origins are named explicitly in CORS_ORIGINS, and an unlisted one gets no
- * header rather than a permissive one.
+ * needs no CORS at all. The browser surfaces do, and the wrong answer here —
+ * `*` beside `Access-Control-Allow-Credentials` — is the one that lets any
+ * page on the internet make authenticated calls with a visitor's session.
+ * The rule itself lives in ./cors.ts, where it is tested.
  */
-const allowedOrigins = new Set(
-  (process.env['CORS_ORIGINS'] ?? '')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter((origin) => origin !== ''),
-);
+const allowedOrigins = parseOrigins(process.env['CORS_ORIGINS']);
 
 requireEnvironment();
 
@@ -99,7 +94,8 @@ const handler = createHTTPHandler({
  */
 const server = createServer((req, res) => {
   const origin = req.headers.origin;
-  const allowed = typeof origin === 'string' && allowedOrigins.has(origin);
+  const allowed =
+    typeof origin === 'string' && isAllowedOrigin(origin, allowedOrigins, isProduction);
 
   if (allowed) {
     res.setHeader('access-control-allow-origin', origin);
@@ -135,6 +131,8 @@ logger.info('api listening', {
   port,
   environment,
   corsOrigins: [...allowedOrigins],
+  // Said out loud, so it is obvious in the log which mode this process is in.
+  loopbackAllowed: !isProduction,
   timezone: 'stored UTC, rendered Africa/Cairo',
 });
 
