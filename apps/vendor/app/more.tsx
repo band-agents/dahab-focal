@@ -2,10 +2,11 @@ import { ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { formatCurrency, formatDate, isolate, money } from '@dahab/i18n';
-import { Card, Illo, Mark, Row, StatusPill } from '@dahab/ui';
+import { Button, Card, Illo, Mark, Row, StatusPill } from '@dahab/ui';
 
 import { EARNINGS, RESOURCES, STAFF } from '../src/operations';
-import { isOwner, session } from '../src/session';
+import { useSession, useSessionState } from '../src/SessionProvider';
+import { isOwner } from '../src/session';
 
 /**
  * V05–V07 · Team, equipment and money, gated by role.
@@ -21,6 +22,8 @@ import { isOwner, session } from '../src/session';
  */
 export default function MoreScreen() {
   const { t } = useTranslation();
+  const session = useSession();
+  const { signOut } = useSessionState();
   const context = { locale: session.locale } as const;
   const owner = isOwner(session.role);
 
@@ -32,7 +35,9 @@ export default function MoreScreen() {
       <View>
         <Text className="font-display text-displayL text-text">{t('vendor.more.title')}</Text>
         <Text className="mt-1 font-ui text-body text-text-muted">
-          {session.vendorName} · {t(owner ? 'vendor.role.owner' : 'vendor.role.staff')}
+          {session.vendorName === null
+            ? t(owner ? 'vendor.role.owner' : 'vendor.role.staff')
+            : `${session.vendorName} · ${t(owner ? 'vendor.role.owner' : 'vendor.role.staff')}`}
         </Text>
       </View>
 
@@ -133,11 +138,26 @@ export default function MoreScreen() {
           <View className="flex-row items-start gap-3 rounded-lg bg-info-surface p-4">
             <Mark name="chat" size={20} />
             <Text className="flex-1 font-ui text-small text-info-text">
-              {t('vendor.role.staffLimit', { name: isolate('Mahmoud') })}
+              {t('vendor.role.staffLimitNoName')}
             </Text>
           </View>
         </View>
       )}
+
+      {/*
+        The way out, at the foot of the last tab rather than beside anything
+        that commits something. The address is shown because a shared phone at
+        a dive centre is normal, and knowing whose session is open matters
+        before you check anyone in.
+      */}
+      <View className="gap-3 border-t border-border pt-6">
+        {session.email === null ? null : (
+          <Text className="font-ui text-caption text-text-muted">{isolate(session.email)}</Text>
+        )}
+        <Button variant="secondary" onPress={signOut}>
+          {t('vendor.more.signOut')}
+        </Button>
+      </View>
     </ScrollView>
   );
 }

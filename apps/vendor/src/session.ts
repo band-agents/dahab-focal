@@ -1,24 +1,28 @@
 import { SOURCE_LOCALE, directionOf, isLocale, type Locale } from '@dahab/i18n';
 import type { Direction, Script, ThemeName } from '@dahab/ui';
 
+import { initialLocale, readStored, type StoredSession, type VendorRole } from './auth';
+
 /**
  * Who is holding the phone, and in what language.
  *
- * The role is the product's defining split. From the permission matrix:
- * `vendorStaff` holds catalog.read, catalog.write, booking.readVendor,
- * booking.manageVendor, vendor.readOwn and resource.manage — and nothing
- * else. `vendorOwner` adds catalog.publish, vendor.writeOwn, staff.manage,
- * pricing.manage and payout.readOwn.
+ * The role is the product's defining split, and it comes from the API now
+ * rather than from a query string. From the permission matrix: `vendorStaff`
+ * holds catalog.read, catalog.write, booking.readVendor, booking.manageVendor,
+ * vendor.readOwn and resource.manage — and nothing else. `vendorOwner` adds
+ * catalog.publish, vendor.writeOwn, staff.manage, pricing.manage and
+ * payout.readOwn.
  *
  * So a guide sees no money, sets no prices, manages no staff and cannot
- * publish. That is designed as a real difference — fewer sections, a service
- * editor that hands off for publishing — rather than as greyed-out buttons.
+ * publish. That is a real difference — fewer sections, a service editor that
+ * hands off for publishing — rather than greyed-out buttons.
  *
- * Read from the URL at module scope so the first paint is already correct,
- * the same way the gallery does it.
+ * Read synchronously at module scope so the first paint is already in the
+ * right language and direction. An async read would mean a flash of English
+ * on an Arabic-first surface, which is the one thing this app must not do.
  */
 
-export type VendorRole = 'vendorOwner' | 'vendorStaff';
+export type { VendorRole } from './auth';
 
 export interface VendorSession {
   readonly role: VendorRole;
@@ -26,11 +30,18 @@ export interface VendorSession {
   readonly locale: Locale;
   readonly direction: Direction;
   readonly script: Script;
-  readonly vendorName: string;
-  readonly person: string;
+  readonly vendorId: string | null;
+  readonly email: string | null;
+  /**
+   * Their own name and their operator's, both from the API. Null where the
+   * profile carries none — which the screens render as an unnamed greeting
+   * rather than as an invented one.
+   */
+  readonly displayName: string | null;
+  readonly vendorName: string | null;
+  readonly accessToken: string;
 }
 
-const ROLES: readonly VendorRole[] = ['vendorOwner', 'vendorStaff'];
 const THEMES: readonly ThemeName[] = ['light', 'dark'];
 
 function search(): URLSearchParams {
@@ -40,45 +51,45 @@ function search(): URLSearchParams {
   return new URLSearchParams(window.location.search);
 }
 
-function pick<T extends string>(
-  params: URLSearchParams,
-  key: string,
-  allowed: readonly T[],
-  fallback: T,
-): T {
-  const raw = params.get(key);
-  if (raw === null) return fallback;
-  const match = allowed.find((candidate) => candidate === raw);
-  if (match === undefined) {
-    console.warn(`vendor: ?${key}=${raw} is not one of ${allowed.join(' | ')} — using ${fallback}.`);
-    return fallback;
-  }
-  return match;
+/**
+ * Theme and locale still read the URL.
+ *
+ * Not as a way in — the role no longer does, which was the actual hole — but
+ * because being able to open the app in Night Dive or in German without an
+ * account is how the screenshots get taken and how a translation gets checked.
+ */
+function themeFromUrl(): ThemeName {
+  const raw = search().get('theme');
+  const match = THEMES.find((candidate) => candidate === raw);
+  return match ?? 'light';
 }
 
-function readSession(): VendorSession {
-  const params = search();
-  const role = pick(params, 'role', ROLES, 'vendorOwner');
-  const theme = pick(params, 'theme', THEMES, 'light');
+export function localeFromUrl(): Locale {
+  const raw = search().get('locale');
+  if (raw === null) return initialLocale(null);
+  return isLocale(raw) ? raw : SOURCE_LOCALE;
+}
 
-  const rawLocale = params.get('locale');
-  // Arabic first on this surface: a Dahab dive centre's staff work in it, and
-  // traveller-facing Arabic being one of seven locales is a different fact.
-  const locale: Locale =
-    rawLocale === null ? 'ar-EG' : isLocale(rawLocale) ? rawLocale : SOURCE_LOCALE;
-
+export function toSession(stored: StoredSession, locale = localeFromUrl()): VendorSession {
   return {
-    role,
-    theme,
+    role: stored.role,
+    theme: themeFromUrl(),
     locale,
     direction: directionOf(locale),
     script: locale === 'ar-EG' ? 'arabic' : 'latin',
-    vendorName: 'Fanous Divers',
-    person: role === 'vendorOwner' ? 'Mahmoud' : 'Yasmin',
+    vendorId: stored.vendorId,
+    email: stored.email,
+    displayName: stored.displayName,
+    vendorName: stored.vendorName,
+    accessToken: stored.accessToken,
   };
 }
 
-export const session: VendorSession = readSession();
+/** The session the app opened with, or null when nobody is signed in. */
+export function restore(): VendorSession | null {
+  const stored = readStored();
+  return stored === null ? null : toSession(stored);
+}
 
 /** The permissions this role actually holds, straight from the matrix. */
 export const OWNER_ONLY = [

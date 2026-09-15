@@ -36,7 +36,8 @@
       "traveler.discover.compareCategoryCount",
       "traveler.hub.chip.nitrox",
       "traveler.site.meters",
-      "vendor.pricing.total"
+      "vendor.pricing.total",
+      "vendor.signIn.brand"
     ]
   },
   "app": {
@@ -657,7 +658,8 @@
       "seats": "{used} de {total}",
       "billed": "{capacity} a bordo · {chargeable} cobrados",
       "guide": "Guía {name}",
-      "nothing": "Nada más por hoy."
+      "nothing": "Nada más por hoy.",
+      "greetingAnon": "Buenos días."
     },
     "outstanding": {
       "waivers": "{count, plural, =0 {Todos los consentimientos firmados} one {# consentimiento pendiente} other {# consentimientos pendientes}}",
@@ -684,7 +686,8 @@
     "role": {
       "owner": "Propietario",
       "staff": "Guía",
-      "staffLimit": "Finanzas, precios y equipo son del propietario. Pregunta a {name}."
+      "staffLimit": "Finanzas, precios y equipo son del propietario. Pregunta a {name}.",
+      "staffLimitNoName": "Las finanzas, los precios y el equipo son del responsable. Pregúntale."
     },
     "action": {
       "checkIn": "Registrar",
@@ -712,7 +715,8 @@
       "inclusions": "Inclusiones declaradas",
       "inclusionsNote": "La comparación reduce cada inclusión a un precio único. Rellenarlo con honestidad te sube, no te cuesta.",
       "publishOwner": "Solo el propietario publica. Guarda un borrador y le llegará a {name}.",
-      "from": "Desde"
+      "from": "Desde",
+      "publishOwnerNoName": "Publicar es cosa del responsable."
     },
     "more": {
       "title": "Más",
@@ -726,7 +730,8 @@
       "resourcesSub": "Una botella en periodo de prueba no entra en una lista.",
       "blocked": "Bloqueada hasta la prueba",
       "dueOn": "Vence {date}",
-      "ownerOnly": "Solo propietario"
+      "ownerOnly": "Solo propietario",
+      "signOut": "Salir"
     },
     "pricing": {
       "title": "Precios",
@@ -745,6 +750,20 @@
         "familyWithInfant": "Familia + bebé",
         "residents": "Tres residentes"
       }
+    },
+    "signIn": {
+      "brand": "Dahab Focal",
+      "brandSub": "App del centro",
+      "title": "Iniciar sesión",
+      "subtitle": "Usa la cuenta de tu centro.",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "submit": "Entrar",
+      "working": "Entrando…",
+      "invalid": "Ese correo y esa contraseña no coinciden con ninguna cuenta.",
+      "notVendor": "Esa cuenta no pertenece a un centro. Esta app es para responsables y guías.",
+      "unreachable": "No se pudo conectar con el servidor. Comprueba la cobertura e inténtalo otra vez.",
+      "noSelfServe": "Las cuentas las crea la plataforma. No hay registro."
     }
   },
   "participant": {

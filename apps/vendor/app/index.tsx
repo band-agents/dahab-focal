@@ -6,7 +6,8 @@ import { Button, Card, Illo, Mark, Row, StatusPill } from '@dahab/ui';
 
 import { CONDITIONS, DEPARTURES, OFFLINE_READY, outstanding, seatCounts } from '../src/day';
 import type { Departure } from '../src/day';
-import { isOwner, session } from '../src/session';
+import { useSession } from '../src/SessionProvider';
+import { isOwner } from '../src/session';
 
 /**
  * V01 · Today — run the day.
@@ -20,6 +21,7 @@ import { isOwner, session } from '../src/session';
  */
 export default function TodayScreen() {
   const { t } = useTranslation();
+  const session = useSession();
   const context = { locale: session.locale } as const;
   const owner = isOwner(session.role);
 
@@ -34,10 +36,16 @@ export default function TodayScreen() {
     <ScrollView className="flex-1 bg-bg" contentContainerClassName="gap-6 px-5 pb-16 pt-14">
       <View>
         <Text className="font-ui text-overline uppercase text-text-muted">
-          {session.vendorName} · {t(owner ? 'vendor.role.owner' : 'vendor.role.staff')}
+          {/* The operator's real name, or the role alone. A profile with no
+              display name is ordinary; inventing one is not. */}
+          {session.vendorName === null
+            ? t(owner ? 'vendor.role.owner' : 'vendor.role.staff')
+            : `${session.vendorName} · ${t(owner ? 'vendor.role.owner' : 'vendor.role.staff')}`}
         </Text>
         <Text className="mt-1 font-display text-displayL text-text">
-          {t('vendor.today.greeting', { name: isolate(session.person) })}
+          {session.displayName === null
+            ? t('vendor.today.greetingAnon')
+            : t('vendor.today.greeting', { name: isolate(session.displayName) })}
         </Text>
         <Text className="mt-1 font-ui text-body text-text-muted">{t('vendor.today.subtitle')}</Text>
       </View>
@@ -104,7 +112,7 @@ export default function TodayScreen() {
         <View className="flex-row items-start gap-3 rounded-lg bg-info-surface p-4">
           <Mark name="chat" size={20} />
           <Text className="flex-1 font-ui text-small text-info-text">
-            {t('vendor.role.staffLimit', { name: isolate('Mahmoud') })}
+            {t('vendor.role.staffLimitNoName')}
           </Text>
         </View>
       )}
@@ -114,6 +122,7 @@ export default function TodayScreen() {
 
 function DepartureCard({ departure }: { readonly departure: Departure }) {
   const { t } = useTranslation();
+  const session = useSession();
   const context = { locale: session.locale } as const;
   const seats = seatCounts(departure.participants);
   const todo = outstanding(departure);

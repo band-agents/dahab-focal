@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { formatCurrency, formatNumber, isolate, money } from '@dahab/i18n';
+import { formatCurrency, formatNumber, money } from '@dahab/i18n';
 import type { CurrencyCode } from '@dahab/i18n';
 import { Button, Card, Mark, StatusPill } from '@dahab/ui';
 
 import { PRESETS, rulesInPriorityOrder, simulate } from '../src/pricing';
-import { isOwner, session } from '../src/session';
+import { useSession } from '../src/SessionProvider';
+import { isOwner } from '../src/session';
 
 /**
  * V04 · Pricing, and the simulator.
@@ -25,6 +26,7 @@ import { isOwner, session } from '../src/session';
  */
 export default function PricingScreen() {
   const { t } = useTranslation();
+  const session = useSession();
   const context = { locale: session.locale } as const;
   const owner = isOwner(session.role);
   const [presetKey, setPresetKey] = useState(PRESETS[0]?.key ?? 'twoAdults');
@@ -36,7 +38,7 @@ export default function PricingScreen() {
         <View className="flex-row items-start gap-3 rounded-lg bg-info-surface p-4">
           <Mark name="chat" size={20} />
           <Text className="flex-1 font-ui text-small text-info-text">
-            {t('vendor.role.staffLimit', { name: isolate('Mahmoud') })}
+            {t('vendor.role.staffLimitNoName')}
           </Text>
         </View>
       </ScrollView>

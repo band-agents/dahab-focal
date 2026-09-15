@@ -7,7 +7,7 @@ import type { MarkName, StatusTone } from '@dahab/ui';
 
 import { BOOKINGS, CASCADE } from '../src/operations';
 import type { BookingStatus, CascadeStep } from '../src/operations';
-import { session } from '../src/session';
+import { useSession } from '../src/SessionProvider';
 
 /**
  * V02 · Bookings, and the cancellation cascade on a phone.
@@ -36,6 +36,7 @@ const CASCADE_MARK: Record<CascadeStep['kind'], MarkName> = {
 
 export default function BookingsScreen() {
   const { t } = useTranslation();
+  const session = useSession();
   const context = { locale: session.locale } as const;
 
   const waiting = BOOKINGS.filter((booking) => booking.status === 'awaitingVendor');

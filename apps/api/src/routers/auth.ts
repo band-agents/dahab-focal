@@ -321,6 +321,10 @@ export const authRouter = router({
          * empty string that looks like a bug.
          */
         email: z.string().nullable(),
+        /** Their own name, for a greeting. Null when the profile has none. */
+        displayName: z.string().nullable(),
+        /** The operator this session acts for, when it acts for exactly one. */
+        vendorName: z.string().nullable(),
       }),
     )
     .query(async ({ ctx }) => {
@@ -345,13 +349,29 @@ export const authRouter = router({
       }
 
       let email: string | null = null;
+      let displayName: string | null = null;
       if (session.userId !== null && ctx.db !== null) {
         const [row] = await ctx.db
-          .select({ email: schema.users.email })
+          .select({
+            email: schema.users.email,
+            displayName: schema.userProfiles.displayName,
+          })
           .from(schema.users)
+          .leftJoin(schema.userProfiles, eq(schema.userProfiles.userId, schema.users.id))
           .where(eq(schema.users.id, session.userId))
           .limit(1);
         email = row?.email ?? null;
+        displayName = row?.displayName ?? null;
+      }
+
+      let vendorName: string | null = null;
+      if (session.vendorId !== null && ctx.db !== null) {
+        const [row] = await ctx.db
+          .select({ displayName: schema.vendors.displayName })
+          .from(schema.vendors)
+          .where(eq(schema.vendors.id, session.vendorId))
+          .limit(1);
+        vendorName = row?.displayName ?? null;
       }
 
       return {
@@ -360,6 +380,8 @@ export const authRouter = router({
         locale: ctx.locale,
         direction: LOCALE_DESCRIPTORS[ctx.locale].direction,
         email,
+        displayName,
+        vendorName,
       };
     }),
 

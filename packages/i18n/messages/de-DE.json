@@ -39,6 +39,7 @@
       "vendor.more.staff",
       "vendor.pricing.simulator",
       "vendor.role.staff",
+      "vendor.signIn.brand",
       "vendor.today.guide"
     ]
   },
@@ -660,7 +661,8 @@
       "seats": "{used} von {total}",
       "billed": "{capacity} an Bord · {chargeable} berechnet",
       "guide": "Guide {name}",
-      "nothing": "Heute sonst nichts."
+      "nothing": "Heute sonst nichts.",
+      "greetingAnon": "Guten Morgen."
     },
     "outstanding": {
       "waivers": "{count, plural, =0 {Alle Erklärungen unterschrieben} one {# Erklärung offen} other {# Erklärungen offen}}",
@@ -687,7 +689,8 @@
     "role": {
       "owner": "Inhaber",
       "staff": "Guide",
-      "staffLimit": "Finanzen, Preise und Team gehören dem Inhaber. Frag {name}."
+      "staffLimit": "Finanzen, Preise und Team gehören dem Inhaber. Frag {name}.",
+      "staffLimitNoName": "Finanzen, Preise und Team gehören dem Inhaber. Fragen Sie ihn."
     },
     "action": {
       "checkIn": "Einchecken",
@@ -715,7 +718,8 @@
       "inclusions": "Angegebene Leistungen",
       "inclusionsNote": "Der Vergleich rechnet alle enthaltenen Leistungen in einen Preis um. Das ehrlich auszufüllen bringt dich nach vorn, es kostet dich nichts.",
       "publishOwner": "Nur der Inhaber veröffentlicht. Speichere einen Entwurf, er geht an {name}.",
-      "from": "Ab"
+      "from": "Ab",
+      "publishOwnerNoName": "Das Veröffentlichen liegt beim Inhaber."
     },
     "more": {
       "title": "Mehr",
@@ -729,7 +733,8 @@
       "resourcesSub": "Eine Flasche in der Prüffrist darf nicht auf die Teilnehmerliste.",
       "blocked": "Gesperrt bis zur Prüfung",
       "dueOn": "Fällig {date}",
-      "ownerOnly": "Nur Inhaber"
+      "ownerOnly": "Nur Inhaber",
+      "signOut": "Abmelden"
     },
     "pricing": {
       "title": "Preise",
@@ -748,6 +753,20 @@
         "familyWithInfant": "Familie + Kleinkind",
         "residents": "Drei Ansässige"
       }
+    },
+    "signIn": {
+      "brand": "Dahab Focal",
+      "brandSub": "Center-App",
+      "title": "Anmelden",
+      "subtitle": "Melden Sie sich mit dem Konto Ihres Centers an.",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "submit": "Anmelden",
+      "working": "Anmeldung läuft…",
+      "invalid": "Diese E-Mail und dieses Passwort gehören zu keinem Konto.",
+      "notVendor": "Dieses Konto gehört zu keinem Center. Die App ist für Inhaber und Guides.",
+      "unreachable": "Server nicht erreichbar. Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+      "noSelfServe": "Konten legt die Plattform an. Eine Selbstregistrierung gibt es nicht."
     }
   },
   "participant": {

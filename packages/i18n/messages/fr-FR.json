@@ -47,6 +47,7 @@
       "traveler.hub.chip.nitrox",
       "traveler.site.meters",
       "vendor.pricing.total",
+      "vendor.signIn.brand",
       "vendor.today.guide"
     ]
   },
@@ -668,7 +669,8 @@
       "seats": "{used} sur {total}",
       "billed": "{capacity} à bord · {chargeable} facturés",
       "guide": "Guide {name}",
-      "nothing": "Rien d’autre aujourd’hui."
+      "nothing": "Rien d’autre aujourd’hui.",
+      "greetingAnon": "Bonjour."
     },
     "outstanding": {
       "waivers": "{count, plural, =0 {Toutes les décharges signées} one {# décharge manquante} other {# décharges manquantes}}",
@@ -695,7 +697,8 @@
     "role": {
       "owner": "Propriétaire",
       "staff": "Moniteur",
-      "staffLimit": "Finances, tarifs et équipe sont au propriétaire. Demandez à {name}."
+      "staffLimit": "Finances, tarifs et équipe sont au propriétaire. Demandez à {name}.",
+      "staffLimitNoName": "Les finances, les tarifs et l’équipe sont au gérant. Demandez-lui."
     },
     "action": {
       "checkIn": "Pointer",
@@ -723,7 +726,8 @@
       "inclusions": "Inclusions déclarées",
       "inclusionsNote": "La comparaison ramène chaque inclusion à un seul prix. Le remplir honnêtement vous fait monter, cela ne vous coûte rien.",
       "publishOwner": "Seul le propriétaire publie. Enregistrez un brouillon, il ira à {name}.",
-      "from": "À partir de"
+      "from": "À partir de",
+      "publishOwnerNoName": "La publication revient au gérant."
     },
     "more": {
       "title": "Plus",
@@ -737,7 +741,8 @@
       "resourcesSub": "Une bouteille en période de requalification ne part pas en liste.",
       "blocked": "Bloquée jusqu’au contrôle",
       "dueOn": "Échéance {date}",
-      "ownerOnly": "Propriétaire seulement"
+      "ownerOnly": "Propriétaire seulement",
+      "signOut": "Se déconnecter"
     },
     "pricing": {
       "title": "Tarifs",
@@ -756,6 +761,20 @@
         "familyWithInfant": "Famille + nourrisson",
         "residents": "Trois résidents"
       }
+    },
+    "signIn": {
+      "brand": "Dahab Focal",
+      "brandSub": "Application du centre",
+      "title": "Connexion",
+      "subtitle": "Utilisez le compte de votre centre.",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "working": "Connexion…",
+      "invalid": "Cet e-mail et ce mot de passe ne correspondent à aucun compte.",
+      "notVendor": "Ce compte n’appartient pas à un centre. L’application est pour les gérants et les guides.",
+      "unreachable": "Serveur injoignable. Vérifiez votre connexion et réessayez.",
+      "noSelfServe": "Les comptes sont créés par la plateforme. Il n’y a pas d’inscription."
     }
   },
   "participant": {

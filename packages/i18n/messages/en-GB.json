@@ -622,7 +622,8 @@
       "seats": "{used} of {total}",
       "billed": "{capacity} aboard · {chargeable} billed",
       "guide": "Guide {name}",
-      "nothing": "Nothing else today."
+      "nothing": "Nothing else today.",
+      "greetingAnon": "Good morning."
     },
     "outstanding": {
       "waivers": "{count, plural, =0 {All waivers signed} one {# waiver outstanding} other {# waivers outstanding}}",
@@ -649,7 +650,8 @@
     "role": {
       "owner": "Owner",
       "staff": "Guide",
-      "staffLimit": "Money, pricing and staff are the owner’s. Ask {name}."
+      "staffLimit": "Money, pricing and staff are the owner’s. Ask {name}.",
+      "staffLimitNoName": "Money, pricing and staff are the owner’s. Ask them."
     },
     "action": {
       "checkIn": "Check in",
@@ -677,7 +679,8 @@
       "inclusions": "Stated inclusions",
       "inclusionsNote": "The comparison normalises every inclusion into one price. Filling this in honestly is what makes you rank well, not what costs you.",
       "publishOwner": "Only the owner can publish. Save a draft and it goes to {name}.",
-      "from": "From"
+      "from": "From",
+      "publishOwnerNoName": "Publishing is the owner’s."
     },
     "more": {
       "title": "More",
@@ -691,7 +694,8 @@
       "resourcesSub": "A cylinder inside its hydrostatic window cannot go on a manifest.",
       "blocked": "Blocked until tested",
       "dueOn": "Due {date}",
-      "ownerOnly": "Owner only"
+      "ownerOnly": "Owner only",
+      "signOut": "Sign out"
     },
     "pricing": {
       "title": "Pricing",
@@ -710,6 +714,20 @@
         "familyWithInfant": "Family + infant",
         "residents": "Three residents"
       }
+    },
+    "signIn": {
+      "brand": "Dahab Focal",
+      "brandSub": "Operator app",
+      "title": "Sign in",
+      "subtitle": "Use your centre’s account.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "working": "Signing in…",
+      "invalid": "That email and password do not match an account.",
+      "notVendor": "That account does not belong to a centre. This app is for owners and guides.",
+      "unreachable": "Could not reach the server. Check your signal and try again.",
+      "noSelfServe": "Accounts are created by the platform. There is no sign-up."
     }
   },
   "participant": {

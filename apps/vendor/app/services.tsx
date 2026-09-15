@@ -1,13 +1,14 @@
 import { ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { formatCurrency, isolate, money } from '@dahab/i18n';
+import { formatCurrency, money } from '@dahab/i18n';
 import { Button, Card, Mark, StatusPill } from '@dahab/ui';
 import type { StatusTone } from '@dahab/ui';
 
 import { SERVICES } from '../src/operations';
 import type { ServiceStatus, VendorService } from '../src/operations';
-import { isOwner, session } from '../src/session';
+import { useSession } from '../src/SessionProvider';
+import { isOwner } from '../src/session';
 
 /**
  * V03 · Services.
@@ -35,6 +36,7 @@ const TONE: Record<ServiceStatus, StatusTone> = {
 
 export default function ServicesScreen() {
   const { t } = useTranslation();
+  const session = useSession();
   const owner = isOwner(session.role);
 
   return (
@@ -50,7 +52,7 @@ export default function ServicesScreen() {
         <View className="flex-row items-start gap-3 rounded-lg bg-info-surface p-4">
           <Mark name="chat" size={20} />
           <Text className="flex-1 font-ui text-small text-info-text">
-            {t('vendor.services.publishOwner', { name: isolate('Mahmoud') })}
+            {t('vendor.services.publishOwnerNoName')}
           </Text>
         </View>
       )}
@@ -70,6 +72,7 @@ function ServiceCard({
   readonly owner: boolean;
 }) {
   const { t } = useTranslation();
+  const session = useSession();
   const context = { locale: session.locale } as const;
   const ready = service.missingComparable === 0;
 

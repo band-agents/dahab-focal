@@ -36,7 +36,10 @@
       "traveler.hub.chip.nitrox",
       "traveler.site.meters",
       "traveler.tabs.account",
-      "traveler.tabs.home"
+      "traveler.tabs.home",
+      "vendor.signIn.brand",
+      "vendor.signIn.email",
+      "vendor.signIn.password"
     ]
   },
   "app": {
@@ -657,7 +660,8 @@
       "seats": "{used} su {total}",
       "billed": "{capacity} a bordo · {chargeable} addebitati",
       "guide": "Guida {name}",
-      "nothing": "Per oggi nient’altro."
+      "nothing": "Per oggi nient’altro.",
+      "greetingAnon": "Buongiorno."
     },
     "outstanding": {
       "waivers": "{count, plural, =0 {Tutte le liberatorie firmate} one {# liberatoria mancante} other {# liberatorie mancanti}}",
@@ -684,7 +688,8 @@
     "role": {
       "owner": "Titolare",
       "staff": "Guida",
-      "staffLimit": "Contabilità, prezzi e personale sono del titolare. Chiedi a {name}."
+      "staffLimit": "Contabilità, prezzi e personale sono del titolare. Chiedi a {name}.",
+      "staffLimitNoName": "Finanze, prezzi e personale sono del titolare. Chiedi a lui."
     },
     "action": {
       "checkIn": "Check-in",
@@ -712,7 +717,8 @@
       "inclusions": "Inclusioni dichiarate",
       "inclusionsNote": "Il confronto riduce ogni inclusione a un solo prezzo. Compilarlo onestamente ti fa salire, non ti costa.",
       "publishOwner": "Solo il titolare pubblica. Salva una bozza e va a {name}.",
-      "from": "Da"
+      "from": "Da",
+      "publishOwnerNoName": "La pubblicazione è del titolare."
     },
     "more": {
       "title": "Altro",
@@ -726,7 +732,8 @@
       "resourcesSub": "Una bombola in scadenza di collaudo non va in elenco.",
       "blocked": "Bloccata fino al collaudo",
       "dueOn": "Scade {date}",
-      "ownerOnly": "Solo titolare"
+      "ownerOnly": "Solo titolare",
+      "signOut": "Esci"
     },
     "pricing": {
       "title": "Prezzi",
@@ -745,6 +752,20 @@
         "familyWithInfant": "Famiglia + neonato",
         "residents": "Tre residenti"
       }
+    },
+    "signIn": {
+      "brand": "Dahab Focal",
+      "brandSub": "App del centro",
+      "title": "Accedi",
+      "subtitle": "Usa l’account del tuo centro.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Accedi",
+      "working": "Accesso in corso…",
+      "invalid": "Questa email e questa password non corrispondono a nessun account.",
+      "notVendor": "Questo account non appartiene a un centro. L’app è per titolari e guide.",
+      "unreachable": "Server irraggiungibile. Controlla la connessione e riprova.",
+      "noSelfServe": "Gli account li crea la piattaforma. Non c’è registrazione."
     }
   },
   "participant": {
