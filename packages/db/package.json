@@ -12,8 +12,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "generate": "drizzle-kit generate && node scripts/postgis-unquote.mjs",
-    "migrate": "node --experimental-strip-types src/migrate.ts",
-    "seed": "node --experimental-strip-types src/seed/index.ts",
+    "migrate": "node --experimental-strip-types --env-file-if-exists=../../.env src/migrate.ts",
+    "seed": "node --experimental-strip-types --env-file-if-exists=../../.env src/seed/index.ts",
     "studio": "drizzle-kit studio",
     "test": "vitest run"
   },

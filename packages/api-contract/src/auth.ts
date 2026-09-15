@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { currencySchema, localeSchema, numberingSystemSchema, userIdSchema, vendorIdSchema } from './common';
+import { currencySchema, localeSchema, numberingSystemSchema, userIdSchema, vendorIdSchema } from './common.ts';
 
 /**
  * Identity, roles and the permission matrix.
@@ -21,11 +21,40 @@ export const permissionSchema = z.enum([
   'catalog.read',
   'catalog.write',
   'catalog.publish',
+  /**
+   * Publish or reject **anyone's** listing, from the console's review queue.
+   *
+   * Separate from `catalog.publish`, which a vendor owner holds over their own
+   * catalogue. Gating the console's review on the vendor-scoped one would have
+   * let any owner publish any operator's service — the same distinction as
+   * `vendor.readOwn` against `vendor.readAny`, and for the same reason.
+   */
+  'catalog.publishAny',
   'booking.createOwn',
   'booking.readOwn',
   'booking.cancelOwn',
   'booking.readVendor',
   'booking.manageVendor',
+  /**
+   * Every booking on the platform, not only one vendor's. Named the same way
+   * as `vendor.readAny` and `user.readAny` because it is the same idea: the
+   * vendor-scoped form answers "mine", this one answers "everyone's", and the
+   * console's bookings, money and cancellation screens all need the second.
+   */
+  'booking.readAny',
+  /**
+   * Cancel or amend **anyone's** departure. The platform-side counterpart to
+   * `booking.manageVendor`: a weather cancellation run from the console
+   * reaches an operator's boat, so it cannot be gated on the permission that
+   * operator holds over their own.
+   */
+  'booking.manageAny',
+  /**
+   * The safety record across every operator. Separate from the booking
+   * permissions because an incident outlives the booking it came from, and
+   * reading one is a different act from reading a manifest.
+   */
+  'incident.readAny',
   'vendor.readOwn',
   'vendor.writeOwn',
   'vendor.readAny',
@@ -135,6 +164,34 @@ export const emailStartSchema = z
   .object({
     email: z.string().email(),
     locale: localeSchema.optional(),
+  })
+  .strict();
+
+/**
+ * The console's sign-in.
+ *
+ * Staff only. Travellers sign in by one-time code and never hold a password,
+ * so this is not a second route into the same door — it is the only route
+ * into a different one, the surface with no phone in the loop.
+ *
+ * Length is the only rule. Composition requirements — a digit, a symbol, a
+ * capital — measurably push people towards `Password1!` and towards reuse,
+ * which is why NIST dropped them.
+ */
+export const MIN_PASSWORD_LENGTH = 12;
+
+export const passwordSignInSchema = z
+  .object({
+    email: z.string().email().max(320),
+    /** Never logged, never echoed back, never put in a URL. */
+    password: z.string().min(1).max(512),
+  })
+  .strict();
+
+export const passwordSetSchema = z
+  .object({
+    email: z.string().email().max(320),
+    password: z.string().min(MIN_PASSWORD_LENGTH).max(512),
   })
   .strict();
 

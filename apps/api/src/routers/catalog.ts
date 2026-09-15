@@ -8,7 +8,7 @@ import {
   pointSchema,
 } from '@dahab/api-contract';
 
-import { publicProcedure, requirePermission, router } from '../trpc';
+import { publicProcedure, requirePermission, router } from '../trpc.ts';
 
 /**
  * Catalogue reads — the only business surface this session exposes, because

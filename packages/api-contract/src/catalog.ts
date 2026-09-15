@@ -10,7 +10,7 @@ import {
   tierIdSchema,
   variantIdSchema,
   vendorIdSchema,
-} from './common';
+} from './common.ts';
 
 /**
  * The catalogue, and the part of it worth getting exactly right: comparable

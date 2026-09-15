@@ -13,8 +13,8 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-import { services } from './catalog';
-import { currencyEnum, moneyAmount, moneyCurrency, primaryId, timestamps } from './_shared';
+import { services } from './catalog.ts';
+import { currencyEnum, moneyAmount, moneyCurrency, primaryId, timestamps } from './_shared.ts';
 
 /**
  * PRICING.

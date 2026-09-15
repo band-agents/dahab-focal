@@ -15,11 +15,11 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-import { bookings } from './booking';
-import { attributeDefinitions, services } from './catalog';
-import { users } from './identity';
-import { vendors } from './vendors';
-import { localeEnum, primaryId, timestamps } from './_shared';
+import { bookings } from './booking.ts';
+import { attributeDefinitions, services } from './catalog.ts';
+import { users } from './identity.ts';
+import { vendors } from './vendors.ts';
+import { localeEnum, primaryId, timestamps } from './_shared.ts';
 
 /** SOCIAL — reviews, questions, and the messages between the two sides. */
 

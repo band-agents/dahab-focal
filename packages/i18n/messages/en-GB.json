@@ -145,5 +145,751 @@
     "stateEmpty": "Empty",
     "stateSkeleton": "Skeleton",
     "noComponentsYet": "No components are registered in this section yet."
+  },
+  "admin": {
+    "console": "Sky Eye",
+    "consoleSub": "Platform console",
+    "nav": {
+      "today": "Today",
+      "vendors": "Vendors",
+      "expiry": "Expiry",
+      "catalog": "Catalogue",
+      "bookings": "Bookings",
+      "money": "Money",
+      "trust": "Safety & trust",
+      "platform": "Platform"
+    },
+    "today": {
+      "title": "Today",
+      "subtitle": "What needs a decision before the boats go out.",
+      "departures": "Departures today",
+      "needsAction": "Bookings needing action",
+      "incidents": "Open incidents",
+      "disputes": "Disputes waiting on us",
+      "payouts": "Payouts due",
+      "expiring": "Expiring inside 30 days",
+      "revenue": "Gross bookings",
+      "takeRate": "Take rate",
+      "weather": "Dahab today",
+      "weatherNote": "Wind cancels boats, and a cancellation cascades.",
+      "noDepartures": "Nothing is going out today.",
+      "seats": "{booked} of {total} seats",
+      "incidentsRecent": "Reported in the last seven days"
+    },
+    "expiry": {
+      "title": "The expiry board",
+      "subtitle": "Everything that lapses, across every operator.",
+      "expired": "Expired",
+      "within7": "Inside 7 days",
+      "within30": "Inside 30 days",
+      "within90": "Inside 90 days",
+      "blocks": "Blocks publishing",
+      "count": "{count, plural, one {# document} other {# documents}}"
+    },
+    "departures": {
+      "title": "Departures",
+      "subtitle": "Capacity against headcount."
+    },
+    "col": {
+      "vendor": "Operator",
+      "document": "Document",
+      "expires": "Expires",
+      "status": "Status",
+      "service": "Service",
+      "when": "When",
+      "seats": "Seats",
+      "amount": "Amount",
+      "severity": "Severity",
+      "site": "Site"
+    },
+    "action": {
+      "review": "Review",
+      "open": "Open",
+      "verify": "Verify",
+      "viewAll": "View all"
+    },
+    "metric": {
+      "today": "Today",
+      "week": "This week",
+      "month": "This month"
+    },
+    "severity": {
+      "nearMiss": "Near miss",
+      "minor": "Minor",
+      "serious": "Serious",
+      "critical": "Critical"
+    },
+    "empty": {
+      "title": "Nothing waiting",
+      "body": "Every queue on this screen is clear."
+    },
+    "cond": {
+      "wind": "{value} kt",
+      "windLabel": "Wind",
+      "waterLabel": "Water",
+      "visLabel": "Visibility",
+      "noSource": "No weather source connected"
+    },
+    "vendors": {
+      "title": "Operators",
+      "subtitle": "Everyone licensed to run in Dahab, and what the platform still owes them.",
+      "queue": "Verification queue",
+      "queueSub": "Documents waiting on us. A rejection has to say why.",
+      "roster": "The roster",
+      "none": "No operator matches this filter.",
+      "noneQueue": "Nothing waiting. Every document has been answered."
+    },
+    "expiryPage": {
+      "title": "The expiry board",
+      "subtitle": "Everything that lapses, across every operator, before it lapses.",
+      "none": "Nothing expires in this window.",
+      "blocksNote": "Stops the operator publishing the moment it lapses."
+    },
+    "vendorStatus": {
+      "applied": "Applied",
+      "inReview": "In review",
+      "active": "Active",
+      "suspended": "Suspended",
+      "closed": "Closed"
+    },
+    "docType": {
+      "commercialRegister": "Commercial register",
+      "taxCard": "Tax card",
+      "operatingPermit": "Operating permit",
+      "cdwsLicence": "CDWS licence",
+      "diveAgencyAffiliation": "Dive agency affiliation",
+      "publicLiabilityInsurance": "Public liability insurance",
+      "boatLicence": "Boat licence",
+      "vehicleLicence": "Vehicle licence",
+      "other": "Other"
+    },
+    "verify": {
+      "pending": "Not supplied",
+      "inReview": "In review",
+      "verified": "Verified",
+      "rejected": "Rejected",
+      "expired": "Expired"
+    },
+    "col2": {
+      "area": "Area",
+      "services": "Services",
+      "rating": "Rating",
+      "staff": "Staff",
+      "issuer": "Issued by",
+      "band": "Due"
+    },
+    "catalog": {
+      "title": "Catalogue & taxonomy",
+      "subtitle": "What operators may publish, and what travellers may compare it on.",
+      "queue": "Waiting on review",
+      "queueSub": "What changed, and whether it can be compared once it is live.",
+      "attributes": "Comparable attributes · Diving",
+      "attributesSub": "These are rows in a table, not columns on a service. Retiring one removes a row from every comparison that uses it.",
+      "categories": "Categories",
+      "categoriesSub": "Each carries its own attribute set. None shares a column with another.",
+      "missing": "{count, plural, =0 {Ready to compare} one {# answer missing} other {# answers missing}}",
+      "notComparable": "Descriptive only",
+      "usage": "On {count, plural, one {# service} other {# services}}",
+      "dataAsData": "Comparable attributes live in attribute_definitions, never as a column on services. One table feeds the taxonomy manager, the vendor service builder and the traveller comparison engine.",
+      "serviceCount": "{count, plural, one {# service} other {# services}}",
+      "noQueue": "Nothing is waiting on a review."
+    },
+    "serviceStatus": {
+      "draft": "Draft",
+      "underReview": "Under review",
+      "published": "Published",
+      "paused": "Paused",
+      "archived": "Archived",
+      "rejected": "Rejected"
+    },
+    "dataType": {
+      "text": "Text",
+      "longText": "Long text",
+      "number": "Number",
+      "measure": "Measure",
+      "boolean": "Yes / no",
+      "enum": "One of",
+      "multiEnum": "Any of",
+      "duration": "Duration",
+      "date": "Date"
+    },
+    "group": {
+      "profile": "Profile",
+      "requirements": "Requirements",
+      "guiding": "Group and guiding",
+      "logistics": "Logistics",
+      "safety": "Safety",
+      "inclusions": "Inclusions"
+    },
+    "col3": {
+      "attribute": "Attribute",
+      "type": "Type",
+      "group": "Comparison group",
+      "normalisation": "Normalised by",
+      "usage": "In use",
+      "submitted": "Submitted",
+      "category": "Category",
+      "comparable": "Comparable",
+      "options": "Options"
+    },
+    "bookings": {
+      "title": "Bookings",
+      "subtitle": "Every booking on the platform, and what the weather is about to do to them.",
+      "all": "All bookings",
+      "risk": "Wind above this operator’s limit",
+      "riskSub": "{forecast} kt forecast against this operator’s {limit} kt limit for {service}, {when}. Cancelling is one operation, and it reaches further than this departure.",
+      "cascadeTitle": "What cancelling touches",
+      "cascadeSub": "Shown before it happens, not after. Nothing below has run yet — this is the preview.",
+      "commit": "Cancel the departure",
+      "keep": "Leave it running",
+      "seats": "{used} of {total} seats",
+      "chargeableNote": "Infants and accompanying instructors hold a seat without being charged, so the manifest and the invoice never match.",
+      "noRisk": "No departure is above its operator’s wind limit.",
+      "none": "No bookings yet.",
+      "noneTomorrow": "Nothing is going out tomorrow."
+    },
+    "cascade": {
+      "bookings": "Bookings cancelled",
+      "transfer": "Transfer that fed it",
+      "refunds": "Refunds opened",
+      "ledger": "Ledger entries written",
+      "notifications": "People told",
+      "releasedNote": "One booking is still awaiting payment, so it is released rather than refunded — nothing was captured to return.",
+      "releases": "Holds released"
+    },
+    "bookingStatus": {
+      "pendingPayment": "Awaiting payment",
+      "confirmed": "Confirmed",
+      "awaitingVendor": "Awaiting operator",
+      "cancelledByTraveler": "Cancelled by traveller",
+      "cancelledByVendor": "Cancelled by operator",
+      "cancelledByWeather": "Cancelled by weather",
+      "noShow": "No show",
+      "completed": "Completed",
+      "refunded": "Refunded",
+      "disputed": "Disputed"
+    },
+    "party": {
+      "adult": "Adult",
+      "child": "Child",
+      "infant": "Infant",
+      "student": "Student",
+      "resident": "Resident",
+      "instructor": "Instructor"
+    },
+    "col4": {
+      "ref": "Reference",
+      "traveler": "Traveller",
+      "party": "Party",
+      "departs": "Departs",
+      "total": "Total"
+    },
+    "money": {
+      "title": "Money",
+      "subtitle": "What came in, what is owed out, and every leg that moved it.",
+      "payments": "Payments",
+      "payouts": "Payouts due",
+      "payoutsSub": "Gross, commission and fees stated separately — never one blended figure.",
+      "ledger": "Ledger",
+      "ledgerSub": "Double-entry and append-only. There is no edit here: a correction is a new entry that reverses the one it replaces.",
+      "balanced": "Balances",
+      "unbalanced": "Does not balance",
+      "reverses": "Reverses {id}",
+      "reversedBy": "Reversed by {id}",
+      "fxTitle": "Exchange rate",
+      "fxSub": "Stored scaled by a million, and the rate a booking used is kept with the booking.",
+      "gross": "Gross",
+      "commission": "Commission",
+      "fees": "Fees",
+      "net": "Net",
+      "balances": "Account balances",
+      "balancesSub": "Every balance is a SUM over an account, never a figure kept up to date by hand. The eight together come to zero.",
+      "noPayments": "No payment has been taken yet.",
+      "noPayouts": "Nothing is owed out.",
+      "noLedger": "The ledger has no entries.",
+      "period": "Period",
+      "noFxSource": "No exchange-rate source connected"
+    },
+    "paymentStatus": {
+      "initiated": "Initiated",
+      "pending": "Pending",
+      "authorized": "Authorised",
+      "captured": "Captured",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded",
+      "partiallyRefunded": "Partly refunded",
+      "chargeback": "Chargeback"
+    },
+    "payoutStatus": {
+      "scheduled": "Scheduled",
+      "processing": "Processing",
+      "paid": "Paid",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "provider": {
+      "paymob": "Paymob",
+      "kashier": "Kashier",
+      "paypal": "PayPal",
+      "fawry": "Fawry",
+      "instapay": "InstaPay",
+      "wise": "Wise",
+      "bankTransfer": "Bank transfer"
+    },
+    "account": {
+      "travelerReceivable": "Traveller receivable",
+      "providerClearing": "Provider clearing",
+      "platformCash": "Platform cash",
+      "vendorPayable": "Operator payable",
+      "platformCommission": "Platform commission",
+      "paymentFees": "Payment fees",
+      "refundsPayable": "Refunds payable",
+      "taxPayable": "Tax payable"
+    },
+    "trust": {
+      "title": "Safety & trust",
+      "subtitle": "What went wrong, who is owed an answer, and what changed because of it.",
+      "incidents": "Incident record",
+      "incidentsSub": "A record, not a queue. Every report carries what changed as a result, and Dahab’s hyperbaric chamber is six minutes away.",
+      "chamber": "Chamber used",
+      "outcomePending": "Review still open",
+      "disputes": "Disputes",
+      "disputesSub": "A resolution writes a ledger reversal, never an edit.",
+      "moderation": "Moderation",
+      "impersonation": "Impersonation",
+      "impersonationSub": "Support reproduces a fault as the user; it is not a way to browse as one. Time-boxed to {minutes} minutes, a reason is required, and a banner shows while it runs.",
+      "noIncidents": "No incident has been reported.",
+      "noDisputes": "No dispute is open.",
+      "noModeration": "Nothing is waiting on a moderator.",
+      "narrative": "What happened"
+    },
+    "incidentKind": {
+      "divingIncident": "Diving incident",
+      "decompressionIllness": "Decompression illness",
+      "equipmentFailure": "Equipment failure",
+      "vesselIncident": "Vessel incident",
+      "vehicleIncident": "Vehicle incident",
+      "medicalEmergency": "Medical emergency",
+      "marineLifeInjury": "Marine life injury",
+      "weatherEvent": "Weather event",
+      "lostDiver": "Lost diver",
+      "other": "Other"
+    },
+    "disputeStatus": {
+      "open": "Open",
+      "awaitingTraveler": "Awaiting traveller",
+      "awaitingVendor": "Awaiting operator",
+      "underReview": "Under review",
+      "resolved": "Resolved",
+      "escalated": "Escalated",
+      "closed": "Closed"
+    },
+    "moderationStatus": {
+      "published": "Published",
+      "pendingReview": "Pending review",
+      "hidden": "Hidden",
+      "removed": "Removed"
+    },
+    "platform": {
+      "title": "Platform",
+      "subtitle": "The audit trail, the switches, the map and the seven languages.",
+      "audit": "Audit log",
+      "auditSub": "The counterweight to an admin holding every permission: actor, permission, target and reason, on every action.",
+      "flags": "Feature flags",
+      "sites": "Dive sites",
+      "translations": "Translation coverage",
+      "translationsSub": "How Arabic written by a Dahab operator reaches six other languages. Machine output still needs a human pass.",
+      "on": "On",
+      "off": "Off",
+      "noAudit": "The audit log is empty: nothing has been written through this console yet.",
+      "flagsSub": "A flag is a dial, not a switch. The percentage is what is actually in force.",
+      "sitesSub": "Depth, entry and the hazard that decides who may dive it."
+    },
+    "difficulty": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "technical": "Technical"
+    },
+    "entry": {
+      "shore": "Shore",
+      "boat": "Boat",
+      "both": "Shore or boat"
+    },
+    "col5": {
+      "when": "When",
+      "actor": "Actor",
+      "permission": "Permission",
+      "target": "Target",
+      "reason": "Reason",
+      "flag": "Flag",
+      "gates": "Gates",
+      "rollout": "Rollout",
+      "site": "Site",
+      "depth": "Depth",
+      "difficulty": "Difficulty",
+      "hazard": "Hazard",
+      "entryType": "Entry",
+      "locale": "Language",
+      "human": "Human",
+      "machine": "Machine",
+      "needsReview": "Needs review",
+      "missing": "Missing",
+      "severity": "Severity",
+      "outcome": "What changed",
+      "provider": "Provider",
+      "due": "Due",
+      "entryId": "Entry",
+      "narrative": "Narrative",
+      "balance": "Balance",
+      "legs": "Legs",
+      "event": "Event",
+      "reviews": "Reviews",
+      "claimed": "Claimed",
+      "account": "Account"
+    },
+    "problem": {
+      "unreachable": "The API did not answer, so this screen has nothing to show — not an empty result.",
+      "noDatabase": "The API is running but has no database configured.",
+      "forbidden": "This account does not hold the permission this screen needs.",
+      "unauthorized": "This console has no valid session."
+    },
+    "event": {
+      "bookingConfirmed": "Booking confirmed",
+      "paymentCaptured": "Payment captured",
+      "paymentFeeCharged": "Provider fee",
+      "refundIssued": "Refund issued",
+      "payoutPaid": "Payout paid"
+    },
+    "signIn": {
+      "title": "Sign in",
+      "subtitle": "The console is for platform staff.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "invalid": "That email and password do not match an account.",
+      "unreachable": "The API did not answer. Nothing is wrong with your password — try again in a moment.",
+      "noSelfServe": "Accounts are created by a platform administrator. There is no sign-up."
+    },
+    "signOut": "Sign out",
+    "signedInAs": "Signed in as {email}",
+    "review": {
+      "reason": "Reason",
+      "reasonHint": "Recorded against your name. A rejection is sent to the operator in full.",
+      "close": "Not now",
+      "outcome": {
+        "done": "Done, and recorded in the audit log.",
+        "conflict": "Someone else got there first. The board below is up to date.",
+        "refused": "This account is not allowed to do that.",
+        "failed": "That did not go through. Nothing was changed."
+      }
+    },
+    "documentReview": {
+      "title": "Review this document",
+      "verify": "Verify",
+      "reject": "Reject",
+      "of": "{type} · {vendor}"
+    },
+    "serviceReview": {
+      "title": "Review this listing",
+      "publish": "Publish",
+      "reject": "Reject",
+      "of": "{title} · {vendor}",
+      "missing": "{count, plural, =0 {Every comparable attribute answered} one {# comparable attribute unanswered} other {# comparable attributes unanswered}}"
+    },
+    "cancelReview": {
+      "title": "Cancel this departure",
+      "confirm": "Cancel the departure",
+      "warning": "This refunds {refunds, plural, one {# booking} other {# bookings}} and releases {releases, plural, one {# more} other {# more}}. It cannot be undone from here.",
+      "reasonHint": "Recorded against your name, and sent to the operator and everyone booked."
+    }
+  },
+  "vendor": {
+    "tabs": {
+      "today": "Today",
+      "bookings": "Bookings",
+      "services": "Services",
+      "more": "More",
+      "pricing": "Pricing"
+    },
+    "today": {
+      "greeting": "Morning, {name}.",
+      "subtitle": "Three departures. One needs a decision before the wind picks up.",
+      "conditions": "Dahab now",
+      "next": "Next four hours",
+      "manifest": "Manifest",
+      "seats": "{used} of {total}",
+      "billed": "{capacity} aboard · {chargeable} billed",
+      "guide": "Guide {name}",
+      "nothing": "Nothing is going out today.",
+      "greetingAnon": "Good morning.",
+      "noWeather": "No weather source connected. The readings that were here were measured from nothing.",
+      "noManifest": "Nobody has booked yet."
+    },
+    "outstanding": {
+      "waivers": "{count, plural, =0 {All waivers signed} one {# waiver outstanding} other {# waivers outstanding}}",
+      "certifications": "{count, plural, =0 {Certifications check out} one {# certification short} other {# certifications short}}",
+      "pickups": "{count, plural, =0 {Everyone collected} one {# not collected} other {# not collected}}",
+      "medical": "{count, plural, =0 {No medical notes} one {# medical note} other {# medical notes}}"
+    },
+    "person": {
+      "certShort": "Short of the minimum for this site",
+      "noWaiver": "Waiver not signed",
+      "medical": "Medical note — read before the briefing",
+      "notPickedUp": "Not collected",
+      "collected": "Collected",
+      "noCert": "No certification needed"
+    },
+    "wind": {
+      "title": "Wind above your limit",
+      "body": "{forecast} kt forecast against your {limit} kt limit. Cancelling reaches the transfer that feeds it and opens the refunds.",
+      "review": "See what cancelling touches"
+    },
+    "offline": {
+      "title": "Ready for the Blue Hole road",
+      "body": "Signal drops most mornings between Assalah and the rim. {vouchers} vouchers, {points} meeting points and {manifests} manifests are on this phone."
+    },
+    "role": {
+      "owner": "Owner",
+      "staff": "Guide",
+      "staffLimit": "Money, pricing and staff are the owner’s. Ask {name}.",
+      "staffLimitNoName": "Money, pricing and staff are the owner’s. Ask them."
+    },
+    "action": {
+      "checkIn": "Check in",
+      "openManifest": "Open manifest",
+      "message": "Message everyone"
+    },
+    "bookings": {
+      "title": "Bookings",
+      "subtitle": "Yours only. Confirm what is waiting, and see what a cancellation reaches.",
+      "waiting": "Waiting on you",
+      "upcoming": "Coming up",
+      "heads": "{count, plural, one {# person} other {# people}}",
+      "confirm": "Confirm",
+      "cancelTitle": "Cancelling the 14:00 boat",
+      "cancelSub": "Shown before it happens. Nothing below has run yet.",
+      "commit": "Cancel the departure",
+      "keep": "Leave it running",
+      "released": "One booking is still awaiting payment, so it is released rather than refunded — nothing was captured.",
+      "notifyDetail": "{count, plural, one {# traveller} other {# travellers}} · {transfer}",
+      "none": "No bookings.",
+      "guest": "Guest"
+    },
+    "services": {
+      "title": "Services",
+      "subtitle": "What you offer, and whether a traveller can compare it.",
+      "comparable": "{count, plural, =0 {Ready to compare} one {# answer missing} other {# answers missing}}",
+      "inclusions": "Stated inclusions",
+      "inclusionsNote": "The comparison normalises every inclusion into one price. Filling this in honestly is what makes you rank well, not what costs you.",
+      "publishOwner": "Only the owner can publish. Save a draft and it goes to {name}.",
+      "from": "From",
+      "publishOwnerNoName": "Publishing is the owner’s.",
+      "none": "No services yet.",
+      "unpriced": "Not priced",
+      "noInclusions": "Nothing declared as included."
+    },
+    "more": {
+      "title": "More",
+      "money": "Earnings",
+      "moneySub": "Gross, commission and fees separately — never one blended figure.",
+      "nextPayout": "Next payout {date}",
+      "staff": "Team",
+      "staffSub": "A lapsed rating cannot be assigned as guide. The calendar refuses it.",
+      "lapsed": "Rating lapsed",
+      "resources": "Equipment",
+      "resourcesSub": "A cylinder inside its hydrostatic window cannot go on a manifest.",
+      "blocked": "Blocked until tested",
+      "dueOn": "Due {date}",
+      "ownerOnly": "Owner only",
+      "signOut": "Sign out",
+      "noStaff": "Nobody has been added to the team yet.",
+      "noResources": "No equipment on record.",
+      "noPayout": "No payout scheduled.",
+      "noExpiry": "No expiry recorded"
+    },
+    "pricing": {
+      "title": "Pricing",
+      "subtitle": "Your rules, and what a traveller actually pays.",
+      "order": "Order they apply in",
+      "orderNote": "Your choice, and it changes the answer: 10% off then a fixed voucher is a different total from the reverse.",
+      "simulator": "Simulator",
+      "simulatorNote": "Runs the same computePrice() the checkout and the comparison use. What you see here is what a traveller is charged.",
+      "total": "Total",
+      "charged": "{count, plural, one {# charged} other {# charged}}",
+      "seated": "{count, plural, one {# seat} other {# seats}}",
+      "suppressed": "{count, plural, one {# rule suppressed by its exclusion group} other {# rules suppressed by their exclusion groups}}",
+      "preset": {
+        "twoAdults": "Two adults",
+        "fourAdults": "Four adults",
+        "familyWithInfant": "Family + infant",
+        "residents": "Three residents"
+      }
+    },
+    "signIn": {
+      "brand": "Dahab Focal",
+      "brandSub": "Operator app",
+      "title": "Sign in",
+      "subtitle": "Use your centre’s account.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "working": "Signing in…",
+      "invalid": "That email and password do not match an account.",
+      "notVendor": "That account does not belong to a centre. This app is for owners and guides.",
+      "unreachable": "Could not reach the server. Check your signal and try again.",
+      "noSelfServe": "Accounts are created by the platform. There is no sign-up."
+    },
+    "problem": {
+      "loading": "Loading…",
+      "offline": "No signal right now. That does not mean nobody is coming — it means we could not ask.",
+      "signedOut": "Your session has ended. Sign in again.",
+      "forbidden": "That one is the owner’s. Ask them if you need it.",
+      "failed": "That did not load. Try again.",
+      "retry": "Try again",
+      "signInAgain": "Sign in again"
+    },
+    "cancel": {
+      "open": "Cancel this departure",
+      "title": "What cancelling touches",
+      "summary": "Cancels {bookings, plural, one {# booking} other {# bookings}}, refunds {refunds} and releases {releases}.",
+      "irreversible": "This cannot be undone from here.",
+      "commit": "Cancel the departure",
+      "working": "Cancelling…",
+      "failed": "That did not go through. Nothing was changed."
+    }
+  },
+  "participant": {
+    "adult": "Adults",
+    "child": "Children",
+    "infant": "Infants",
+    "student": "Students",
+    "resident": "Residents",
+    "instructor": "Accompanying instructors"
+  },
+  "priceRule": {
+    "earlyBird": "Early bird",
+    "residentRate": "Resident rate",
+    "groupOfFour": "Group of four or more"
+  },
+  "category": {
+    "diving": "Diving",
+    "freediving": "Freediving",
+    "snorkeling": "Snorkelling",
+    "boatSea": "Boat & sea",
+    "courses": "Courses",
+    "kiteWatersports": "Kite & watersports",
+    "foodCooking": "Food & cooking",
+    "rentals": "Rentals",
+    "desertSafari": "Desert & safari",
+    "bedouinCulture": "Bedouin & culture",
+    "wellnessYoga": "Wellness & yoga",
+    "transfers": "Transfers"
+  },
+  "traveler": {
+    "tabs": {
+      "home": "Home",
+      "discover": "Discover",
+      "trips": "Trips",
+      "account": "Account"
+    },
+    "notBuilt": {
+      "title": "Not built yet",
+      "body": "This tab is designed but not coded — see docs/HANDOVER.md. Discover is the one working screen so far."
+    },
+    "discover": {
+      "title": "Discover Dahab",
+      "searchPlaceholder": "Dives, desert, kite — or ask in a sentence",
+      "recent": "Recent",
+      "categories": "Categories",
+      "parsedAs": "Read as",
+      "notUsedYet": "Not used yet",
+      "unparsedAmbiguous": "“Two” could mean two dives or two people — tap to choose.",
+      "unparsedCertification": "Nothing said about certification, so all levels are shown.",
+      "resultsMatch": "{count, plural, one {# trip matches} other {# trips match}}",
+      "showResults": "Show {count}",
+      "mapView": "Map",
+      "listView": "List",
+      "compare": "Compare",
+      "compareCount": "{count, plural, one {# attribute} other {# attributes}}",
+      "compareCategoryCount": "{category} · {attributes}",
+      "askBahri": "Ask Bahri",
+      "chipKind": {
+        "area": "Area",
+        "entry": "Entry",
+        "price": "Price",
+        "backBefore": "Back before"
+      }
+    },
+    "filters": {
+      "title": "Filters",
+      "clearAll": "Clear all"
+    },
+    "filterField": {
+      "entry": "Entry",
+      "depth": "Depth",
+      "certification": "Certification",
+      "duration": "Duration",
+      "price": "Price",
+      "included": "Included"
+    },
+    "sort": {
+      "title": "Sort",
+      "earliest": "Earliest start",
+      "priceAsc": "Price, low to high",
+      "rating": "Rating",
+      "closest": "Closest to you",
+      "fewestDivers": "Fewest divers per guide"
+    },
+    "hub": {
+      "tripsCount": "{count, plural, one {# trip} other {# trips}}",
+      "operatorsCount": "{count, plural, one {# operator} other {# operators}}",
+      "summary": "{trips} · {operators} · shore and boat",
+      "sitesThisWeek": "Sites this week",
+      "operatorsTitle": "Operators",
+      "chip": {
+        "shoreEntry": "Shore entry",
+        "boat": "Boat",
+        "nightDive": "Night dive",
+        "nitrox": "Nitrox",
+        "course": "Course"
+      },
+      "noFly": "You fly {weekday}, {time}. Anything booked less than 24 hours before that sits inside the no-fly window for multi-day diving."
+    },
+    "site": {
+      "depthProfile": "Depth profile",
+      "saddle": "Saddle",
+      "arch": "Arch",
+      "floor": "Floor",
+      "gateTitle": "{name} needs technical certification",
+      "gateBody": "You hold {certification} with {dives, plural, one {# logged dive} other {# logged dives}}. {name} asks for trimix or a full cave/tech ticket plus 100 logged dives.",
+      "gateCta": "What it takes",
+      "tripsHere": "{count, plural, one {# trip visits this site} other {# trips visit this site}}",
+      "seeTrips": "See trips",
+      "meters": "{value, number} m"
+    },
+    "ask": {
+      "title": "Ask Bahri",
+      "subtitle": "Answers from operator listings, not opinions",
+      "placeholder": "Ask about Dahab",
+      "notConnected": "Bahri is not wired to a real answer engine yet — this thread is a worked example from the design.",
+      "suggestShowBoth": "Show the two of them",
+      "suggestWhatsNotIncluded": "What is not included?",
+      "suggestFreedivingInstead": "Freediving instead"
+    }
+  },
+  "diveSite": {
+    "blueHole": "Blue Hole",
+    "theBells": "The Bells",
+    "theArch": "The Arch",
+    "elCanyon": "El Canyon",
+    "threePools": "Three Pools",
+    "eelGarden": "Eel Garden",
+    "lighthouse": "Lighthouse",
+    "gabrElBint": "Gabr El Bint",
+    "rasAbuGalum": "Ras Abu Galum",
+    "theIslands": "The Islands",
+    "ummSid": "Umm Sid"
   }
 }

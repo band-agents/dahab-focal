@@ -7,7 +7,7 @@
     "./eslint": "./eslint/index.mjs",
     "./eslint/rtl": "./eslint/rtl-plugin.mjs",
     "./prettier": "./prettier/index.mjs",
-    "./tailwind": "./tailwind/base.js",
+    "./tailwind": "./tailwind/base.cjs",
     "./tsconfig/base.json": "./tsconfig/base.json",
     "./tsconfig/react-native.json": "./tsconfig/react-native.json",
     "./tsconfig/next.json": "./tsconfig/next.json",

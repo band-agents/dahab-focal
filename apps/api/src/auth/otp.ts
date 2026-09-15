@@ -2,7 +2,7 @@ import { createHmac, randomInt, timingSafeEqual } from 'node:crypto';
 
 import type { OtpTransport } from '@dahab/api-contract';
 
-import { logger } from '../logger';
+import { logger } from '../logger.ts';
 
 /**
  * Phone OTP.

@@ -3,7 +3,44 @@
     "locale": "it-IT",
     "source": false,
     "needsTranslation": [],
-    "identicalToSource": ["app.name", "action.ok", "gallery.stateFocus"]
+    "identicalToSource": [
+      "action.ok",
+      "admin.col5.flag",
+      "admin.col5.provider",
+      "admin.cond.wind",
+      "admin.console",
+      "admin.documentReview.of",
+      "admin.provider.fawry",
+      "admin.provider.instapay",
+      "admin.provider.kashier",
+      "admin.provider.paymob",
+      "admin.provider.paypal",
+      "admin.provider.wise",
+      "admin.serviceReview.of",
+      "admin.signIn.email",
+      "admin.signIn.password",
+      "app.name",
+      "diveSite.blueHole",
+      "diveSite.eelGarden",
+      "diveSite.elCanyon",
+      "diveSite.gabrElBint",
+      "diveSite.lighthouse",
+      "diveSite.rasAbuGalum",
+      "diveSite.theArch",
+      "diveSite.theBells",
+      "diveSite.theIslands",
+      "diveSite.threePools",
+      "diveSite.ummSid",
+      "gallery.stateFocus",
+      "traveler.discover.compareCategoryCount",
+      "traveler.hub.chip.nitrox",
+      "traveler.site.meters",
+      "traveler.tabs.account",
+      "traveler.tabs.home",
+      "vendor.signIn.brand",
+      "vendor.signIn.email",
+      "vendor.signIn.password"
+    ]
   },
   "app": {
     "name": "Dahab Focal",
@@ -146,5 +183,751 @@
     "stateEmpty": "Vuoto",
     "stateSkeleton": "Scheletro",
     "noComponentsYet": "In questa sezione non c’è ancora nessun componente registrato."
+  },
+  "admin": {
+    "console": "Sky Eye",
+    "consoleSub": "Console della piattaforma",
+    "nav": {
+      "today": "Oggi",
+      "vendors": "Operatori",
+      "expiry": "Scadenze",
+      "catalog": "Catalogo",
+      "bookings": "Prenotazioni",
+      "money": "Contabilità",
+      "trust": "Sicurezza e fiducia",
+      "platform": "Piattaforma"
+    },
+    "today": {
+      "title": "Oggi",
+      "subtitle": "Cosa richiede una decisione prima che le barche escano.",
+      "departures": "Partenze di oggi",
+      "needsAction": "Prenotazioni da gestire",
+      "incidents": "Incidenti aperti",
+      "disputes": "Controversie in attesa",
+      "payouts": "Pagamenti dovuti",
+      "expiring": "In scadenza entro 30 giorni",
+      "revenue": "Volume prenotazioni",
+      "takeRate": "Quota piattaforma",
+      "weather": "Dahab oggi",
+      "weatherNote": "Il vento annulla le barche, e un annullamento trascina il resto.",
+      "noDepartures": "Oggi non parte nulla.",
+      "seats": "{booked} di {total} posti",
+      "incidentsRecent": "Segnalati negli ultimi sette giorni"
+    },
+    "expiry": {
+      "title": "Il quadro delle scadenze",
+      "subtitle": "Tutto ciò che scade, per ogni operatore.",
+      "expired": "Scaduto",
+      "within7": "Entro 7 giorni",
+      "within30": "Entro 30 giorni",
+      "within90": "Entro 90 giorni",
+      "blocks": "Blocca la pubblicazione",
+      "count": "{count, plural, one {# documento} other {# documenti}}"
+    },
+    "departures": {
+      "title": "Partenze",
+      "subtitle": "Capienza rispetto ai presenti."
+    },
+    "col": {
+      "vendor": "Operatore",
+      "document": "Documento",
+      "expires": "Scade",
+      "status": "Stato",
+      "service": "Servizio",
+      "when": "Quando",
+      "seats": "Posti",
+      "amount": "Importo",
+      "severity": "Gravità",
+      "site": "Sito"
+    },
+    "action": {
+      "review": "Esamina",
+      "open": "Apri",
+      "verify": "Verifica",
+      "viewAll": "Vedi tutti"
+    },
+    "metric": {
+      "today": "Oggi",
+      "week": "Questa settimana",
+      "month": "Questo mese"
+    },
+    "severity": {
+      "nearMiss": "Quasi incidente",
+      "minor": "Lieve",
+      "serious": "Grave",
+      "critical": "Critico"
+    },
+    "empty": {
+      "title": "Nulla in attesa",
+      "body": "Tutte le code di questa schermata sono vuote."
+    },
+    "cond": {
+      "wind": "{value} kt",
+      "windLabel": "Vento",
+      "waterLabel": "Acqua",
+      "visLabel": "Visibilità",
+      "noSource": "Nessuna fonte meteo collegata"
+    },
+    "vendors": {
+      "title": "Operatori",
+      "subtitle": "Tutti quelli autorizzati a Dahab, e cosa deve loro la piattaforma.",
+      "queue": "Coda di verifica",
+      "queueSub": "Documenti in attesa di noi. Un rifiuto deve dire perché.",
+      "roster": "L'elenco",
+      "none": "Nessun operatore corrisponde a questo filtro.",
+      "noneQueue": "Nulla in attesa. Ogni documento ha avuto risposta."
+    },
+    "expiryPage": {
+      "title": "Il quadro delle scadenze",
+      "subtitle": "Tutto ciò che scade, per ogni operatore, prima che scada.",
+      "none": "Nulla scade in questo periodo.",
+      "blocksNote": "Blocca la pubblicazione nel momento in cui scade."
+    },
+    "vendorStatus": {
+      "applied": "Candidato",
+      "inReview": "In esame",
+      "active": "Attivo",
+      "suspended": "Sospeso",
+      "closed": "Chiuso"
+    },
+    "docType": {
+      "commercialRegister": "Registro delle imprese",
+      "taxCard": "Tessera fiscale",
+      "operatingPermit": "Licenza di esercizio",
+      "cdwsLicence": "Licenza CDWS",
+      "diveAgencyAffiliation": "Affiliazione a didattica subacquea",
+      "publicLiabilityInsurance": "Responsabilità civile",
+      "boatLicence": "Licenza imbarcazione",
+      "vehicleLicence": "Libretto del veicolo",
+      "other": "Altro"
+    },
+    "verify": {
+      "pending": "Non fornito",
+      "inReview": "In esame",
+      "verified": "Verificato",
+      "rejected": "Respinto",
+      "expired": "Scaduto"
+    },
+    "col2": {
+      "area": "Zona",
+      "services": "Servizi",
+      "rating": "Valutazione",
+      "staff": "Personale",
+      "issuer": "Rilasciato da",
+      "band": "Scadenza"
+    },
+    "catalog": {
+      "title": "Catalogo e tassonomia",
+      "subtitle": "Cosa possono pubblicare gli operatori e su cosa i viaggiatori lo confrontano.",
+      "queue": "In attesa di revisione",
+      "queueSub": "Cosa è cambiato e se sarà confrontabile una volta online.",
+      "attributes": "Attributi confrontabili · Immersioni",
+      "attributesSub": "Sono righe di una tabella, non colonne di un servizio. Ritirarne uno toglie una riga da ogni confronto che lo usa.",
+      "categories": "Categorie",
+      "categoriesSub": "Ognuna ha il proprio insieme di attributi. Nessuna condivide una colonna.",
+      "missing": "{count, plural, =0 {Pronto al confronto} one {manca # risposta} other {mancano # risposte}}",
+      "notComparable": "Solo descrittivo",
+      "usage": "Su {count, plural, one {# servizio} other {# servizi}}",
+      "dataAsData": "Gli attributi confrontabili stanno in attribute_definitions, mai come colonna su services. Una tabella alimenta la tassonomia, il costruttore di servizi e il motore di confronto.",
+      "serviceCount": "{count, plural, one {# servizio} other {# servizi}}",
+      "noQueue": "Nulla è in attesa di revisione."
+    },
+    "serviceStatus": {
+      "draft": "Bozza",
+      "underReview": "In revisione",
+      "published": "Pubblicato",
+      "paused": "In pausa",
+      "archived": "Archiviato",
+      "rejected": "Respinto"
+    },
+    "dataType": {
+      "text": "Testo",
+      "longText": "Testo lungo",
+      "number": "Numero",
+      "measure": "Misura",
+      "boolean": "Sì / no",
+      "enum": "Uno tra",
+      "multiEnum": "Uno o più tra",
+      "duration": "Durata",
+      "date": "Data"
+    },
+    "group": {
+      "profile": "Profilo",
+      "requirements": "Requisiti",
+      "guiding": "Gruppo e guida",
+      "logistics": "Logistica",
+      "safety": "Sicurezza",
+      "inclusions": "Incluso"
+    },
+    "col3": {
+      "attribute": "Attributo",
+      "type": "Tipo",
+      "group": "Gruppo di confronto",
+      "normalisation": "Normalizzato con",
+      "usage": "In uso",
+      "submitted": "Inviato",
+      "category": "Categoria",
+      "comparable": "Confrontabile",
+      "options": "Opzioni"
+    },
+    "bookings": {
+      "title": "Prenotazioni",
+      "subtitle": "Tutte le prenotazioni della piattaforma, e cosa sta per farne il meteo.",
+      "all": "Tutte le prenotazioni",
+      "risk": "Vento oltre il limite di questo operatore",
+      "riskSub": "Previsti {forecast} kt contro un limite di {limit} kt per {service}, {when}. Annullare è una sola operazione, ma arriva oltre questa partenza.",
+      "cascadeTitle": "Cosa tocca l'annullamento",
+      "cascadeSub": "Mostrato prima, non dopo. Nulla qui sotto è stato eseguito — è l’anteprima.",
+      "commit": "Annulla la partenza",
+      "keep": "Lasciala attiva",
+      "seats": "{used} di {total} posti",
+      "chargeableNote": "Neonati e istruttori accompagnatori occupano un posto senza essere addebitati: lista e fattura non coincidono mai.",
+      "noRisk": "Nessuna partenza supera il limite di vento dell’operatore.",
+      "none": "Ancora nessuna prenotazione.",
+      "noneTomorrow": "Domani non esce nulla."
+    },
+    "cascade": {
+      "bookings": "Prenotazioni annullate",
+      "transfer": "Transfer collegato",
+      "refunds": "Rimborsi aperti",
+      "ledger": "Scritture contabili",
+      "notifications": "Persone avvisate",
+      "releasedNote": "Una prenotazione attende ancora il pagamento: viene liberata, non rimborsata — nulla è stato incassato.",
+      "releases": "Prenotazioni rilasciate"
+    },
+    "bookingStatus": {
+      "pendingPayment": "In attesa di pagamento",
+      "confirmed": "Confermata",
+      "awaitingVendor": "In attesa dell’operatore",
+      "cancelledByTraveler": "Annullata dal viaggiatore",
+      "cancelledByVendor": "Annullata dall’operatore",
+      "cancelledByWeather": "Annullata per meteo",
+      "noShow": "Non presentato",
+      "completed": "Completata",
+      "refunded": "Rimborsata",
+      "disputed": "Contestata"
+    },
+    "party": {
+      "adult": "Adulto",
+      "child": "Bambino",
+      "infant": "Neonato",
+      "student": "Studente",
+      "resident": "Residente",
+      "instructor": "Istruttore"
+    },
+    "col4": {
+      "ref": "Riferimento",
+      "traveler": "Viaggiatore",
+      "party": "Gruppo",
+      "departs": "Partenza",
+      "total": "Totale"
+    },
+    "money": {
+      "title": "Contabilità",
+      "subtitle": "Cosa è entrato, cosa è dovuto e ogni scrittura che lo ha mosso.",
+      "payments": "Pagamenti",
+      "payouts": "Pagamenti dovuti",
+      "payoutsSub": "Lordo, commissione e spese indicati separatamente — mai una cifra unica.",
+      "ledger": "Partita doppia",
+      "ledgerSub": "Doppia registrazione, solo in aggiunta. Qui non si modifica: una correzione è una nuova scrittura che storna quella precedente.",
+      "balanced": "Quadra",
+      "unbalanced": "Non quadra",
+      "reverses": "Storna {id}",
+      "reversedBy": "Stornata da {id}",
+      "fxTitle": "Tasso di cambio",
+      "fxSub": "Memorizzato scalato di un milione; il tasso usato da una prenotazione resta con la prenotazione.",
+      "gross": "Lordo",
+      "commission": "Commissione",
+      "fees": "Spese",
+      "net": "Netto",
+      "balances": "Saldi dei conti",
+      "balancesSub": "Ogni saldo è una SUM su un conto, mai un numero aggiornato a mano. Gli otto insieme fanno zero.",
+      "noPayments": "Non è ancora stato incassato alcun pagamento.",
+      "noPayouts": "Non c’è nulla da liquidare.",
+      "noLedger": "Il libro mastro non ha registrazioni.",
+      "period": "Periodo",
+      "noFxSource": "Nessuna fonte di cambio collegata"
+    },
+    "paymentStatus": {
+      "initiated": "Avviato",
+      "pending": "In sospeso",
+      "authorized": "Autorizzato",
+      "captured": "Incassato",
+      "failed": "Fallito",
+      "cancelled": "Annullato",
+      "refunded": "Rimborsato",
+      "partiallyRefunded": "Rimborsato in parte",
+      "chargeback": "Storno carta"
+    },
+    "payoutStatus": {
+      "scheduled": "Programmato",
+      "processing": "In elaborazione",
+      "paid": "Pagato",
+      "failed": "Fallito",
+      "cancelled": "Annullato"
+    },
+    "provider": {
+      "paymob": "Paymob",
+      "kashier": "Kashier",
+      "paypal": "PayPal",
+      "fawry": "Fawry",
+      "instapay": "InstaPay",
+      "wise": "Wise",
+      "bankTransfer": "Bonifico bancario"
+    },
+    "account": {
+      "travelerReceivable": "Credito verso viaggiatore",
+      "providerClearing": "Compensazione provider",
+      "platformCash": "Cassa piattaforma",
+      "vendorPayable": "Debito verso operatore",
+      "platformCommission": "Commissione piattaforma",
+      "paymentFees": "Spese di pagamento",
+      "refundsPayable": "Rimborsi da pagare",
+      "taxPayable": "Imposte da versare"
+    },
+    "trust": {
+      "title": "Sicurezza e fiducia",
+      "subtitle": "Cosa è andato storto, a chi si deve una risposta e cosa è cambiato.",
+      "incidents": "Registro incidenti",
+      "incidentsSub": "Un registro, non una coda. Ogni segnalazione porta con sé cosa è cambiato, e la camera iperbarica di Dahab è a sei minuti.",
+      "chamber": "Camera iperbarica usata",
+      "outcomePending": "Revisione ancora aperta",
+      "disputes": "Controversie",
+      "disputesSub": "Una risoluzione scrive uno storno, mai una modifica.",
+      "moderation": "Moderazione",
+      "impersonation": "Accesso come utente",
+      "impersonationSub": "L'assistenza riproduce un guasto come l'utente; non è un modo per navigare al posto suo. Limitato a {minutes} minuti, motivo obbligatorio, banner visibile mentre è attivo.",
+      "noIncidents": "Nessun incidente segnalato.",
+      "noDisputes": "Nessuna controversia aperta.",
+      "noModeration": "Nulla è in attesa di un moderatore.",
+      "narrative": "Che cosa è successo"
+    },
+    "incidentKind": {
+      "divingIncident": "Incidente subacqueo",
+      "decompressionIllness": "Malattia da decompressione",
+      "equipmentFailure": "Guasto attrezzatura",
+      "vesselIncident": "Incidente imbarcazione",
+      "vehicleIncident": "Incidente veicolo",
+      "medicalEmergency": "Emergenza medica",
+      "marineLifeInjury": "Lesione da fauna marina",
+      "weatherEvent": "Evento meteo",
+      "lostDiver": "Subacqueo disperso",
+      "other": "Altro"
+    },
+    "disputeStatus": {
+      "open": "Aperta",
+      "awaitingTraveler": "In attesa del viaggiatore",
+      "awaitingVendor": "In attesa dell'operatore",
+      "underReview": "In esame",
+      "resolved": "Risolta",
+      "escalated": "Scalata",
+      "closed": "Chiusa"
+    },
+    "moderationStatus": {
+      "published": "Pubblicato",
+      "pendingReview": "In attesa di revisione",
+      "hidden": "Nascosto",
+      "removed": "Rimosso"
+    },
+    "platform": {
+      "title": "Piattaforma",
+      "subtitle": "La traccia di audit, gli interruttori, la mappa e le sette lingue.",
+      "audit": "Registro di audit",
+      "auditSub": "Il contrappeso al fatto che un admin abbia ogni permesso: attore, permesso, oggetto e motivo, su ogni azione.",
+      "flags": "Feature flag",
+      "sites": "Siti di immersione",
+      "translations": "Copertura delle traduzioni",
+      "translationsSub": "Come l'arabo scritto da un operatore di Dahab raggiunge altre sei lingue. L'output automatico richiede comunque una revisione umana.",
+      "on": "Attivo",
+      "off": "Disattivo",
+      "noAudit": "Il registro di controllo è vuoto: da questa console non è ancora stato scritto nulla.",
+      "flagsSub": "Un flag è una manopola, non un interruttore. Ciò che conta è la percentuale.",
+      "sitesSub": "Profondità, ingresso e il pericolo che decide chi può immergersi."
+    },
+    "difficulty": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzato",
+      "technical": "Tecnico"
+    },
+    "entry": {
+      "shore": "Da riva",
+      "boat": "Da barca",
+      "both": "Riva o barca"
+    },
+    "col5": {
+      "when": "Quando",
+      "actor": "Attore",
+      "permission": "Permesso",
+      "target": "Oggetto",
+      "reason": "Motivo",
+      "flag": "Flag",
+      "gates": "Controlla",
+      "rollout": "Distribuzione",
+      "site": "Sito",
+      "depth": "Profondità",
+      "difficulty": "Difficoltà",
+      "hazard": "Pericolo",
+      "entryType": "Ingresso",
+      "locale": "Lingua",
+      "human": "Umano",
+      "machine": "Automatico",
+      "needsReview": "Da rivedere",
+      "missing": "Mancante",
+      "severity": "Gravità",
+      "outcome": "Cosa è cambiato",
+      "provider": "Provider",
+      "due": "Scadenza",
+      "entryId": "Scrittura",
+      "narrative": "Causale",
+      "balance": "Saldo",
+      "legs": "Righe",
+      "event": "Evento",
+      "reviews": "Recensioni",
+      "claimed": "Richiesto",
+      "account": "Conto"
+    },
+    "problem": {
+      "unreachable": "L'API non ha risposto, quindi questa schermata non ha nulla da mostrare — non è un risultato vuoto.",
+      "noDatabase": "L'API è attiva ma non ha un database configurato.",
+      "forbidden": "Questo account non ha il permesso richiesto da questa schermata.",
+      "unauthorized": "Questa console non ha una sessione valida."
+    },
+    "event": {
+      "bookingConfirmed": "Prenotazione confermata",
+      "paymentCaptured": "Pagamento incassato",
+      "paymentFeeCharged": "Commissione del provider",
+      "refundIssued": "Rimborso emesso",
+      "payoutPaid": "Liquidazione pagata"
+    },
+    "signIn": {
+      "title": "Accedi",
+      "subtitle": "La console è per il personale della piattaforma.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Accedi",
+      "invalid": "Questa email e questa password non corrispondono a nessun account.",
+      "unreachable": "L’API non ha risposto. Non dipende dalla password — riprova tra poco.",
+      "noSelfServe": "Gli account li crea un amministratore della piattaforma. Non c’è registrazione."
+    },
+    "signOut": "Esci",
+    "signedInAs": "Accesso come {email}",
+    "review": {
+      "reason": "Motivo",
+      "reasonHint": "Registrato a tuo nome. Un rifiuto arriva all’operatore per intero.",
+      "close": "Non ora",
+      "outcome": {
+        "done": "Fatto, e registrato nel log di audit.",
+        "conflict": "Qualcun altro è arrivato prima. La tabella qui sotto è aggiornata.",
+        "refused": "Questo account non può farlo.",
+        "failed": "Non è andata a buon fine. Nulla è stato modificato."
+      }
+    },
+    "documentReview": {
+      "title": "Esamina questo documento",
+      "verify": "Verifica",
+      "reject": "Rifiuta",
+      "of": "{type} · {vendor}"
+    },
+    "serviceReview": {
+      "title": "Esamina questo annuncio",
+      "publish": "Pubblica",
+      "reject": "Rifiuta",
+      "of": "{title} · {vendor}",
+      "missing": "{count, plural, =0 {Tutti gli attributi confrontabili sono compilati} one {# attributo confrontabile mancante} other {# attributi confrontabili mancanti}}"
+    },
+    "cancelReview": {
+      "title": "Annulla questa partenza",
+      "confirm": "Annulla la partenza",
+      "warning": "Rimborsa {refunds, plural, one {# prenotazione} other {# prenotazioni}} e ne libera {releases, plural, one {# altra} other {# altre}}. Da qui non si torna indietro.",
+      "reasonHint": "Registrato a tuo nome, e inviato all’operatore e a tutti i prenotati."
+    }
+  },
+  "vendor": {
+    "tabs": {
+      "today": "Oggi",
+      "bookings": "Prenotazioni",
+      "services": "Servizi",
+      "more": "Altro",
+      "pricing": "Prezzi"
+    },
+    "today": {
+      "greeting": "Buongiorno, {name}.",
+      "subtitle": "Tre partenze. Una richiede una decisione prima che rinforzi il vento.",
+      "conditions": "Dahab adesso",
+      "next": "Prossime quattro ore",
+      "manifest": "Elenco partecipanti",
+      "seats": "{used} su {total}",
+      "billed": "{capacity} a bordo · {chargeable} addebitati",
+      "guide": "Guida {name}",
+      "nothing": "Oggi non esce nulla.",
+      "greetingAnon": "Buongiorno.",
+      "noWeather": "Nessuna fonte meteo collegata. I valori che erano qui non misuravano nulla.",
+      "noManifest": "Ancora nessuna prenotazione."
+    },
+    "outstanding": {
+      "waivers": "{count, plural, =0 {Tutte le liberatorie firmate} one {# liberatoria mancante} other {# liberatorie mancanti}}",
+      "certifications": "{count, plural, =0 {Brevetti a posto} one {# brevetto insufficiente} other {# brevetti insufficienti}}",
+      "pickups": "{count, plural, =0 {Tutti raccolti} one {# non raccolto} other {# non raccolti}}",
+      "medical": "{count, plural, =0 {Nessuna nota medica} one {# nota medica} other {# note mediche}}"
+    },
+    "person": {
+      "certShort": "Sotto il minimo per questo sito",
+      "noWaiver": "Liberatoria non firmata",
+      "medical": "Nota medica — leggere prima del briefing",
+      "notPickedUp": "Non raccolto",
+      "collected": "Raccolto",
+      "noCert": "Nessun brevetto richiesto"
+    },
+    "wind": {
+      "title": "Vento oltre il tuo limite",
+      "body": "Previsti {forecast} kt contro il tuo limite di {limit} kt. Annullare tocca il transfer collegato e apre i rimborsi.",
+      "review": "Vedi cosa tocca l’annullamento"
+    },
+    "offline": {
+      "title": "Pronto per la strada del Blue Hole",
+      "body": "Tra Assalah e il bordo il segnale cade quasi ogni mattina. {vouchers} voucher, {points} punti d’incontro e {manifests} elenchi sono su questo telefono."
+    },
+    "role": {
+      "owner": "Titolare",
+      "staff": "Guida",
+      "staffLimit": "Contabilità, prezzi e personale sono del titolare. Chiedi a {name}.",
+      "staffLimitNoName": "Finanze, prezzi e personale sono del titolare. Chiedi a lui."
+    },
+    "action": {
+      "checkIn": "Check-in",
+      "openManifest": "Apri elenco",
+      "message": "Scrivi a tutti"
+    },
+    "bookings": {
+      "title": "Prenotazioni",
+      "subtitle": "Solo le tue. Conferma ciò che attende e guarda cosa tocca un annullamento.",
+      "waiting": "In attesa di te",
+      "upcoming": "In arrivo",
+      "heads": "{count, plural, one {# persona} other {# persone}}",
+      "confirm": "Conferma",
+      "cancelTitle": "Annullare la barca delle 14:00",
+      "cancelSub": "Mostrato prima. Nulla qui sotto è stato eseguito.",
+      "commit": "Annulla la partenza",
+      "keep": "Lasciala attiva",
+      "released": "Una prenotazione attende ancora il pagamento: viene liberata, non rimborsata — nulla è stato incassato.",
+      "notifyDetail": "{count, plural, one {# viaggiatore} other {# viaggiatori}} · {transfer}",
+      "none": "Nessuna prenotazione.",
+      "guest": "Ospite"
+    },
+    "services": {
+      "title": "Servizi",
+      "subtitle": "Cosa offri e se un viaggiatore può confrontarlo.",
+      "comparable": "{count, plural, =0 {Pronto al confronto} one {manca # risposta} other {mancano # risposte}}",
+      "inclusions": "Inclusioni dichiarate",
+      "inclusionsNote": "Il confronto riduce ogni inclusione a un solo prezzo. Compilarlo onestamente ti fa salire, non ti costa.",
+      "publishOwner": "Solo il titolare pubblica. Salva una bozza e va a {name}.",
+      "from": "Da",
+      "publishOwnerNoName": "La pubblicazione è del titolare.",
+      "none": "Ancora nessun servizio.",
+      "unpriced": "Senza prezzo",
+      "noInclusions": "Nulla dichiarato come incluso."
+    },
+    "more": {
+      "title": "Altro",
+      "money": "Guadagni",
+      "moneySub": "Lordo, commissione e spese separati — mai una cifra unica.",
+      "nextPayout": "Prossimo pagamento {date}",
+      "staff": "Squadra",
+      "staffSub": "Un brevetto scaduto non può essere assegnato come guida.",
+      "lapsed": "Brevetto scaduto",
+      "resources": "Attrezzatura",
+      "resourcesSub": "Una bombola in scadenza di collaudo non va in elenco.",
+      "blocked": "Bloccata fino al collaudo",
+      "dueOn": "Scade {date}",
+      "ownerOnly": "Solo titolare",
+      "signOut": "Esci",
+      "noStaff": "Nessuno è ancora stato aggiunto al team.",
+      "noResources": "Nessuna attrezzatura registrata.",
+      "noPayout": "Nessun versamento programmato.",
+      "noExpiry": "Nessuna scadenza registrata"
+    },
+    "pricing": {
+      "title": "Prezzi",
+      "subtitle": "Le tue regole, e quanto paga davvero un viaggiatore.",
+      "order": "Ordine di applicazione",
+      "orderNote": "È una tua scelta e cambia il risultato: 10% di sconto e poi un buono fisso dà un totale diverso dal contrario.",
+      "simulator": "Simulatore",
+      "simulatorNote": "Esegue lo stesso computePrice() di checkout e confronto. Quello che vedi qui è ciò che viene addebitato.",
+      "total": "Totale",
+      "charged": "{count, plural, one {# a pagamento} other {# a pagamento}}",
+      "seated": "{count, plural, one {# posto} other {# posti}}",
+      "suppressed": "{count, plural, one {# regola esclusa dal suo gruppo} other {# regole escluse dai loro gruppi}}",
+      "preset": {
+        "twoAdults": "Due adulti",
+        "fourAdults": "Quattro adulti",
+        "familyWithInfant": "Famiglia + neonato",
+        "residents": "Tre residenti"
+      }
+    },
+    "signIn": {
+      "brand": "Dahab Focal",
+      "brandSub": "App del centro",
+      "title": "Accedi",
+      "subtitle": "Usa l’account del tuo centro.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Accedi",
+      "working": "Accesso in corso…",
+      "invalid": "Questa email e questa password non corrispondono a nessun account.",
+      "notVendor": "Questo account non appartiene a un centro. L’app è per titolari e guide.",
+      "unreachable": "Server irraggiungibile. Controlla la connessione e riprova.",
+      "noSelfServe": "Gli account li crea la piattaforma. Non c’è registrazione."
+    },
+    "problem": {
+      "loading": "Caricamento…",
+      "offline": "Nessun segnale adesso. Non vuol dire che non viene nessuno: vuol dire che non abbiamo potuto chiedere.",
+      "signedOut": "La sessione è finita. Accedi di nuovo.",
+      "forbidden": "Quello è del titolare. Chiedi a lui se ti serve.",
+      "failed": "Non si è caricato. Riprova.",
+      "retry": "Riprova",
+      "signInAgain": "Accedi di nuovo"
+    },
+    "cancel": {
+      "open": "Annulla questa partenza",
+      "title": "Cosa tocca l’annullamento",
+      "summary": "Annulla {bookings, plural, one {# prenotazione} other {# prenotazioni}}, rimborsa {refunds} e libera {releases}.",
+      "irreversible": "Da qui non si torna indietro.",
+      "commit": "Annulla la partenza",
+      "working": "Annullamento…",
+      "failed": "Non è andata a buon fine. Nulla è stato modificato."
+    }
+  },
+  "participant": {
+    "adult": "Adulti",
+    "child": "Bambini",
+    "infant": "Neonati",
+    "student": "Studenti",
+    "resident": "Residenti",
+    "instructor": "Istruttori accompagnatori"
+  },
+  "priceRule": {
+    "earlyBird": "Prenotazione anticipata",
+    "residentRate": "Tariffa residenti",
+    "groupOfFour": "Gruppo da quattro"
+  },
+  "category": {
+    "diving": "Immersioni",
+    "freediving": "Apnea",
+    "snorkeling": "Snorkeling",
+    "boatSea": "Barca e mare",
+    "courses": "Corsi",
+    "kiteWatersports": "Kite e sport acquatici",
+    "foodCooking": "Cibo e cucina",
+    "rentals": "Noleggio",
+    "desertSafari": "Deserto e safari",
+    "bedouinCulture": "Beduini e cultura",
+    "wellnessYoga": "Benessere e yoga",
+    "transfers": "Trasferimenti"
+  },
+  "traveler": {
+    "tabs": {
+      "home": "Home",
+      "discover": "Scopri",
+      "trips": "Viaggi",
+      "account": "Account"
+    },
+    "notBuilt": {
+      "title": "Non ancora realizzato",
+      "body": "Questa schermata è progettata ma non ancora sviluppata — vedi docs/HANDOVER.md. Scopri è l'unica schermata funzionante per ora."
+    },
+    "discover": {
+      "title": "Scopri Dahab",
+      "searchPlaceholder": "Immersioni, deserto, kite — o chiedi con una frase",
+      "recent": "Recenti",
+      "categories": "Categorie",
+      "parsedAs": "Interpretato come",
+      "notUsedYet": "Non ancora usato",
+      "unparsedAmbiguous": "“Due” potrebbe significare due immersioni o due persone — tocca per scegliere.",
+      "unparsedCertification": "Non è stato detto nulla sul brevetto, quindi sono mostrati tutti i livelli.",
+      "resultsMatch": "{count, plural, one {# viaggio corrisponde} other {# viaggi corrispondono}}",
+      "showResults": "Mostra {count}",
+      "mapView": "Mappa",
+      "listView": "Elenco",
+      "compare": "Confronta",
+      "compareCount": "{count, plural, one {# attributo} other {# attributi}}",
+      "compareCategoryCount": "{category} · {attributes}",
+      "askBahri": "Chiedi a Bahri",
+      "chipKind": {
+        "area": "Zona",
+        "entry": "Ingresso",
+        "price": "Prezzo",
+        "backBefore": "Rientro entro"
+      }
+    },
+    "filters": {
+      "title": "Filtri",
+      "clearAll": "Cancella tutto"
+    },
+    "filterField": {
+      "entry": "Ingresso",
+      "depth": "Profondità",
+      "certification": "Brevetto",
+      "duration": "Durata",
+      "price": "Prezzo",
+      "included": "Incluso"
+    },
+    "sort": {
+      "title": "Ordina",
+      "earliest": "Partenza più presto",
+      "priceAsc": "Prezzo, dal più basso",
+      "rating": "Valutazione",
+      "closest": "Più vicino a te",
+      "fewestDivers": "Meno subacquei per guida"
+    },
+    "hub": {
+      "tripsCount": "{count, plural, one {# viaggio} other {# viaggi}}",
+      "operatorsCount": "{count, plural, one {# operatore} other {# operatori}}",
+      "summary": "{trips} · {operators} · da riva e in barca",
+      "sitesThisWeek": "Siti questa settimana",
+      "operatorsTitle": "Operatori",
+      "chip": {
+        "shoreEntry": "Ingresso da riva",
+        "boat": "Barca",
+        "nightDive": "Immersione notturna",
+        "nitrox": "Nitrox",
+        "course": "Corso"
+      },
+      "noFly": "Il tuo volo è {weekday} alle {time}. Tutto ciò che viene prenotato meno di 24 ore prima rientra nella finestra di divieto di volo dopo immersioni su più giorni."
+    },
+    "site": {
+      "depthProfile": "Profilo di profondità",
+      "saddle": "Sella",
+      "arch": "Arco",
+      "floor": "Fondale",
+      "gateTitle": "{name} richiede un brevetto tecnico",
+      "gateBody": "Hai {certification} con {dives, plural, one {# immersione registrata} other {# immersioni registrate}}. {name} richiede trimix o un brevetto completo cave/tech più 100 immersioni registrate.",
+      "gateCta": "Cosa serve",
+      "tripsHere": "{count, plural, one {# viaggio visita questo sito} other {# viaggi visitano questo sito}}",
+      "seeTrips": "Vedi i viaggi",
+      "meters": "{value, number} m"
+    },
+    "ask": {
+      "title": "Chiedi a Bahri",
+      "subtitle": "Risposte dalle schede degli operatori, non opinioni",
+      "placeholder": "Chiedi qualcosa su Dahab",
+      "notConnected": "Bahri non è ancora collegato a un vero motore di risposte — questa conversazione è un esempio tratto dal design.",
+      "suggestShowBoth": "Mostra entrambi",
+      "suggestWhatsNotIncluded": "Cosa non è incluso?",
+      "suggestFreedivingInstead": "Apnea invece"
+    }
+  },
+  "diveSite": {
+    "blueHole": "Blue Hole",
+    "theBells": "The Bells",
+    "theArch": "The Arch",
+    "elCanyon": "El Canyon",
+    "threePools": "Three Pools",
+    "eelGarden": "Eel Garden",
+    "lighthouse": "Lighthouse",
+    "gabrElBint": "Gabr El Bint",
+    "rasAbuGalum": "Ras Abu Galum",
+    "theIslands": "The Islands",
+    "ummSid": "Umm Sid"
   }
 }

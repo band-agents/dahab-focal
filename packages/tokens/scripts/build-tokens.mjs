@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * tokens.json -> theme.ts, tokens.css, tailwind-preset.js, tokens.d.ts
+ * tokens.json -> theme.ts, tokens.css, tailwind-preset.cjs, tokens.d.ts
  *
  * tokens.json is the only place a visual value is defined (CLAUDE.md). Every
  * consumer reads a generated artefact, so there is exactly one edit that
@@ -386,7 +386,7 @@ ${blocks.join('\n\n')}
 const artefacts = [
   { name: 'theme.ts', contents: generateThemeTs() },
   { name: 'tokens.css', contents: generateTokensCss() },
-  { name: 'tailwind-preset.js', contents: generateTailwindPreset() },
+  { name: 'tailwind-preset.cjs', contents: generateTailwindPreset() },
   { name: 'tokens.d.ts', contents: generateTokensDts() },
   { name: 'fonts.css', contents: generateFontsCss() },
 ];

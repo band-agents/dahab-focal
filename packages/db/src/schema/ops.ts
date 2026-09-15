@@ -13,10 +13,10 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-import { bookings } from './booking';
-import { users } from './identity';
-import { vendors } from './vendors';
-import { moneyAmount, moneyCurrency, primaryId, timestamps } from './_shared';
+import { bookings } from './booking.ts';
+import { users } from './identity.ts';
+import { vendors } from './vendors.ts';
+import { moneyAmount, moneyCurrency, primaryId, timestamps } from './_shared.ts';
 
 /** OPS — the things that go wrong, and the record of who did what. */
 
@@ -130,6 +130,15 @@ export const auditLog = pgTable(
     entityTable: varchar('entity_table', { length: 80 }).notNull(),
     entityId: uuid('entity_id').notNull(),
     action: varchar('action', { length: 40 }).notNull(),
+    /**
+     * Why the actor did it, in their words.
+     *
+     * An admin holds every permission, so the counterweight is that a
+     * consequential action records a reason — a rejection the vendor actually
+     * receives, an impersonation a reviewer can judge. Nullable because system
+     * and job actors have no reason to give beyond their own name.
+     */
+    reason: text('reason'),
     /** Only the changed keys, both sides, so the diff is readable. */
     beforeJson: jsonb('before_json').$type<Record<string, unknown>>(),
     afterJson: jsonb('after_json').$type<Record<string, unknown>>(),

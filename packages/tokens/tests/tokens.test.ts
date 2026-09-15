@@ -67,7 +67,7 @@ const tokensRaw = read('tokens.json');
 const tokens = JSON.parse(tokensRaw) as TokensFile;
 const theme = read('src/generated/theme.ts');
 const css = read('src/generated/tokens.css');
-const preset = read('src/generated/tailwind-preset.js');
+const preset = read('src/generated/tailwind-preset.cjs');
 const types = read('src/generated/tokens.d.ts');
 
 /** Every colour token, flattened, with the theme it came from. */
@@ -141,10 +141,28 @@ describe('the two corrections made in code against the canvas', () => {
     expect(round(contrastRatio('#8A7B68', '#FDFAF6'), 2)).toBeLessThan(4.5);
   });
 
-  it('danger-text is #B82D2D and clears AA on its own surface', () => {
-    expect(tokens.color['light']?.['danger-text']?.value).toBe('#B82D2D');
-    expect(round(contrastRatio('#B82D2D', '#F5DCDC'), 2)).toBeGreaterThanOrEqual(4.5);
+  it('danger-text is #A82B2B on its own tint, and #C13333 survives on cream', () => {
+    // Design System section 09 (7 Sep 2026) split this in two rather than
+    // replacing one value: #C13333 was never wrong on cream, it only failed
+    // on its own tint. The interim in-code #B82D2D is superseded.
+    expect(tokens.color['light']?.['danger-text']?.value).toBe('#A82B2B');
+    expect(round(contrastRatio('#A82B2B', '#F5DCDC'), 2)).toBeGreaterThanOrEqual(4.5);
     expect(round(contrastRatio('#C13333', '#F5DCDC'), 2)).toBeLessThan(4.5);
+
+    expect(tokens.color['light']?.['danger-text-on-cream']?.value).toBe('#C13333');
+    expect(round(contrastRatio('#C13333', '#FDFAF6'), 2)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('Night Dive carries the link, focus ring and status strips section 09 added', () => {
+    // Without these, dark mode falls back to light values: text-link lands at
+    // ~1.6:1 on #0A2422 and the focus ring at ~2.0:1, which blocks shipping.
+    const night = tokens.color['dark'] ?? {};
+    for (const name of ['text-link', 'focus-ring', 'success-text', 'warning-text', 'danger-text', 'info-text']) {
+      const value = night[name]?.value;
+      expect(value, `night ${name} is missing`).toBeDefined();
+      expect(round(contrastRatio(value as string, '#0A2422'), 2)).toBeGreaterThanOrEqual(4.5);
+      expect(round(contrastRatio(value as string, '#0F2E2E'), 2)).toBeGreaterThanOrEqual(4.5);
+    }
   });
 });
 
@@ -219,7 +237,7 @@ describe('token parity across every generated output', () => {
     for (const entry of allColors) {
       expect(theme, `theme.ts is missing ${entry.name}`).toContain(`"${entry.name}"`);
       expect(css, `tokens.css is missing ${entry.name}`).toContain(`--color-${entry.name}:`);
-      expect(preset, `tailwind-preset.js is missing ${entry.name}`).toContain(`"${entry.name}"`);
+      expect(preset, `tailwind-preset.cjs is missing ${entry.name}`).toContain(`"${entry.name}"`);
       expect(types, `tokens.d.ts is missing ${entry.name}`).toContain(`| "${entry.name}"`);
     }
   });

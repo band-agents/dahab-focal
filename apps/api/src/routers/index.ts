@@ -2,9 +2,12 @@ import { z } from 'zod';
 
 import { LOCALES } from '@dahab/i18n';
 
-import { publicProcedure, router } from '../trpc';
-import { authRouter } from './auth';
-import { catalogRouter } from './catalog';
+import { probeDatabase } from '../database.ts';
+import { publicProcedure, router } from '../trpc.ts';
+import { adminRouter } from './admin.ts';
+import { authRouter } from './auth.ts';
+import { catalogRouter } from './catalog.ts';
+import { vendorRouter } from './vendor.ts';
 
 export const appRouter = router({
   /**
@@ -22,12 +25,14 @@ export const appRouter = router({
         checks: z.record(z.string(), z.enum(['ok', 'unavailable', 'unchecked'])),
       }),
     )
-    .query(({ ctx }) => {
-      // Database and Redis checks land with the first procedure that needs
-      // them; reporting `unchecked` is honest, reporting `ok` would not be.
-      const checks = { database: 'unchecked' as const, redis: 'unchecked' as const };
+    .query(async ({ ctx }) => {
+      // The database is really probed now. Redis still lands with the first
+      // procedure that needs it; reporting `unchecked` is honest, reporting
+      // `ok` would not be.
+      const database = await probeDatabase();
+      const checks = { database, redis: 'unchecked' as const };
       return {
-        status: 'ok' as const,
+        status: database === 'ok' ? ('ok' as const) : ('degraded' as const),
         version: process.env['npm_package_version'] ?? '0.1.0',
         requestId: ctx.requestId,
         time: ctx.now.toISOString(),
@@ -38,6 +43,12 @@ export const appRouter = router({
 
   auth: authRouter,
   catalog: catalogRouter,
+  admin: adminRouter,
+  /**
+   * The operator app. Every procedure pins its vendor from the session, so
+   * no caller can ask for another operator's rows.
+   */
+  vendor: vendorRouter,
 });
 
 export type AppRouter = typeof appRouter;
