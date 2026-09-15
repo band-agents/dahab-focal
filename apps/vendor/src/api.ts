@@ -1,6 +1,8 @@
 import type { AppRouter } from '@dahab/api/router';
 
 import { API_URL, readStored } from './auth';
+import { readCache, writeCache } from './cache';
+import { refreshSession } from './refresh';
 
 /**
  * The operator app's reads.
@@ -46,13 +48,26 @@ export type Problem =
   | { kind: 'forbidden' }
   | { kind: 'failed'; detail: string };
 
-export type Result<T> = { ok: true; data: T } | { ok: false; problem: Problem };
+/**
+ * A successful read says whether it came from the network or from the phone.
+ *
+ * `cachedAt` is set only on the second kind. A guide holding a manifest on
+ * the Blue Hole road has to be able to tell four-seconds-old from
+ * yesterday-morning, and a stale manifest presented as current is how
+ * somebody gets left standing on the shore.
+ */
+export type Result<T> =
+  | { ok: true; data: T; cachedAt?: number }
+  | { ok: false; problem: Problem };
 
-async function read<T>(path: string, input?: unknown): Promise<Result<T>> {
+async function read<T>(path: string, input?: unknown, retrying = false): Promise<Result<T>> {
   const stored = readStored();
   if (stored === null) return { ok: false, problem: { kind: 'signedOut' } };
 
   const query = input === undefined ? '' : `?input=${encodeURIComponent(JSON.stringify(input))}`;
+  // The cache is per request, not per procedure: today's manifest and
+  // tomorrow's are different answers to the same question.
+  const cacheKey = `${path}${query}`;
 
   let payload: { result?: { data?: T }; error?: { data?: { code?: string }; message?: string } };
   try {
@@ -61,12 +76,23 @@ async function read<T>(path: string, input?: unknown): Promise<Result<T>> {
     });
     payload = await response.json();
   } catch {
+    // No signal. Everything below this line is why the cache exists: a guide
+    // at the rim gets the manifest they were looking at in Assalah, with its
+    // age attached, rather than a screen that can only apologise.
+    const cached = await readCache<T>(cacheKey);
+    if (cached !== null) return { ok: true, data: cached.data, cachedAt: cached.at };
     return { ok: false, problem: { kind: 'offline' } };
   }
 
   if (payload.error !== undefined) {
     const code = payload.error.data?.code;
-    if (code === 'UNAUTHORIZED') return { ok: false, problem: { kind: 'signedOut' } };
+    if (code === 'UNAUTHORIZED') {
+      // The access token lasts fifteen minutes; a morning on a boat is longer
+      // than that. Rotate once and try again — only once, or a refresh token
+      // the server has already revoked would loop.
+      if (!retrying && (await refreshSession())) return read<T>(path, input, true);
+      return { ok: false, problem: { kind: 'signedOut' } };
+    }
     if (code === 'FORBIDDEN') return { ok: false, problem: { kind: 'forbidden' } };
     return { ok: false, problem: { kind: 'failed', detail: payload.error.message ?? '' } };
   }
@@ -74,6 +100,10 @@ async function read<T>(path: string, input?: unknown): Promise<Result<T>> {
   if (payload.result?.data === undefined) {
     return { ok: false, problem: { kind: 'failed', detail: 'The API returned nothing.' } };
   }
+
+  // Written after the answer is known good, never before: a cache that can
+  // hold a half-read is worse than no cache.
+  void writeCache(cacheKey, payload.result.data);
   return { ok: true, data: payload.result.data };
 }
 

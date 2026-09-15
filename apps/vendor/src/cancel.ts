@@ -1,6 +1,7 @@
 import type { AppRouter } from '@dahab/api/router';
 
 import { API_URL, readStored } from './auth';
+import { refreshSession } from './refresh';
 import type { Result } from './api';
 
 /**
@@ -26,7 +27,7 @@ type Output<K extends keyof VendorRouter> = VendorRouter[K] extends {
 export type CancellationPreview = Output<'cancellationPreview'>;
 export type CancellationResult = Output<'cancelDeparture'>;
 
-async function post<T>(path: string, body: unknown): Promise<Result<T>> {
+async function post<T>(path: string, body: unknown, retrying = false): Promise<Result<T>> {
   const stored = readStored();
   if (stored === null) return { ok: false, problem: { kind: 'signedOut' } };
 
@@ -45,7 +46,14 @@ async function post<T>(path: string, body: unknown): Promise<Result<T>> {
     };
     if (payload.error !== undefined) {
       const code = payload.error.data?.code;
-      if (code === 'UNAUTHORIZED') return { ok: false, problem: { kind: 'signedOut' } };
+      if (code === 'UNAUTHORIZED') {
+        // Same one-shot rotation as the reads: fifteen minutes is shorter
+        // than a morning on a boat.
+        if (!retrying && (await refreshSession())) {
+          return post<T>(path, body, true);
+        }
+        return { ok: false, problem: { kind: 'signedOut' } };
+      }
       if (code === 'FORBIDDEN') return { ok: false, problem: { kind: 'forbidden' } };
       return { ok: false, problem: { kind: 'failed', detail: payload.error.message ?? '' } };
     }
@@ -58,7 +66,7 @@ async function post<T>(path: string, body: unknown): Promise<Result<T>> {
   }
 }
 
-async function get<T>(path: string, input: unknown): Promise<Result<T>> {
+async function get<T>(path: string, input: unknown, retrying = false): Promise<Result<T>> {
   const stored = readStored();
   if (stored === null) return { ok: false, problem: { kind: 'signedOut' } };
 
@@ -73,7 +81,14 @@ async function get<T>(path: string, input: unknown): Promise<Result<T>> {
     };
     if (payload.error !== undefined) {
       const code = payload.error.data?.code;
-      if (code === 'UNAUTHORIZED') return { ok: false, problem: { kind: 'signedOut' } };
+      if (code === 'UNAUTHORIZED') {
+        // Same one-shot rotation as the reads: fifteen minutes is shorter
+        // than a morning on a boat.
+        if (!retrying && (await refreshSession())) {
+          return get<T>(path, input, true);
+        }
+        return { ok: false, problem: { kind: 'signedOut' } };
+      }
       if (code === 'FORBIDDEN') return { ok: false, problem: { kind: 'forbidden' } };
       return { ok: false, problem: { kind: 'failed', detail: payload.error.message ?? '' } };
     }

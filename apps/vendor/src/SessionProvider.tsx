@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
 import { signOut as endSession, type StoredSession } from './auth';
+import { clearCache } from './cache';
 import { restore, toSession, type VendorSession } from './session';
 
 /**
@@ -34,6 +35,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     // The local copy goes first so the UI cannot be left signed in waiting on
     // a network that may not answer; the API call revokes the row behind it.
     setSession(null);
+    // One phone at a dive centre is several guides. The next person to sign in
+    // must not find the last one's manifest still cached on it.
+    void clearCache();
     if (token !== undefined) void endSession(token);
   }, [session]);
 

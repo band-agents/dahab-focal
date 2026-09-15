@@ -647,8 +647,7 @@
       "review": "See what cancelling touches"
     },
     "offline": {
-      "title": "Ready for the Blue Hole road",
-      "body": "Signal drops most mornings between Assalah and the rim. {vouchers} vouchers, {points} meeting points and {manifests} manifests are on this phone."
+      "showing": "No signal. This is what the phone had at {when}."
     },
     "role": {
       "owner": "Owner",

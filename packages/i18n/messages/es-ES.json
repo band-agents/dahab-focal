@@ -683,8 +683,7 @@
       "review": "Ver a qué afecta cancelar"
     },
     "offline": {
-      "title": "Listo para la pista del Blue Hole",
-      "body": "Entre Assalah y el borde el móvil se cae casi cada mañana. {vouchers} bonos, {points} puntos de encuentro y {manifests} listas están en este teléfono."
+      "showing": "Sin cobertura. Esto es lo que el teléfono tenía a las {when}."
     },
     "role": {
       "owner": "Propietario",

@@ -686,8 +686,7 @@
       "review": "Folgen der Absage ansehen"
     },
     "offline": {
-      "title": "Bereit für die Blue-Hole-Piste",
-      "body": "Zwischen Assalah und dem Rand fällt morgens meist das Netz aus. {vouchers} Voucher, {points} Treffpunkte und {manifests} Listen liegen auf diesem Handy."
+      "showing": "Kein Empfang. Das ist der Stand auf dem Telefon von {when}."
     },
     "role": {
       "owner": "Inhaber",

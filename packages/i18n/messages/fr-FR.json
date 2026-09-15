@@ -694,8 +694,7 @@
       "review": "Voir ce que l’annulation touche"
     },
     "offline": {
-      "title": "Prêt pour la route du Blue Hole",
-      "body": "Entre Assalah et le bord, le réseau tombe presque chaque matin. {vouchers} bons, {points} points de rendez-vous et {manifests} listes sont sur ce téléphone."
+      "showing": "Pas de réseau. Voici ce que le téléphone avait à {when}."
     },
     "role": {
       "owner": "Propriétaire",

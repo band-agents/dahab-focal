@@ -42,8 +42,19 @@ export default function MoreScreen() {
   const cash = (amount: { amountMinor: number; currency: Earnings['gross']['currency'] }) =>
     formatCurrency(money(amount.amountMinor, amount.currency), context);
 
+  // One pull reloads all three, because an operator pulling on this screen
+  // means "show me what is true now", not "show me the money card".
+  const refreshAll = () => {
+    earnings.reload();
+    staff.reload();
+    resources.reload();
+  };
+
   return (
-    <Screen>
+    <Screen
+      onRefresh={refreshAll}
+      refreshing={earnings.refreshing || staff.refreshing || resources.refreshing}
+    >
       <View>
         <Text className={`${display} text-displayL text-text`}>{t('vendor.more.title')}</Text>
         <Text className="mt-1 font-ui text-body text-text-muted">

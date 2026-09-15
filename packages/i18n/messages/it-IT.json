@@ -685,8 +685,7 @@
       "review": "Vedi cosa tocca l’annullamento"
     },
     "offline": {
-      "title": "Pronto per la strada del Blue Hole",
-      "body": "Tra Assalah e il bordo il segnale cade quasi ogni mattina. {vouchers} voucher, {points} punti d’incontro e {manifests} elenchi sono su questo telefono."
+      "showing": "Nessun segnale. Questo è quanto il telefono aveva alle {when}."
     },
     "role": {
       "owner": "Titolare",

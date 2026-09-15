@@ -9,6 +9,7 @@ import { api } from '../src/api';
 import type { VendorService } from '../src/api';
 import { Loading, Problem } from '../src/Problem';
 import { Screen } from '../src/Screen';
+import { Stale } from '../src/Stale';
 import { useSession } from '../src/SessionProvider';
 import { isOwner } from '../src/session';
 import { useApi } from '../src/useApi';
@@ -44,10 +45,14 @@ export default function ServicesScreen() {
   const display = useDisplayFontClass();
   const session = useSession();
   const owner = isOwner(session.role);
-  const { query, reload } = useApi(() => api.services(session.locale), [session.locale]);
+  const { query, reload, refreshing } = useApi(() => api.services(session.locale), [session.locale]);
 
   return (
-    <Screen>
+    <Screen onRefresh={reload} refreshing={refreshing}>
+      {query.status === 'ok' && query.cachedAt !== undefined ? (
+        <Stale at={query.cachedAt} />
+      ) : null}
+
       <View>
         <Text className={`${display} text-displayL text-text`}>{t('vendor.services.title')}</Text>
         <Text className="mt-1 font-ui text-body text-text-muted">

@@ -13,6 +13,7 @@ import { cancelDeparture, previewCancellation } from '../src/cancel';
 import type { CancellationPreview } from '../src/cancel';
 import { Loading, Problem } from '../src/Problem';
 import { Screen } from '../src/Screen';
+import { Stale } from '../src/Stale';
 import { useSession } from '../src/SessionProvider';
 import { isOwner } from '../src/session';
 import { useApi } from '../src/useApi';
@@ -57,10 +58,14 @@ export default function TodayScreen() {
   const display = useDisplayFontClass();
   const session = useSession();
   const owner = isOwner(session.role);
-  const { query, reload } = useApi(() => api.today(session.locale), [session.locale]);
+  const { query, reload, refreshing } = useApi(() => api.today(session.locale), [session.locale]);
 
   return (
-    <Screen>
+    <Screen onRefresh={reload} refreshing={refreshing}>
+      {query.status === 'ok' && query.cachedAt !== undefined ? (
+        <Stale at={query.cachedAt} />
+      ) : null}
+
       <View>
         <Text className="font-ui text-overline uppercase text-text-muted">
           {/* The operator's real name, or the role alone. A profile with no
