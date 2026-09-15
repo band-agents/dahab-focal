@@ -1,46 +1,48 @@
 import { ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { formatCurrency, formatDate, formatNumber, isolate, money } from '@dahab/i18n';
-import { Button, Card, Mark, Row, StatusPill } from '@dahab/ui';
-import type { MarkName, StatusTone } from '@dahab/ui';
+import { formatCurrency, formatDate, isolate, money } from '@dahab/i18n';
+import { Card, Row, StatusPill } from '@dahab/ui';
+import type { StatusTone } from '@dahab/ui';
 
-import { BOOKINGS, CASCADE } from '../src/operations';
-import type { BookingStatus, CascadeStep } from '../src/operations';
+import { api } from '../src/api';
+import type { VendorBooking } from '../src/api';
+import { Loading, Problem } from '../src/Problem';
 import { useSession } from '../src/SessionProvider';
+import { useApi } from '../src/useApi';
 
 /**
- * V02 · Bookings, and the cancellation cascade on a phone.
+ * V02 · Bookings.
  *
- * Weather cancels boats and cancellation is a first-class, cascading
- * operation — so the operator sees what it reaches BEFORE committing: which
- * bookings, the transfer that fed the departure, the refunds it opens, and
- * who has to be told. On a phone that fits in one card, which is the point:
- * the decision is taken at the dock, in the wind, not at a desk.
+ * Every row is this operator's, and only this operator's — the procedure
+ * behind it reads its vendor from the session and never from an input, so
+ * there is no id a caller could change to see somebody else's.
+ *
+ * The cancellation cascade lives on Today, beside the departure it would
+ * cancel. It was on this screen as a fixture: a card describing a cancellation
+ * that could not happen, with counts nobody had computed. A preview of an
+ * action you cannot take is worse than no preview, so it moved to where the
+ * action is real.
  */
 
-const TONE: Record<BookingStatus, StatusTone> = {
+const TONE: Record<VendorBooking['status'], StatusTone> = {
   pendingPayment: 'warning',
   confirmed: 'success',
   awaitingVendor: 'warning',
+  cancelledByTraveler: 'neutral',
+  cancelledByVendor: 'neutral',
   cancelledByWeather: 'info',
-  completed: 'neutral',
-};
-
-const CASCADE_MARK: Record<CascadeStep['kind'], MarkName> = {
-  bookings: 'pass',
-  transfer: 'camel',
-  refunds: 'shell',
-  notifications: 'chat',
+  noShow: 'neutral',
+  completed: 'success',
+  refunded: 'info',
+  disputed: 'danger',
 };
 
 export default function BookingsScreen() {
   const { t } = useTranslation();
   const session = useSession();
   const context = { locale: session.locale } as const;
-
-  const waiting = BOOKINGS.filter((booking) => booking.status === 'awaitingVendor');
-  const upcoming = BOOKINGS.filter((booking) => booking.status !== 'awaitingVendor');
+  const { query, reload } = useApi(() => api.bookings(session.locale), [session.locale]);
 
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerClassName="gap-6 px-5 pb-16 pt-14">
@@ -51,108 +53,75 @@ export default function BookingsScreen() {
         </Text>
       </View>
 
+      {query.status === 'loading' ? (
+        <Loading />
+      ) : query.status === 'problem' ? (
+        <Problem problem={query.problem} onRetry={reload} />
+      ) : (
+        <Sections bookings={query.data} context={context} />
+      )}
+    </ScrollView>
+  );
+}
+
+function Sections({
+  bookings,
+  context,
+}: {
+  readonly bookings: readonly VendorBooking[];
+  readonly context: { locale: ReturnType<typeof useSession>['locale'] };
+}) {
+  const { t } = useTranslation();
+
+  const waiting = bookings.filter((booking) => booking.status === 'awaitingVendor');
+  const rest = bookings.filter((booking) => booking.status !== 'awaitingVendor');
+
+  return (
+    <>
       {waiting.length === 0 ? null : (
         <Card eyebrow={t('vendor.bookings.waiting')} mark="chat">
           {waiting.map((booking) => (
-            <View key={booking.id}>
-              <Row
-                title={isolate(booking.traveler)}
-                detail={isolate(booking.service)}
-                meta={`${booking.ref} · ${t('vendor.bookings.heads', { count: booking.heads })}`}
-                mark="fin"
-                trailing={
-                  <Text className="font-display text-h3 tabular-nums text-text">
-                    {formatCurrency(money(booking.total.amountMinor, booking.total.currency), context)}
-                  </Text>
-                }
-              />
-              <View className="mt-3">
-                <Button variant="primary" mark="pass" block>
-                  {t('vendor.bookings.confirm')}
-                </Button>
-              </View>
-            </View>
+            <Row
+              key={booking.id}
+              // A booking with nobody named is the normal shape when a
+              // traveller booked as a guest, and reads as such.
+              title={booking.travelerName === null ? t('vendor.bookings.guest') : isolate(booking.travelerName)}
+              detail={isolate(booking.serviceTitle)}
+              meta={`${booking.reference} · ${t('vendor.bookings.heads', { count: booking.heads })}`}
+              mark="fin"
+              trailing={
+                <Text className="font-display text-h3 tabular-nums text-text">
+                  {formatCurrency(
+                    money(booking.total.amountMinor, booking.total.currency),
+                    context,
+                  )}
+                </Text>
+              }
+            />
           ))}
         </Card>
       )}
 
-      {/*
-        The cascade, shown before the action rather than after it. Naming what
-        it touches is the whole value: a total would let an operator cancel
-        without ever learning that the 10:10 transfer goes with it.
-      */}
-      <Card surface="bg-warning-surface" mark="wind" title={t('vendor.bookings.cancelTitle')}>
-        <Text className="font-ui text-small text-warning-text">
-          {t('vendor.bookings.cancelSub')}
-        </Text>
-
-        <View className="mt-4 gap-2">
-          {CASCADE.map((step) => (
-            <View
-              key={step.kind}
-              className="flex-row items-center gap-3 rounded-lg bg-surface px-4 py-3"
-            >
-              <Mark name={CASCADE_MARK[step.kind]} size={24} />
-              <View className="flex-1">
-                <Text className="font-ui text-body text-text">
-                  {t(`admin.cascade.${step.kind}`)}
-                </Text>
-                <Text className="font-ui text-caption text-text-muted">
-                  {step.detail === undefined
-                    ? t('vendor.bookings.notifyDetail', {
-                        count: step.travellers ?? 0,
-                        transfer: isolate(step.transfer ?? ''),
-                      })
-                    : isolate(step.detail)}
-                </Text>
-              </View>
-              <View className="items-end">
-                <Text className="font-display text-h3 tabular-nums text-text">
-                  {formatNumber(step.count, context)}
-                </Text>
-                {step.amount === undefined ? null : (
-                  <Text className="font-ui text-caption text-text-muted">
-                    {formatCurrency(money(step.amount.amountMinor, step.amount.currency), context)}
-                  </Text>
-                )}
-              </View>
-            </View>
-          ))}
-        </View>
-
-        {/* Why refunds is fewer than bookings. Without it the numbers read as
-            a bug, and an operator who distrusts the arithmetic distrusts the
-            whole screen. */}
-        <Text className="mt-3 font-ui text-caption text-warning-text">
-          {t('vendor.bookings.released')}
-        </Text>
-
-        <View className="mt-4 gap-3">
-          <Button variant="primary" mark="wind" block>
-            {t('vendor.bookings.commit')}
-          </Button>
-          <Button variant="secondary" block>
-            {t('vendor.bookings.keep')}
-          </Button>
-        </View>
-      </Card>
-
       <Card eyebrow={t('vendor.bookings.upcoming')} mark="pass">
-        {upcoming.map((booking) => (
-          <Row
-            key={booking.id}
-            title={isolate(booking.traveler)}
-            detail={isolate(booking.service)}
-            meta={`${booking.ref} · ${formatDate(new Date(booking.departsAt), context, 'dateTime')}`}
-            mark="sail"
-            trailing={
-              <StatusPill tone={TONE[booking.status]}>
-                {t(`admin.bookingStatus.${booking.status}`)}
-              </StatusPill>
-            }
-          />
-        ))}
+        {rest.length === 0 ? (
+          <Text className="font-ui text-body text-text-muted">{t('vendor.bookings.none')}</Text>
+        ) : (
+          rest.map((booking) => (
+            <Row
+              key={booking.id}
+              title={booking.travelerName === null ? t('vendor.bookings.guest') : isolate(booking.travelerName)}
+              detail={isolate(booking.serviceTitle)}
+              meta={`${booking.reference} · ${formatDate(new Date(booking.startsAt), context, 'dateTime')}`}
+              mark="sail"
+              trailing={
+                <StatusPill tone={TONE[booking.status]}>
+                  {t(`admin.bookingStatus.${booking.status}`)}
+                </StatusPill>
+              }
+            />
+          ))
+        )}
       </Card>
-    </ScrollView>
+    </>
   );
 }

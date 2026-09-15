@@ -622,13 +622,16 @@
       "seats": "{used} of {total}",
       "billed": "{capacity} aboard · {chargeable} billed",
       "guide": "Guide {name}",
-      "nothing": "Nothing else today.",
-      "greetingAnon": "Good morning."
+      "nothing": "Nothing is going out today.",
+      "greetingAnon": "Good morning.",
+      "noWeather": "No weather source connected. The readings that were here were measured from nothing.",
+      "noManifest": "Nobody has booked yet."
     },
     "outstanding": {
       "waivers": "{count, plural, =0 {All waivers signed} one {# waiver outstanding} other {# waivers outstanding}}",
       "certifications": "{count, plural, =0 {Certifications check out} one {# certification short} other {# certifications short}}",
-      "pickups": "{count, plural, =0 {Everyone collected} one {# not collected} other {# not collected}}"
+      "pickups": "{count, plural, =0 {Everyone collected} one {# not collected} other {# not collected}}",
+      "medical": "{count, plural, =0 {No medical notes} one {# medical note} other {# medical notes}}"
     },
     "person": {
       "certShort": "Short of the minimum for this site",
@@ -670,7 +673,9 @@
       "commit": "Cancel the departure",
       "keep": "Leave it running",
       "released": "One booking is still awaiting payment, so it is released rather than refunded — nothing was captured.",
-      "notifyDetail": "{count, plural, one {# traveller} other {# travellers}} · {transfer}"
+      "notifyDetail": "{count, plural, one {# traveller} other {# travellers}} · {transfer}",
+      "none": "No bookings.",
+      "guest": "Guest"
     },
     "services": {
       "title": "Services",
@@ -680,7 +685,10 @@
       "inclusionsNote": "The comparison normalises every inclusion into one price. Filling this in honestly is what makes you rank well, not what costs you.",
       "publishOwner": "Only the owner can publish. Save a draft and it goes to {name}.",
       "from": "From",
-      "publishOwnerNoName": "Publishing is the owner’s."
+      "publishOwnerNoName": "Publishing is the owner’s.",
+      "none": "No services yet.",
+      "unpriced": "Not priced",
+      "noInclusions": "Nothing declared as included."
     },
     "more": {
       "title": "More",
@@ -695,7 +703,11 @@
       "blocked": "Blocked until tested",
       "dueOn": "Due {date}",
       "ownerOnly": "Owner only",
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "noStaff": "Nobody has been added to the team yet.",
+      "noResources": "No equipment on record.",
+      "noPayout": "No payout scheduled.",
+      "noExpiry": "No expiry recorded"
     },
     "pricing": {
       "title": "Pricing",
@@ -728,6 +740,24 @@
       "notVendor": "That account does not belong to a centre. This app is for owners and guides.",
       "unreachable": "Could not reach the server. Check your signal and try again.",
       "noSelfServe": "Accounts are created by the platform. There is no sign-up."
+    },
+    "problem": {
+      "loading": "Loading…",
+      "offline": "No signal right now. That does not mean nobody is coming — it means we could not ask.",
+      "signedOut": "Your session has ended. Sign in again.",
+      "forbidden": "That one is the owner’s. Ask them if you need it.",
+      "failed": "That did not load. Try again.",
+      "retry": "Try again",
+      "signInAgain": "Sign in again"
+    },
+    "cancel": {
+      "open": "Cancel this departure",
+      "title": "What cancelling touches",
+      "summary": "Cancels {bookings, plural, one {# booking} other {# bookings}}, refunds {refunds} and releases {releases}.",
+      "irreversible": "This cannot be undone from here.",
+      "commit": "Cancel the departure",
+      "working": "Cancelling…",
+      "failed": "That did not go through. Nothing was changed."
     }
   },
   "participant": {

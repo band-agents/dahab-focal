@@ -669,13 +669,16 @@
       "seats": "{used} sur {total}",
       "billed": "{capacity} à bord · {chargeable} facturés",
       "guide": "Guide {name}",
-      "nothing": "Rien d’autre aujourd’hui.",
-      "greetingAnon": "Bonjour."
+      "nothing": "Rien ne part aujourd’hui.",
+      "greetingAnon": "Bonjour.",
+      "noWeather": "Aucune source météo connectée. Les valeurs qui étaient ici ne mesuraient rien.",
+      "noManifest": "Personne n’a encore réservé."
     },
     "outstanding": {
       "waivers": "{count, plural, =0 {Toutes les décharges signées} one {# décharge manquante} other {# décharges manquantes}}",
       "certifications": "{count, plural, =0 {Niveaux conformes} one {# niveau insuffisant} other {# niveaux insuffisants}}",
-      "pickups": "{count, plural, =0 {Tout le monde récupéré} one {# non récupéré} other {# non récupérés}}"
+      "pickups": "{count, plural, =0 {Tout le monde récupéré} one {# non récupéré} other {# non récupérés}}",
+      "medical": "{count, plural, =0 {Aucune note médicale} one {# note médicale} other {# notes médicales}}"
     },
     "person": {
       "certShort": "En dessous du minimum pour ce site",
@@ -717,7 +720,9 @@
       "commit": "Annuler le départ",
       "keep": "Le maintenir",
       "released": "Une réservation attend encore le paiement : elle est libérée et non remboursée — rien n’a été encaissé.",
-      "notifyDetail": "{count, plural, one {# voyageur} other {# voyageurs}} · {transfer}"
+      "notifyDetail": "{count, plural, one {# voyageur} other {# voyageurs}} · {transfer}",
+      "none": "Aucune réservation.",
+      "guest": "Invité"
     },
     "services": {
       "title": "Prestations",
@@ -727,7 +732,10 @@
       "inclusionsNote": "La comparaison ramène chaque inclusion à un seul prix. Le remplir honnêtement vous fait monter, cela ne vous coûte rien.",
       "publishOwner": "Seul le propriétaire publie. Enregistrez un brouillon, il ira à {name}.",
       "from": "À partir de",
-      "publishOwnerNoName": "La publication revient au gérant."
+      "publishOwnerNoName": "La publication revient au gérant.",
+      "none": "Pas encore de prestations.",
+      "unpriced": "Sans tarif",
+      "noInclusions": "Rien de déclaré comme inclus."
     },
     "more": {
       "title": "Plus",
@@ -742,7 +750,11 @@
       "blocked": "Bloquée jusqu’au contrôle",
       "dueOn": "Échéance {date}",
       "ownerOnly": "Propriétaire seulement",
-      "signOut": "Se déconnecter"
+      "signOut": "Se déconnecter",
+      "noStaff": "Personne n’a encore été ajouté à l’équipe.",
+      "noResources": "Aucun matériel enregistré.",
+      "noPayout": "Aucun versement prévu.",
+      "noExpiry": "Aucune échéance enregistrée"
     },
     "pricing": {
       "title": "Tarifs",
@@ -775,6 +787,24 @@
       "notVendor": "Ce compte n’appartient pas à un centre. L’application est pour les gérants et les guides.",
       "unreachable": "Serveur injoignable. Vérifiez votre connexion et réessayez.",
       "noSelfServe": "Les comptes sont créés par la plateforme. Il n’y a pas d’inscription."
+    },
+    "problem": {
+      "loading": "Chargement…",
+      "offline": "Pas de réseau pour l’instant. Cela ne veut pas dire que personne ne vient : cela veut dire que nous n’avons pas pu demander.",
+      "signedOut": "Votre session est terminée. Reconnectez-vous.",
+      "forbidden": "Cela revient au gérant. Demandez-lui si vous en avez besoin.",
+      "failed": "Le chargement a échoué. Réessayez.",
+      "retry": "Réessayer",
+      "signInAgain": "Se reconnecter"
+    },
+    "cancel": {
+      "open": "Annuler ce départ",
+      "title": "Ce que l’annulation touche",
+      "summary": "Annule {bookings, plural, one {# réservation} other {# réservations}}, rembourse {refunds} et libère {releases}.",
+      "irreversible": "C’est irréversible depuis ici.",
+      "commit": "Annuler le départ",
+      "working": "Annulation…",
+      "failed": "Cela n’a pas abouti. Rien n’a été modifié."
     }
   },
   "participant": {

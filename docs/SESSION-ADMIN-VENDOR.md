@@ -13,7 +13,7 @@ design import). This file continues from there.
 | Surface | State |
 | --- | --- |
 | `apps/admin` — Sky Eye console | Next.js 15, **8 screens**, all wired to the API |
-| `apps/vendor` — operator app | Expo, **5 screens**, Arabic-first, role-split |
+| `apps/vendor` — operator app | Expo, **5 screens**, Arabic-first, signed in, on the API |
 | `packages/ui-web` | Web component library, marks + 4 primitives |
 | `packages/ui` | The same library for React Native |
 | `packages/tokens` | Now also owns the 55 generated marks |
@@ -52,13 +52,20 @@ Arabic is the default, not English.
 
 ## What this codebase is deliberately honest about
 
-**1. The console reads the database. The vendor app does not.**
+**1. Both dashboards read the database. The traveller app does not.**
 
-All eight admin screens query Supabase through `apps/api` over HTTP. The
-fixture modules under `apps/admin/lib/` were deleted, not commented out — if
-you want to add data to a console screen, the thing you want is a procedure in
-`apps/api/src/routers/admin.ts`. `apps/vendor` and `apps/traveler` are still
-on fixtures.
+All eight admin screens and all five operator screens query Supabase through
+`apps/api` over HTTP. The fixture modules were deleted, not commented out —
+`apps/admin/lib/`'s in session 4, `apps/vendor/src/day.ts` and
+`operations.ts` in session 5. If you want to add data to a screen, the thing
+you want is a procedure in `admin.ts` or `vendor.ts`. `apps/traveler` is
+still on fixtures.
+
+**Every operator procedure pins its vendor from the session and none takes a
+vendorId as input.** That is the whole safety property: a vendor id in an
+input is a vendor id an operator can change. Proven against two accounts at
+two different operators — neither sees the other's rows, and a guide is
+refused money and staff outright.
 
 **2. The data is a seed, and it says so.**
 
@@ -69,6 +76,19 @@ so re-seeding produces a current week rather than a museum piece. Everything
 is real Dahab except the travellers' names, which exist because a manifest
 with no names on it cannot be read — `packages/db/src/seed/operations.ts` says
 so in its header.
+
+**2b. Two gaps in the seed, which the operator app now shows plainly.**
+
+- **`pricing_models` is empty.** The seed writes services, departures,
+  bookings and payments, but no pricing model — so `computePrice()` has
+  nothing to read for a real service and V03 says "not priced" against every
+  listing. That is the truthful answer and the screen gives it rather than
+  inventing a number, but the seed owes the rows.
+- **No waivers, and only the lead traveller is named.** `waivers` is never
+  written, so every manifest reads as fully outstanding; and
+  `write-operations.ts` names seat 1 and writes `Name pending check-in` for
+  the rest — an English sentence in a name column, which shows untranslated on
+  an Arabic manifest.
 
 **3. Two sources genuinely do not exist, and the screens say so.**
 

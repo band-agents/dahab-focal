@@ -660,13 +660,16 @@
       "seats": "{used} su {total}",
       "billed": "{capacity} a bordo · {chargeable} addebitati",
       "guide": "Guida {name}",
-      "nothing": "Per oggi nient’altro.",
-      "greetingAnon": "Buongiorno."
+      "nothing": "Oggi non esce nulla.",
+      "greetingAnon": "Buongiorno.",
+      "noWeather": "Nessuna fonte meteo collegata. I valori che erano qui non misuravano nulla.",
+      "noManifest": "Ancora nessuna prenotazione."
     },
     "outstanding": {
       "waivers": "{count, plural, =0 {Tutte le liberatorie firmate} one {# liberatoria mancante} other {# liberatorie mancanti}}",
       "certifications": "{count, plural, =0 {Brevetti a posto} one {# brevetto insufficiente} other {# brevetti insufficienti}}",
-      "pickups": "{count, plural, =0 {Tutti raccolti} one {# non raccolto} other {# non raccolti}}"
+      "pickups": "{count, plural, =0 {Tutti raccolti} one {# non raccolto} other {# non raccolti}}",
+      "medical": "{count, plural, =0 {Nessuna nota medica} one {# nota medica} other {# note mediche}}"
     },
     "person": {
       "certShort": "Sotto il minimo per questo sito",
@@ -708,7 +711,9 @@
       "commit": "Annulla la partenza",
       "keep": "Lasciala attiva",
       "released": "Una prenotazione attende ancora il pagamento: viene liberata, non rimborsata — nulla è stato incassato.",
-      "notifyDetail": "{count, plural, one {# viaggiatore} other {# viaggiatori}} · {transfer}"
+      "notifyDetail": "{count, plural, one {# viaggiatore} other {# viaggiatori}} · {transfer}",
+      "none": "Nessuna prenotazione.",
+      "guest": "Ospite"
     },
     "services": {
       "title": "Servizi",
@@ -718,7 +723,10 @@
       "inclusionsNote": "Il confronto riduce ogni inclusione a un solo prezzo. Compilarlo onestamente ti fa salire, non ti costa.",
       "publishOwner": "Solo il titolare pubblica. Salva una bozza e va a {name}.",
       "from": "Da",
-      "publishOwnerNoName": "La pubblicazione è del titolare."
+      "publishOwnerNoName": "La pubblicazione è del titolare.",
+      "none": "Ancora nessun servizio.",
+      "unpriced": "Senza prezzo",
+      "noInclusions": "Nulla dichiarato come incluso."
     },
     "more": {
       "title": "Altro",
@@ -733,7 +741,11 @@
       "blocked": "Bloccata fino al collaudo",
       "dueOn": "Scade {date}",
       "ownerOnly": "Solo titolare",
-      "signOut": "Esci"
+      "signOut": "Esci",
+      "noStaff": "Nessuno è ancora stato aggiunto al team.",
+      "noResources": "Nessuna attrezzatura registrata.",
+      "noPayout": "Nessun versamento programmato.",
+      "noExpiry": "Nessuna scadenza registrata"
     },
     "pricing": {
       "title": "Prezzi",
@@ -766,6 +778,24 @@
       "notVendor": "Questo account non appartiene a un centro. L’app è per titolari e guide.",
       "unreachable": "Server irraggiungibile. Controlla la connessione e riprova.",
       "noSelfServe": "Gli account li crea la piattaforma. Non c’è registrazione."
+    },
+    "problem": {
+      "loading": "Caricamento…",
+      "offline": "Nessun segnale adesso. Non vuol dire che non viene nessuno: vuol dire che non abbiamo potuto chiedere.",
+      "signedOut": "La sessione è finita. Accedi di nuovo.",
+      "forbidden": "Quello è del titolare. Chiedi a lui se ti serve.",
+      "failed": "Non si è caricato. Riprova.",
+      "retry": "Riprova",
+      "signInAgain": "Accedi di nuovo"
+    },
+    "cancel": {
+      "open": "Annulla questa partenza",
+      "title": "Cosa tocca l’annullamento",
+      "summary": "Annulla {bookings, plural, one {# prenotazione} other {# prenotazioni}}, rimborsa {refunds} e libera {releases}.",
+      "irreversible": "Da qui non si torna indietro.",
+      "commit": "Annulla la partenza",
+      "working": "Annullamento…",
+      "failed": "Non è andata a buon fine. Nulla è stato modificato."
     }
   },
   "participant": {

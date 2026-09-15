@@ -1,12 +1,12 @@
 import { TRPCError } from '@trpc/server';
-import { and, asc, eq, inArray, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { commissionMinor } from '@dahab/api-contract';
 import { schema } from '@dahab/db';
 import type { Database } from '@dahab/db';
 
 import { requireDatabase } from '../database.ts';
+import { commitCancellation } from '../operations/cancel-departure.ts';
 import { requirePermission } from '../trpc.ts';
 import type { Context } from '../context.ts';
 
@@ -237,237 +237,15 @@ export const adminWritesRouter = {
     )
     .mutation(async ({ ctx, input }) => {
       const db = requireDatabase(ctx.db);
-
-      return db.transaction(async (tx) => {
-        const [slot] = await tx
-          .select({
-            id: schema.availabilitySlots.id,
-            isCancelled: schema.availabilitySlots.isCancelled,
-            bookedCount: schema.availabilitySlots.bookedCount,
-            serviceId: schema.availabilitySlots.serviceId,
-            vendorId: schema.services.vendorId,
-          })
-          .from(schema.availabilitySlots)
-          .innerJoin(schema.services, eq(schema.services.id, schema.availabilitySlots.serviceId))
-          .where(eq(schema.availabilitySlots.id, input.slotId))
-          .limit(1);
-
-        if (slot === undefined) {
-          throw new TRPCError({ code: 'NOT_FOUND', message: 'No such departure.' });
-        }
-        if (slot.isCancelled) {
-          throw new TRPCError({
-            code: 'CONFLICT',
-            message: 'This departure is already cancelled.',
-          });
-        }
-
-        // The same query the preview ran, so the operator is committing the
-        // list they were shown rather than whatever it has become.
-        const held = await tx
-          .select({
-            id: schema.bookings.id,
-            reference: schema.bookings.reference,
-            status: schema.bookings.status,
-            totalAmount: schema.bookings.totalAmount,
-            currency: schema.bookings.totalCurrency,
-          })
-          .from(schema.bookings)
-          .where(
-            and(
-              eq(schema.bookings.slotId, input.slotId),
-              inArray(schema.bookings.status, ['pendingPayment', 'confirmed', 'awaitingVendor']),
-            ),
-          )
-          .orderBy(asc(schema.bookings.reference));
-
-        const [group] = await tx.execute<{ id: string }>(sql`SELECT uuid_generate_v7() AS id`);
-        const cascadeId = group?.id;
-        if (cascadeId === undefined) throw new Error('Could not mint a cascade id.');
-
-        await tx
-          .update(schema.availabilitySlots)
-          .set({
-            isCancelled: true,
-            cancellationReason: input.reason,
-            // The seats go back. A cancelled slot still holding its headcount
-            // makes every capacity figure on every screen wrong.
-            bookedCount: 0,
-            updatedAt: ctx.now,
-          })
-          .where(eq(schema.availabilitySlots.id, input.slotId));
-
-        let refunded = 0;
-        let released = 0;
-        let refundTotalMinor = 0;
-        let ledgerLegs = 0;
-
-        for (const booking of held) {
-          await tx
-            .update(schema.bookings)
-            .set({ status: 'cancelledByWeather', updatedAt: ctx.now })
-            .where(eq(schema.bookings.id, booking.id));
-
-          await tx.insert(schema.bookingStatusHistory).values({
-            bookingId: booking.id,
-            fromStatus: booking.status,
-            toStatus: 'cancelledByWeather',
-            actorUserId: ctx.session?.userId ?? null,
-            actorKind: 'user',
-            reasonKey: 'booking.reason.weather',
-            note: input.reason,
-            // One id across every booking the cancellation hit, so the whole
-            // cascade can be read back — or undone — as a single act.
-            cascadeId,
-            createdAt: ctx.now,
-            updatedAt: ctx.now,
-          });
-
-          const captured = await tx
-            .select({
-              id: schema.payments.id,
-              amount: schema.payments.amount,
-              currency: schema.payments.currency,
-            })
-            .from(schema.payments)
-            .where(
-              and(
-                eq(schema.payments.bookingId, booking.id),
-                eq(schema.payments.status, 'captured'),
-              ),
-            );
-
-          if (captured.length === 0) {
-            released += 1;
-            continue;
-          }
-
-          for (const payment of captured) {
-            const amount = Number(payment.amount);
-            const [refund] = await tx
-              .insert(schema.refunds)
-              .values({
-                paymentId: payment.id,
-                bookingId: booking.id,
-                amount,
-                currency: payment.currency,
-                reasonKey: 'refund.reason.weather',
-                note: input.reason,
-                // Keyed on the cascade and the payment, so a retry of this
-                // whole cancellation cannot refund the same capture twice.
-                idempotencyKey: `cascade-${cascadeId}-${payment.id}`.slice(0, 80),
-                status: 'refunded',
-                processedAt: ctx.now,
-                createdAt: ctx.now,
-                updatedAt: ctx.now,
-              })
-              .returning({ id: schema.refunds.id });
-            if (refund === undefined) throw new Error('The refund row was not written.');
-
-            const commission = commissionMinor(amount);
-            ledgerLegs += await writeLedgerGroup(
-              tx,
-              'refundIssued',
-              ctx.now,
-              [
-                { account: 'vendorPayable', amount: amount - commission },
-                { account: 'platformCommission', amount: commission },
-                { account: 'refundsPayable', amount: -amount },
-              ],
-              {
-                bookingId: booking.id,
-                vendorId: slot.vendorId,
-                paymentId: payment.id,
-                refundId: refund.id,
-                currency: payment.currency,
-              },
-            );
-
-            refunded += 1;
-            refundTotalMinor += amount;
-          }
-        }
-
-        await audit(tx, ctx, {
-          entityTable: 'availability_slots',
-          entityId: slot.id,
-          action: 'departure.cancelled',
-          reason: input.reason,
-          before: { isCancelled: false, bookedCount: slot.bookedCount },
-          after: {
-            isCancelled: true,
-            bookedCount: 0,
-            cascadeId,
-            bookingsCancelled: held.length,
-            refunded,
-            released,
-            refundTotalMinor,
-          },
-        });
-
-        ctx.logger.info('departure cancelled', {
-          slotId: slot.id,
-          cascadeId,
-          cancelled: held.length,
-          refunded,
-          released,
-          refundTotalMinor,
-        });
-
-        return {
-          ok: true as const,
-          cancelled: held.length,
-          refunded,
-          released,
-          refundTotalMinor,
-          ledgerLegs,
-        };
+      const result = await commitCancellation(db, ctx, {
+        slotId: input.slotId,
+        reason: input.reason,
+        // The console reaches any operator's boat. The operator app passes
+        // its own id instead; the cascade itself is the same either way.
+        scopeToVendor: null,
+        actorKind: 'user',
       });
+      const { cascadeId: _cascadeId, ...wire } = result;
+      return wire;
     }),
 };
-
-type LedgerAccount = (typeof schema.ledgerAccountEnum.enumValues)[number];
-
-/**
- * One business event, as rows that sum to zero.
- *
- * The sum is checked here rather than trusted, because an unbalanced group is
- * silent: nothing fails, and the money screen's claim that the eight accounts
- * come to zero quietly stops being true.
- */
-async function writeLedgerGroup(
-  tx: Database,
-  eventKind: string,
-  occurredAt: Date,
-  legs: readonly { account: LedgerAccount; amount: number }[],
-  links: {
-    bookingId: string;
-    vendorId: string;
-    paymentId: string;
-    refundId: string;
-    currency: string;
-  },
-): Promise<number> {
-  const sum = legs.reduce((total, leg) => total + leg.amount, 0);
-  if (sum !== 0) {
-    throw new Error(`Ledger group ${eventKind} does not balance: ${sum}`);
-  }
-
-  const [group] = await tx.execute<{ id: string }>(sql`SELECT uuid_generate_v7() AS id`);
-  const entryGroupId = group?.id;
-  if (entryGroupId === undefined) throw new Error('Could not mint a ledger group id.');
-
-  const { currency, ...bound } = links;
-  await tx.insert(schema.ledgerEntries).values(
-    legs.map((leg) => ({
-      entryGroupId,
-      account: leg.account,
-      amount: leg.amount,
-      currency,
-      eventKind,
-      occurredAt,
-      ...bound,
-    })),
-  );
-  return legs.length;
-}

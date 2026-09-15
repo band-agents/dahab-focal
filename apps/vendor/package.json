@@ -30,7 +30,8 @@
     "react-native-screens": "~4.11.1",
     "react-native-web": "~0.20.0",
     "react-native-svg": "15.11.2",
-    "@dahab/api-contract": "workspace:*"
+    "@dahab/api-contract": "workspace:*",
+    "@dahab/api": "workspace:*"
   },
   "devDependencies": {
     "@dahab/config": "workspace:*",

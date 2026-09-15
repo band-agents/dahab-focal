@@ -658,13 +658,16 @@
       "seats": "{used} de {total}",
       "billed": "{capacity} a bordo · {chargeable} cobrados",
       "guide": "Guía {name}",
-      "nothing": "Nada más por hoy.",
-      "greetingAnon": "Buenos días."
+      "nothing": "Hoy no sale nada.",
+      "greetingAnon": "Buenos días.",
+      "noWeather": "No hay ninguna fuente meteorológica conectada. Las cifras que había aquí no medían nada.",
+      "noManifest": "Todavía no ha reservado nadie."
     },
     "outstanding": {
       "waivers": "{count, plural, =0 {Todos los consentimientos firmados} one {# consentimiento pendiente} other {# consentimientos pendientes}}",
       "certifications": "{count, plural, =0 {Titulaciones correctas} one {# titulación insuficiente} other {# titulaciones insuficientes}}",
-      "pickups": "{count, plural, =0 {Todos recogidos} one {# sin recoger} other {# sin recoger}}"
+      "pickups": "{count, plural, =0 {Todos recogidos} one {# sin recoger} other {# sin recoger}}",
+      "medical": "{count, plural, =0 {Sin notas médicas} one {# nota médica} other {# notas médicas}}"
     },
     "person": {
       "certShort": "Por debajo del mínimo para este punto",
@@ -706,7 +709,9 @@
       "commit": "Cancelar la salida",
       "keep": "Mantenerla",
       "released": "Una reserva sigue esperando el pago: se libera en vez de reembolsarse — no se cobró nada.",
-      "notifyDetail": "{count, plural, one {# viajero} other {# viajeros}} · {transfer}"
+      "notifyDetail": "{count, plural, one {# viajero} other {# viajeros}} · {transfer}",
+      "none": "No hay reservas.",
+      "guest": "Invitado"
     },
     "services": {
       "title": "Servicios",
@@ -716,7 +721,10 @@
       "inclusionsNote": "La comparación reduce cada inclusión a un precio único. Rellenarlo con honestidad te sube, no te cuesta.",
       "publishOwner": "Solo el propietario publica. Guarda un borrador y le llegará a {name}.",
       "from": "Desde",
-      "publishOwnerNoName": "Publicar es cosa del responsable."
+      "publishOwnerNoName": "Publicar es cosa del responsable.",
+      "none": "Aún no hay servicios.",
+      "unpriced": "Sin precio",
+      "noInclusions": "No se ha declarado nada como incluido."
     },
     "more": {
       "title": "Más",
@@ -731,7 +739,11 @@
       "blocked": "Bloqueada hasta la prueba",
       "dueOn": "Vence {date}",
       "ownerOnly": "Solo propietario",
-      "signOut": "Salir"
+      "signOut": "Salir",
+      "noStaff": "Todavía no se ha añadido a nadie al equipo.",
+      "noResources": "No hay equipo registrado.",
+      "noPayout": "No hay ningún pago programado.",
+      "noExpiry": "Sin fecha de caducidad"
     },
     "pricing": {
       "title": "Precios",
@@ -764,6 +776,24 @@
       "notVendor": "Esa cuenta no pertenece a un centro. Esta app es para responsables y guías.",
       "unreachable": "No se pudo conectar con el servidor. Comprueba la cobertura e inténtalo otra vez.",
       "noSelfServe": "Las cuentas las crea la plataforma. No hay registro."
+    },
+    "problem": {
+      "loading": "Cargando…",
+      "offline": "Ahora no hay cobertura. Eso no significa que no venga nadie: significa que no hemos podido preguntar.",
+      "signedOut": "Tu sesión ha terminado. Vuelve a entrar.",
+      "forbidden": "Eso es del responsable. Pregúntale si lo necesitas.",
+      "failed": "No se ha cargado. Inténtalo otra vez.",
+      "retry": "Inténtalo otra vez",
+      "signInAgain": "Volver a entrar"
+    },
+    "cancel": {
+      "open": "Cancelar esta salida",
+      "title": "A qué afecta cancelar",
+      "summary": "Cancela {bookings, plural, one {# reserva} other {# reservas}}, reembolsa {refunds} y libera {releases}.",
+      "irreversible": "Desde aquí no tiene vuelta atrás.",
+      "commit": "Cancelar la salida",
+      "working": "Cancelando…",
+      "failed": "No salió adelante. No se cambió nada."
     }
   },
   "participant": {

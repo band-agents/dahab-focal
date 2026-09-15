@@ -5,10 +5,12 @@ import { formatCurrency, money } from '@dahab/i18n';
 import { Button, Card, Mark, StatusPill } from '@dahab/ui';
 import type { StatusTone } from '@dahab/ui';
 
-import { SERVICES } from '../src/operations';
-import type { ServiceStatus, VendorService } from '../src/operations';
+import { api } from '../src/api';
+import type { VendorService } from '../src/api';
+import { Loading, Problem } from '../src/Problem';
 import { useSession } from '../src/SessionProvider';
 import { isOwner } from '../src/session';
+import { useApi } from '../src/useApi';
 
 /**
  * V03 · Services.
@@ -27,17 +29,20 @@ import { isOwner } from '../src/session';
  * Publishing is the owner's: `catalog.publish` is not in vendorStaff.
  */
 
-const TONE: Record<ServiceStatus, StatusTone> = {
+const TONE: Record<VendorService['status'], StatusTone> = {
   draft: 'neutral',
   underReview: 'warning',
   published: 'success',
   paused: 'info',
+  archived: 'neutral',
+  rejected: 'danger',
 };
 
 export default function ServicesScreen() {
   const { t } = useTranslation();
   const session = useSession();
   const owner = isOwner(session.role);
+  const { query, reload } = useApi(() => api.services(session.locale), [session.locale]);
 
   return (
     <ScrollView className="flex-1 bg-bg" contentContainerClassName="gap-6 px-5 pb-16 pt-14">
@@ -57,9 +62,17 @@ export default function ServicesScreen() {
         </View>
       )}
 
-      {SERVICES.map((service) => (
-        <ServiceCard key={service.id} service={service} owner={owner} />
-      ))}
+      {query.status === 'loading' ? (
+        <Loading />
+      ) : query.status === 'problem' ? (
+        <Problem problem={query.problem} onRetry={reload} />
+      ) : query.data.length === 0 ? (
+        <Text className="font-ui text-body text-text-muted">{t('vendor.services.none')}</Text>
+      ) : (
+        query.data.map((service) => (
+          <ServiceCard key={service.id} service={service} owner={owner} />
+        ))
+      )}
     </ScrollView>
   );
 }
@@ -87,11 +100,22 @@ function ServiceCard({
         </StatusPill>
       }
     >
+      {/* No pricing model is a real state — a draft written before anyone
+          decided what it costs — and reads as "not priced", never as zero. */}
       <View className="flex-row items-baseline gap-2">
         <Text className="font-ui text-small text-text-muted">{t('vendor.services.from')}</Text>
-        <Text className="font-display text-h2 tabular-nums text-text">
-          {formatCurrency(money(service.from.amountMinor, service.from.currency), context)}
-        </Text>
+        {service.fromPrice === null ? (
+          <Text className="font-ui text-body text-text-muted">
+            {t('vendor.services.unpriced')}
+          </Text>
+        ) : (
+          <Text className="font-display text-h2 tabular-nums text-text">
+            {formatCurrency(
+              money(service.fromPrice.amountMinor, service.fromPrice.currency),
+              context,
+            )}
+          </Text>
+        )}
       </View>
 
       <View className="mt-3">
@@ -104,13 +128,21 @@ function ServiceCard({
         <Text className="font-ui text-overline uppercase text-text-muted">
           {t('vendor.services.inclusions')}
         </Text>
-        <View className="mt-2 flex-row flex-wrap gap-2">
-          {service.inclusions.map((inclusion) => (
-            <View key={inclusion} className="rounded-pill bg-surface-raised px-3 py-1">
-              <Text className="font-ui text-small text-text">{inclusion}</Text>
-            </View>
-          ))}
-        </View>
+        {service.inclusions.length === 0 ? (
+          <Text className="mt-2 font-ui text-small text-text-muted">
+            {t('vendor.services.noInclusions')}
+          </Text>
+        ) : (
+          <View className="mt-2 flex-row flex-wrap gap-2">
+            {service.inclusions.map((inclusion) => (
+              <View key={inclusion} className="rounded-pill bg-surface-raised px-3 py-1">
+                {/* The machine key until `attribute.*` is translated — shown
+                    as a key rather than dressed up as prose it is not. */}
+                <Text className="font-mono text-caption text-text">{inclusion}</Text>
+              </View>
+            ))}
+          </View>
+        )}
         <Text className="mt-2 font-ui text-caption text-text-muted">
           {t('vendor.services.inclusionsNote')}
         </Text>

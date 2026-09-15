@@ -7,6 +7,7 @@ import { publicProcedure, router } from '../trpc.ts';
 import { adminRouter } from './admin.ts';
 import { authRouter } from './auth.ts';
 import { catalogRouter } from './catalog.ts';
+import { vendorRouter } from './vendor.ts';
 
 export const appRouter = router({
   /**
@@ -43,6 +44,11 @@ export const appRouter = router({
   auth: authRouter,
   catalog: catalogRouter,
   admin: adminRouter,
+  /**
+   * The operator app. Every procedure pins its vendor from the session, so
+   * no caller can ask for another operator's rows.
+   */
+  vendor: vendorRouter,
 });
 
 export type AppRouter = typeof appRouter;
