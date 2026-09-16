@@ -429,7 +429,8 @@
       "noPayouts": "Nothing is owed out.",
       "noLedger": "The ledger has no entries.",
       "period": "Period",
-      "noFxSource": "No exchange-rate source connected"
+      "noFxSource": "No exchange-rate source connected",
+      "legCount": "{count, plural, one {# leg} other {# legs}}"
     },
     "paymentStatus": {
       "initiated": "Initiated",

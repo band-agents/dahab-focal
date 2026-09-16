@@ -2,9 +2,15 @@ import Link from 'next/link';
 import type { Route } from 'next';
 
 import { formatDate, formatNumber, isolate } from '@dahab/i18n/server';
-import { DataTable, Illo, Mark, Panel, StatusPill } from '@dahab/ui-web';
-import type { Column, StatusTone } from '@dahab/ui-web';
 
+import {
+  Icon,
+  Panel,
+  Pill,
+  RecordList,
+  type RecordColumn,
+  type Tone,
+} from '@/components/console';
 import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
 import { OutcomeNotice, ReviewPanel } from '@/components/ReviewPanel';
@@ -34,7 +40,7 @@ type QueueItem = Awaited<ReturnType<typeof api.admin.serviceQueue.query>>[number
 type Attribute = Awaited<ReturnType<typeof api.admin.attributeUsage.query>>[number];
 type Category = Awaited<ReturnType<typeof api.admin.categories.query>>[number];
 
-const SERVICE_TONE: Record<QueueItem['status'], StatusTone> = {
+const SERVICE_TONE: Record<QueueItem['status'], Tone> = {
   draft: 'neutral',
   underReview: 'warning',
   published: 'success',
@@ -73,59 +79,64 @@ export default async function CatalogPage({
     ? attributes.data.filter((attribute) => !attribute.isComparable)
     : [];
 
-  const queueColumns: readonly Column<QueueItem>[] = [
+  const queueColumns: readonly RecordColumn<QueueItem>[] = [
     {
       key: 'title',
+      role: 'primary',
       header: t('admin.col.service'),
       cell: (row) => (
         <span className="block">
-          <span className="block text-body text-text">{row.title}</span>
-          <span className="block text-small text-text-muted">{row.vendorName}</span>
+          <span className="block text-cLabel text-c-text">{row.title}</span>
+          <span className="block text-cMeta text-c-muted">{row.vendorName}</span>
         </span>
       ),
     },
     {
       key: 'category',
+      role: 'secondary',
       header: t('admin.col3.category'),
       cell: (row) => row.categorySlug,
       width: '11rem',
     },
     {
       key: 'submitted',
+      role: 'column',
       header: t('admin.col3.submitted'),
       cell: (row) => formatDate(new Date(row.submittedAt), context, 'date'),
       width: '11rem',
     },
     {
       key: 'ready',
+      role: 'column',
       header: t('admin.col3.comparable'),
       width: '14rem',
       cell: (row) =>
         row.missingComparable === 0 ? (
-          <StatusPill tone="success" mark="eco">
+          <Pill tone="success" icon="check">
             {t('admin.catalog.missing', { count: 0 })}
-          </StatusPill>
+          </Pill>
         ) : (
-          <StatusPill tone="warning" mark="firstAid">
+          <Pill tone="warning" icon="alert">
             {t('admin.catalog.missing', { count: row.missingComparable })}
-          </StatusPill>
+          </Pill>
         ),
     },
     {
       key: 'status',
+      role: 'column',
       header: t('admin.col.status'),
       width: '12rem',
       cell: (row) => (
-        <StatusPill
+        <Pill
           tone={SERVICE_TONE[row.status]}
-          mark={row.status === 'rejected' ? 'sos' : row.status === 'published' ? 'eco' : 'chat'}
         >
           {t(`admin.serviceStatus.${row.status}`)}
-        </StatusPill>
+        </Pill>
       ),
     },
     {
       key: 'action',
+      role: 'end',
       header: t('admin.action.review'),
       width: '9rem',
       // A link. Publishing is what puts a listing in front of travellers, so
@@ -134,7 +145,7 @@ export default async function CatalogPage({
       cell: (row) => (
         <Link
           href={`/${locale}/catalog?review=${row.id}` as Route}
-          className="inline-flex min-h-11 items-center rounded-input border border-border-strong bg-surface px-4 font-ui text-body text-text hover:bg-surface-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+          className="inline-flex min-h-11 items-center rounded-input border border-c-edge-strong bg-c-surface px-4 font-ui text-cLabel text-c-text hover:bg-c-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
         >
           {t('admin.action.review')}
         </Link>
@@ -145,40 +156,44 @@ export default async function CatalogPage({
   const reviewing =
     queue.ok && review !== undefined ? queue.data.find((row) => row.id === review) : undefined;
 
-  const attributeColumns: readonly Column<Attribute>[] = [
+  const attributeColumns: readonly RecordColumn<Attribute>[] = [
     {
       key: 'key',
+      role: 'primary',
       header: t('admin.col3.attribute'),
       cell: (row) => (
         <span className="block">
           {/* The machine key, shown as one: this is the contract the vendor
               form and the comparison engine both bind to. */}
-          <span className="block font-mono text-small text-text">{row.key}</span>
+          <span className="block font-mono text-cMeta text-c-text">{row.key}</span>
           {row.unit === null ? null : (
-            <span className="block text-caption text-text-muted">{row.unit}</span>
+            <span className="block text-cMeta text-c-muted">{row.unit}</span>
           )}
         </span>
       ),
     },
     {
       key: 'type',
+      role: 'secondary',
       header: t('admin.col3.type'),
       cell: (row) => t(`admin.dataType.${row.dataType}`),
       width: '9rem',
     },
     {
       key: 'normalisation',
+      role: 'column',
       header: t('admin.col3.normalisation'),
       width: '11rem',
       cell: (row) =>
         row.normalization === 'none' ? (
-          <span className="text-text-muted">—</span>
+          <span className="text-c-muted">—</span>
         ) : (
-          <span className="font-mono text-small text-text">{row.normalization}</span>
+          <span className="font-mono text-cMeta text-c-text">{row.normalization}</span>
         ),
     },
     {
       key: 'options',
+      role: 'column',
       header: t('admin.col3.options'),
       numeric: true,
       width: '7rem',
@@ -186,20 +201,27 @@ export default async function CatalogPage({
     },
     {
       key: 'usage',
+      role: 'end',
       header: t('admin.col3.usage'),
       width: '13rem',
       cell: (row) => (
-        <span className="text-small text-text-muted">
+        <span className="text-cMeta text-c-muted">
           {t('admin.catalog.usage', { count: row.valuesOnServices })}
         </span>
       ),
     },
   ];
 
-  const categoryColumns: readonly Column<Category>[] = [
-    { key: 'slug', header: t('admin.col3.category'), cell: (row) => row.slug },
+  const categoryColumns: readonly RecordColumn<Category>[] = [
+    {
+      key: 'slug',
+      role: 'primary',
+      header: t('admin.col3.category'),
+      cell: (row) => row.slug,
+    },
     {
       key: 'attributes',
+      role: 'secondary',
       header: t('admin.col3.attribute'),
       numeric: true,
       cell: (row) => formatNumber(row.attributes, context),
@@ -207,6 +229,7 @@ export default async function CatalogPage({
     },
     {
       key: 'comparable',
+      role: 'column',
       header: t('admin.col3.comparable'),
       numeric: true,
       cell: (row) => formatNumber(row.comparable, context),
@@ -214,6 +237,7 @@ export default async function CatalogPage({
     },
     {
       key: 'services',
+      role: 'end',
       header: t('admin.col2.services'),
       numeric: true,
       // Published against total: a category with six listings of which one is
@@ -222,7 +246,7 @@ export default async function CatalogPage({
       cell: (row) => (
         <span>
           {formatNumber(row.publishedServices, context)}
-          <span className="text-text-muted"> / {formatNumber(row.services, context)}</span>
+          <span className="text-c-muted"> / {formatNumber(row.services, context)}</span>
         </span>
       ),
       width: '9rem',
@@ -242,8 +266,8 @@ export default async function CatalogPage({
           at a slow comparison query will be tempted to denormalise this into
           columns, and that is the one change that cannot be undone cheaply.
         */}
-        <p className="flex items-start gap-3 rounded-lg bg-info-surface px-5 py-4 text-small text-info-text">
-          <Mark name="compass" size={20} noFlip className="mt-1 shrink-0" />
+        <p className="flex items-start gap-3 rounded-c-sm bg-c-info-bg px-5 py-4 text-cMeta text-c-info">
+          <Icon name="operators" size={20} />
           {t('admin.catalog.dataAsData')}
         </p>
 
@@ -253,10 +277,9 @@ export default async function CatalogPage({
           <ReviewPanel
             t={t}
             title={t('admin.serviceReview.title')}
-            mark="compass"
             summary={
               <span className="block">
-                <span className="block font-display text-h3 text-text">
+                <span className="block font-console text-cHeading text-c-text">
                   {t('admin.serviceReview.of', {
                     title: isolate(reviewing.title),
                     vendor: isolate(reviewing.vendorName),
@@ -268,15 +291,15 @@ export default async function CatalogPage({
                   listing that cannot be compared, which is the product's
                   whole premise.
                 */}
-                <span className="mt-1 block text-small text-text-muted">
+                <span className="mt-1 block text-cMeta text-c-muted">
                   {t('admin.serviceReview.missing', { count: reviewing.missingComparable })}
                 </span>
               </span>
             }
             action={reviewService}
             hidden={{ locale, serviceId: reviewing.id }}
-            approve={{ value: 'published', label: t('admin.serviceReview.publish'), mark: 'eco' }}
-            reject={{ value: 'rejected', label: t('admin.serviceReview.reject'), mark: 'sos' }}
+            approve={{ value: 'published', label: t('admin.serviceReview.publish'), icon: 'check' }}
+            reject={{ value: 'rejected', label: t('admin.serviceReview.reject'), icon: 'ban' }}
             reasonLabel={t('admin.review.reason')}
             reasonHint={t('admin.review.reasonHint')}
             closeHref={`/${locale}/catalog` as Route}
@@ -288,18 +311,16 @@ export default async function CatalogPage({
         ) : (
           <Panel
             title={t('admin.catalog.queue')}
-            mark="chat"
-            eyebrow={t('admin.catalog.serviceCount', { count: queue.data.length })}
+            figure={t('admin.catalog.serviceCount', { count: queue.data.length })}
             flush
           >
-            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.catalog.queueSub')}</p>
+            <p className="px-4 pb-2 pt-3 text-cMeta text-c-muted">{t('admin.catalog.queueSub')}</p>
             {queue.data.length === 0 ? (
-              <div className="flex items-center gap-4 px-6 pb-6">
-                <Illo name="seaTurtle" size={56} />
-                <p className="text-body text-text-muted">{t('admin.catalog.noQueue')}</p>
+              <div className="flex items-center gap-4 px-4 pb-6">
+                <p className="text-cLabel text-c-text-muted">{t('admin.catalog.noQueue')}</p>
               </div>
             ) : (
-              <DataTable
+              <RecordList
                 columns={queueColumns}
                 rows={queue.data}
                 rowKey={(row) => row.id}
@@ -316,34 +337,32 @@ export default async function CatalogPage({
             title={t('admin.catalog.attributes')}
           />
         ) : (
-          <Panel title={t('admin.catalog.attributes')} mark="pass" flush>
-            <p className="px-6 pb-4 text-small text-text-muted">{t('admin.catalog.attributesSub')}</p>
+          <Panel title={t('admin.catalog.attributes')} flush>
+            <p className="px-4 pb-3 text-cMeta text-c-muted">{t('admin.catalog.attributesSub')}</p>
             {groups.map(({ group, rows }) => (
-              <div key={group} className="border-t border-border">
-                <h3 className="px-6 pb-2 pt-4 text-overline uppercase text-text-muted">
+              <div key={group} className="border-t border-c-edge">
+                <h3 className="px-4 pb-2 pt-4 text-cOverline uppercase text-c-muted">
                   {t(`admin.group.${group}`)}
                 </h3>
-                <DataTable
+                <RecordList
                   columns={attributeColumns}
                   rows={rows}
                   rowKey={(row) => row.id}
-                  density="compact"
                   caption={t(`admin.group.${group}`)}
                 />
               </div>
             ))}
 
             {descriptive.length === 0 ? null : (
-              <div className="border-t border-border">
-                <h3 className="flex items-center gap-2 px-6 pb-2 pt-4 text-overline uppercase text-text-muted">
-                  <Mark name="chat" size={16} />
+              <div className="border-t border-c-edge">
+                <h3 className="flex items-center gap-2 px-4 pb-2 pt-4 text-cOverline uppercase text-c-muted">
+                  <Icon name="doc" size={16} />
                   {t('admin.catalog.notComparable')}
                 </h3>
-                <DataTable
+                <RecordList
                   columns={attributeColumns}
                   rows={descriptive}
                   rowKey={(row) => row.id}
-                  density="compact"
                   caption={t('admin.catalog.notComparable')}
                 />
               </div>
@@ -358,13 +377,12 @@ export default async function CatalogPage({
             title={t('admin.catalog.categories')}
           />
         ) : (
-          <Panel title={t('admin.catalog.categories')} mark="weave" flush>
-            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.catalog.categoriesSub')}</p>
-            <DataTable
+          <Panel title={t('admin.catalog.categories')} flush>
+            <p className="px-4 pb-2 pt-3 text-cMeta text-c-muted">{t('admin.catalog.categoriesSub')}</p>
+            <RecordList
               columns={categoryColumns}
               rows={categories.data}
               rowKey={(row) => row.slug}
-              density="compact"
               caption={t('admin.catalog.categories')}
             />
           </Panel>

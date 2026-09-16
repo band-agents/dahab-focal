@@ -2,9 +2,17 @@ import Link from 'next/link';
 import type { Route } from 'next';
 
 import { formatCurrency, formatDate, formatNumber, isolate, money } from '@dahab/i18n/server';
-import { Button, DataTable, Illo, Mark, Panel, StatusPill } from '@dahab/ui-web';
-import type { Column, MarkName, StatusTone } from '@dahab/ui-web';
 
+import {
+  Action,
+  Icon,
+  Panel,
+  Pill,
+  RecordList,
+  type IconName,
+  type RecordColumn,
+  type Tone,
+} from '@/components/console';
 import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
 import { OutcomeNotice } from '@/components/ReviewPanel';
@@ -16,7 +24,7 @@ import { sectionHref } from '@/lib/nav';
 /**
  * A05 · Bookings and operations.
  *
- * The screen exists for one reason: "weather cancels boats, and cancellation
+ * The screen exists for one reason:"weather cancels boats, and cancellation
  * is a first-class, cascading operation". A status dropdown would let an
  * operator cancel a Thursday boat without ever seeing that it also opens
  * three refunds and leaves a fourth booking to be released rather than
@@ -25,7 +33,7 @@ import { sectionHref } from '@/lib/nav';
  *
  * What the design showed and this cannot: the wind forecast that picks the
  * departure out. No weather source is connected, so nothing here claims a
- * departure is at risk. The preview instead answers "what would cancelling
+ * departure is at risk. The preview instead answers"what would cancelling
  * this one do", for whichever departure is chosen — which is the part that
  * had to be true before a forecast could ever be trusted to trigger it.
  */
@@ -35,7 +43,7 @@ type Departure = Awaited<ReturnType<typeof api.admin.departures.query>>[number];
 type Preview = Awaited<ReturnType<typeof api.admin.cancellationPreview.query>>;
 type ParticipantKind = keyof Booking['party'];
 
-const TONE: Record<Booking['status'], StatusTone> = {
+const TONE: Record<Booking['status'], Tone> = {
   pendingPayment: 'warning',
   confirmed: 'success',
   awaitingVendor: 'warning',
@@ -48,18 +56,6 @@ const TONE: Record<Booking['status'], StatusTone> = {
   disputed: 'danger',
 };
 
-const STATUS_MARK: Record<Booking['status'], MarkName> = {
-  pendingPayment: 'firstAid',
-  confirmed: 'eco',
-  awaitingVendor: 'chat',
-  cancelledByTraveler: 'pass',
-  cancelledByVendor: 'pass',
-  cancelledByWeather: 'wind',
-  noShow: 'pass',
-  completed: 'eco',
-  refunded: 'shell',
-  disputed: 'sos',
-};
 
 /**
  * Seats held versus heads billed. Mirrors PARTICIPANT_RULES in
@@ -105,38 +101,42 @@ export default async function BookingsPage({
       ? null
       : await load(() => api.admin.cancellationPreview.query({ slotId: chosen.id, locale }));
 
-  const columns: readonly Column<Booking>[] = [
+  const columns: readonly RecordColumn<Booking>[] = [
     {
       key: 'ref',
+      role: 'primary',
       header: t('admin.col4.ref'),
       width: '8rem',
-      cell: (row) => <span className="font-mono text-small text-text">{row.reference}</span>,
+      cell: (row) => <span className="font-mono text-cMeta text-c-text">{row.reference}</span>,
     },
     {
       key: 'service',
+      role: 'secondary',
       header: t('admin.col.service'),
       cell: (row) => (
         <span className="block">
-          <span className="block text-body text-text">{row.serviceTitle}</span>
-          <span className="block text-small text-text-muted">{row.vendorName}</span>
+          <span className="block text-cLabel text-c-text">{row.serviceTitle}</span>
+          <span className="block text-cMeta text-c-muted">{row.vendorName}</span>
         </span>
       ),
     },
     {
       key: 'traveler',
+      role: 'column',
       header: t('admin.col4.traveler'),
       cell: (row) => row.travelerName ?? '—',
       width: '11rem',
     },
     {
       key: 'party',
+      role: 'column',
       header: t('admin.col4.party'),
       width: '15rem',
       cell: (row) => {
         const counts = partyCounts(row.party);
         return (
           <span className="flex flex-col">
-            <span className="text-small text-text">
+            <span className="text-cMeta text-c-text">
               {Object.entries(row.party)
                 .map(
                   ([kind, total]) =>
@@ -147,7 +147,7 @@ export default async function BookingsPage({
             {counts.chargeable === counts.capacity ? null : (
               // Seats held against heads billed, surfaced rather than left to
               // arithmetic: the boat's headcount depends on the first number.
-              <span className="text-caption text-text-muted">
+              <span className="text-cMeta text-c-muted">
                 {formatNumber(counts.capacity, context)} /{' '}
                 {formatNumber(counts.chargeable, context)}
               </span>
@@ -158,22 +158,25 @@ export default async function BookingsPage({
     },
     {
       key: 'departs',
+      role: 'column',
       header: t('admin.col4.departs'),
       width: '12rem',
       cell: (row) => formatDate(new Date(row.startsAt), context, 'dateTime'),
     },
     {
       key: 'status',
+      role: 'column',
       header: t('admin.col.status'),
       width: '14rem',
       cell: (row) => (
-        <StatusPill tone={TONE[row.status]} mark={STATUS_MARK[row.status]}>
+        <Pill tone={TONE[row.status]}>
           {t(`admin.bookingStatus.${row.status}`)}
-        </StatusPill>
+        </Pill>
       ),
     },
     {
       key: 'total',
+      role: 'end',
       header: t('admin.col4.total'),
       numeric: true,
       width: '10rem',
@@ -192,22 +195,22 @@ export default async function BookingsPage({
         {outcome === undefined ? null : <OutcomeNotice outcome={outcome} t={t} />}
 
         {/*
-          Not a warning panel. The design's version was headed "wind above
+          Not a warning panel. The design's version was headed"wind above
           this operator's limit", and no forecast reaches this console — so
           this carries the neutral ground and says plainly that nothing is
           flagged. It turns warning-coloured on the day a weather source can
           actually flag something.
         */}
-        <section className="rounded-xl bg-surface">
-          <header className="flex items-start gap-3 px-6 pt-5">
-            <Mark name="wind" size={24} noFlip className="mt-1 shrink-0" />
+        <section className="rounded-c-md bg-c-surface">
+          <header className="flex items-start gap-3 px-4 pt-5">
+            <Icon name="wind" size={24} />
             <div>
-              <h2 className="font-display text-h2 text-text">{t('admin.departures.title')}</h2>
-              <p className="mt-1 max-w-prose text-body text-text-muted">
+              <h2 className="font-figure text-cHeading text-c-text">{t('admin.departures.title')}</h2>
+              <p className="mt-1 max-w-prose text-cLabel text-c-text-muted">
                 {t('admin.cond.noSource')} · {t('admin.bookings.noRisk')}
               </p>
               {chosen === null ? null : (
-                <p className="mt-2 text-small text-text-muted">
+                <p className="mt-2 text-cMeta text-c-muted">
                   {t('admin.bookings.seats', {
                     used: formatNumber(chosen.booked, context),
                     total: formatNumber(chosen.capacity, context),
@@ -217,9 +220,9 @@ export default async function BookingsPage({
             </div>
           </header>
 
-          <div className="mt-5 rounded-xl bg-bg p-6">
-            <h3 className="font-display text-h3 text-text">{t('admin.bookings.cascadeTitle')}</h3>
-            <p className="mt-1 text-small text-text-muted">{t('admin.bookings.cascadeSub')}</p>
+          <div className="mt-5 rounded-c-md bg-c-bg p-6">
+            <h3 className="font-console text-cHeading text-c-text">{t('admin.bookings.cascadeTitle')}</h3>
+            <p className="mt-1 text-cMeta text-c-muted">{t('admin.bookings.cascadeSub')}</p>
 
             {!upcoming.ok ? (
               <div className="mt-4">
@@ -231,8 +234,7 @@ export default async function BookingsPage({
               </div>
             ) : upcoming.data.length === 0 ? (
               <div className="mt-4 flex items-center gap-4">
-                <Illo name="dhow" size={56} />
-                <p className="text-body text-text-muted">{t('admin.bookings.noneTomorrow')}</p>
+                <p className="text-cLabel text-c-text-muted">{t('admin.bookings.noneTomorrow')}</p>
               </div>
             ) : (
               <>
@@ -246,10 +248,10 @@ export default async function BookingsPage({
                       // not generate; the path itself comes from the closed
                       // section list, which is where the safety actually is.
                       href={`${sectionHref(locale, 'bookings')}?slot=${departure.id}` as Route}
-                      className={`rounded-pill border px-4 py-2 text-small ${
+                      className={`rounded-c-xs border px-4 py-2 text-cMeta ${
                         departure.id === chosen?.id
-                          ? 'border-cta-edge bg-cta-fill text-text'
-                          : 'border-border bg-surface text-text-muted'
+                          ? 'border-cta-edge bg-cta-fill text-c-text'
+                          : 'border-c-edge bg-c-surface text-c-muted'
                       }`}
                     >
                       <bdi>{isolate(formatDate(new Date(departure.startsAt), context, 'time'))}</bdi>
@@ -278,17 +280,17 @@ export default async function BookingsPage({
         {!bookings.ok ? (
           <DataProblemNotice problem={bookings.problem} t={t} title={t('admin.bookings.all')} />
         ) : (
-          <Panel title={t('admin.bookings.all')} mark="pass" flush>
-            <p className="flex items-start gap-2 px-6 pb-3 text-small text-text-muted">
-              <Mark name="diver" size={16} className="mt-1 shrink-0" />
+          <Panel title={t('admin.bookings.all')} flush>
+            <p className="flex items-start gap-2 px-4 pb-3 text-cMeta text-c-muted">
+              <Icon name="people" size={16} />
               {t('admin.bookings.chargeableNote')}
             </p>
-            <DataTable
+            <RecordList
               columns={columns}
               rows={bookings.data}
               rowKey={(row) => row.id}
               caption={t('admin.bookings.all')}
-              empty={<p className="text-body text-text-muted">{t('admin.bookings.none')}</p>}
+              empty={<p className="text-cLabel text-c-text-muted">{t('admin.bookings.none')}</p>}
             />
           </Panel>
         )}
@@ -297,13 +299,20 @@ export default async function BookingsPage({
   );
 }
 
-const CASCADE_MARK = {
-  bookings: 'pass',
-  releases: 'chat',
-  refunds: 'shell',
-  ledger: 'weave',
-  notifications: 'chat',
-} as const satisfies Record<string, MarkName>;
+/**
+ * One glyph per step of the cascade, so the five rows are told apart at a
+ * glance rather than only by their words. Money and the ledger are
+ * deliberately different marks: a refund is cash leaving, a ledger entry is
+ * the record of it, and the screen is explaining that they are not the same
+ * count.
+ */
+const CASCADE_ICON = {
+  bookings: 'boat',
+  releases: 'people',
+  refunds: 'money',
+  ledger: 'doc',
+  notifications: 'doc',
+} as const satisfies Record<string, IconName>;
 
 function Cascade({
   preview,
@@ -351,18 +360,18 @@ function Cascade({
     <>
       <ol className="mt-4 flex flex-col gap-3">
         {steps.map((step) => (
-          <li key={step.kind} className="flex items-start gap-4 rounded-lg bg-surface px-4 py-3">
-            <Mark name={CASCADE_MARK[step.kind]} size={24} className="mt-1 shrink-0" />
+          <li key={step.kind} className="flex items-start gap-4 rounded-c-sm bg-c-surface px-4 py-3">
+            <Icon name={CASCADE_ICON[step.kind]} size={20} className="mt-0.5 shrink-0 text-c-muted" />
             <span className="flex min-w-0 flex-1 flex-col">
-              <span className="text-body text-text">{t(`admin.cascade.${step.kind}`)}</span>
-              <span className="text-small text-text-muted">{step.detail.join(' · ')}</span>
+              <span className="text-cLabel text-c-text">{t(`admin.cascade.${step.kind}`)}</span>
+              <span className="text-cMeta text-c-muted">{step.detail.join(' · ')}</span>
             </span>
             <span className="flex shrink-0 flex-col items-end">
-              <span className="font-display text-h3 tabular-nums text-text">
+              <span className="font-console text-cHeading tabular-nums text-c-text">
                 {formatNumber(step.count, context)}
               </span>
               {step.amountMinor === null || step.amountMinor === 0 ? null : (
-                <span className="text-small text-text-muted">
+                <span className="text-cMeta text-c-muted">
                   {formatCurrency(money(step.amountMinor, preview.currency), context)}
                 </span>
               )}
@@ -376,8 +385,8 @@ function Cascade({
         like a bug, and an operator who thinks the console is buggy stops
         trusting the rest of it.
       */}
-      <p className="mt-3 flex items-start gap-2 text-small text-text-muted">
-        <Mark name="chat" size={16} className="mt-1 shrink-0" />
+      <p className="mt-3 flex items-start gap-2 text-cMeta text-c-muted">
+        <Icon name="doc" size={16} />
         {t('admin.cascade.releasedNote')}
       </p>
 
@@ -391,8 +400,8 @@ function Cascade({
         <input type="hidden" name="locale" value={context.locale} />
         <input type="hidden" name="slotId" value={preview.slot.id} />
 
-        <p className="flex items-start gap-2 rounded-lg bg-warning-surface p-4 font-ui text-small text-warning-text">
-          <Mark name="sos" size={20} className="mt-0.5 shrink-0" />
+        <p className="flex items-start gap-2 rounded-c-sm bg-c-warn-bg p-4 font-ui text-cMeta text-c-warn">
+          <Icon name="ban" size={20} />
           {t('admin.cancelReview.warning', {
             refunds: preview.refunds.length,
             releases: preview.releases.length,
@@ -400,27 +409,27 @@ function Cascade({
         </p>
 
         <label className="flex flex-col gap-2">
-          <span className="font-ui text-small text-text">{t('admin.review.reason')}</span>
+          <span className="font-ui text-cMeta text-c-text">{t('admin.review.reason')}</span>
           <textarea
             name="reason"
             required
             minLength={8}
             maxLength={2000}
             rows={3}
-            className="w-full rounded-input border border-border-strong bg-surface p-4 font-ui text-body text-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+            className="w-full rounded-input border border-c-edge-strong bg-c-surface p-4 font-ui text-cLabel text-c-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
           />
-          <span className="text-caption text-text-muted">
+          <span className="text-cMeta text-c-muted">
             {t('admin.cancelReview.reasonHint')}
           </span>
         </label>
 
         <div className="flex items-center gap-3">
-          <Button type="submit" variant="primary" mark="wind">
+          <Action type="submit" intent="primary" icon="wind">
             {t('admin.bookings.commit')}
-          </Button>
+          </Action>
           <Link
             href={sectionHref(context.locale, 'bookings')}
-            className="inline-flex min-h-11 items-center rounded-input px-4 font-ui text-body text-text-link focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+            className="inline-flex min-h-11 items-center rounded-input px-4 font-ui text-cLabel text-c-text-link focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
           >
             {t('admin.bookings.keep')}
           </Link>

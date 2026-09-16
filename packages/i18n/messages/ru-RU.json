@@ -524,7 +524,8 @@
       "noPayouts": "Ничего не подлежит выплате.",
       "noLedger": "В книге нет записей.",
       "period": "Период",
-      "noFxSource": "Источник курса валют не подключён"
+      "noFxSource": "Источник курса валют не подключён",
+      "legCount": "{count, plural, one {# проводка} few {# проводки} many {# проводок} other {# проводки}}"
     },
     "paymentStatus": {
       "initiated": "Начат",

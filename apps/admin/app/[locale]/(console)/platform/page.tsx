@@ -1,7 +1,12 @@
 import { LOCALE_DESCRIPTORS, formatDate, formatDepth, formatNumber } from '@dahab/i18n/server';
-import { DataTable, Illo, Mark, Panel, StatusPill } from '@dahab/ui-web';
-import type { Column } from '@dahab/ui-web';
 
+import {
+  Icon,
+  Panel,
+  Pill,
+  RecordList,
+  type RecordColumn,
+} from '@/components/console';
 import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
 import { api, load } from '@/lib/api';
@@ -41,73 +46,87 @@ export default async function PlatformPage({ params }: { params: Promise<{ local
     load(() => api.admin.diveSites.query()),
   ]);
 
-  const auditColumns: readonly Column<AuditRecord>[] = [
+  const auditColumns: readonly RecordColumn<AuditRecord>[] = [
     {
       key: 'at',
+      role: 'primary',
       header: t('admin.col5.when'),
       cell: (row) => formatDate(new Date(row.at), context, 'dateTime'),
       width: '13rem',
     },
     {
       key: 'actor',
+      role: 'secondary',
       header: t('admin.col5.actor'),
       cell: (row) => row.actor ?? '—',
       width: '13rem',
     },
     {
       key: 'action',
+      role: 'column',
       header: t('admin.col5.permission'),
       width: '13rem',
       // The action, not the button: a screen may need several, and neither an
       // action nor a permission is ever named after a control.
-      cell: (row) => <span className="font-mono text-small text-text">{row.action}</span>,
+      cell: (row) => <span className="font-mono text-cMeta text-c-text">{row.action}</span>,
     },
     {
       key: 'target',
+      role: 'column',
       header: t('admin.col5.target'),
-      cell: (row) => <span className="font-mono text-small text-text-muted">{row.entity}</span>,
+      cell: (row) => <span className="font-mono text-cMeta text-c-muted">{row.entity}</span>,
       width: '18rem',
     },
     {
       key: 'reason',
+      role: 'end',
       header: t('admin.col5.reason'),
-      cell: (row) => <span className="text-small text-text-muted">{row.reason ?? '—'}</span>,
+      cell: (row) => <span className="text-cMeta text-c-muted">{row.reason ?? '—'}</span>,
     },
   ];
 
-  const flagColumns: readonly Column<FeatureFlag>[] = [
+  const flagColumns: readonly RecordColumn<FeatureFlag>[] = [
     {
       key: 'key',
+      role: 'primary',
       header: t('admin.col5.flag'),
-      cell: (row) => <span className="font-mono text-small text-text">{row.key}</span>,
+      cell: (row) => <span className="font-mono text-cMeta text-c-text">{row.key}</span>,
       width: '20rem',
     },
-    { key: 'gates', header: t('admin.col5.gates'), cell: (row) => row.description },
+    {
+      key: 'gates',
+      role: 'secondary',
+      header: t('admin.col5.gates'),
+      cell: (row) => row.description,
+    },
     {
       key: 'rollout',
+      role: 'column',
       header: t('admin.col5.rollout'),
       numeric: true,
       width: '10rem',
-      // The dial's actual position. A flag that is "on" at 25% is on for a
+      // The dial's actual position. A flag that is"on" at 25% is on for a
       // quarter of travellers, and the word alone would hide that.
       cell: (row) =>
         formatNumber(row.rolloutPercentage / 100, context, { style: 'percent' }),
     },
     {
       key: 'on',
+      role: 'column',
       header: t('admin.col.status'),
       width: '9rem',
       cell: (row) => (
-        <StatusPill tone={row.isEnabled ? 'success' : 'neutral'} mark={row.isEnabled ? 'eco' : 'pass'}>
+        <Pill tone={row.isEnabled ? 'success' : 'neutral'}>
           {row.isEnabled ? t('admin.platform.on') : t('admin.platform.off')}
-        </StatusPill>
+        </Pill>
       ),
     },
   ];
 
-  const siteColumns: readonly Column<DiveSite>[] = [
+  const siteColumns: readonly RecordColumn<DiveSite>[] = [
     {
       key: 'name',
+      role: 'primary',
       header: t('admin.col5.site'),
       // The site's own i18n key, resolved here. Place names are data in the
       // database and translations in the catalogue, never a literal in a page.
@@ -116,6 +135,7 @@ export default async function PlatformPage({ params }: { params: Promise<{ local
     },
     {
       key: 'depth',
+      role: 'secondary',
       header: t('admin.col5.depth'),
       numeric: true,
       width: '8rem',
@@ -124,10 +144,11 @@ export default async function PlatformPage({ params }: { params: Promise<{ local
     },
     {
       key: 'difficulty',
+      role: 'column',
       header: t('admin.col5.difficulty'),
       width: '11rem',
       cell: (row) => (
-        <StatusPill
+        <Pill
           tone={
             row.difficulty === 'technical'
               ? 'danger'
@@ -135,44 +156,47 @@ export default async function PlatformPage({ params }: { params: Promise<{ local
                 ? 'warning'
                 : 'neutral'
           }
-          mark={row.difficulty === 'technical' ? 'sos' : 'depth'}
         >
           {t(`admin.difficulty.${row.difficulty}`)}
-        </StatusPill>
+        </Pill>
       ),
     },
     {
       key: 'entry',
+      role: 'column',
       header: t('admin.col5.entryType'),
       cell: (row) => t(`admin.entry.${row.entryType}`),
       width: '11rem',
     },
     {
       key: 'hazard',
+      role: 'end',
       header: t('admin.col5.hazard'),
       cell: (row) =>
         row.hazards.length === 0 ? (
-          <span className="text-text-muted">—</span>
+          <span className="text-c-muted">—</span>
         ) : (
-          <span className="text-small text-text">{row.hazards.join(' · ')}</span>
+          <span className="text-cMeta text-c-text">{row.hazards.join(' · ')}</span>
         ),
     },
   ];
 
-  const translationColumns: readonly Column<Coverage>[] = [
+  const translationColumns: readonly RecordColumn<Coverage>[] = [
     {
       key: 'locale',
+      role: 'primary',
       header: t('admin.col5.locale'),
       width: '14rem',
       cell: (row) => (
         <span className="flex items-center gap-2">
-          <span className="text-body text-text">{LOCALE_DESCRIPTORS[row.locale].endonym}</span>
-          <span className="font-mono text-caption text-text-muted">{row.locale}</span>
+          <span className="text-cLabel text-c-text">{LOCALE_DESCRIPTORS[row.locale].endonym}</span>
+          <span className="font-figure text-cFigureSm text-c-muted">{row.locale}</span>
         </span>
       ),
     },
     {
       key: 'human',
+      role: 'secondary',
       header: t('admin.col5.human'),
       numeric: true,
       cell: (row) => formatNumber(row.human, context),
@@ -180,6 +204,7 @@ export default async function PlatformPage({ params }: { params: Promise<{ local
     },
     {
       key: 'machine',
+      role: 'column',
       header: t('admin.col5.machine'),
       numeric: true,
       cell: (row) => formatNumber(row.machine, context),
@@ -187,6 +212,7 @@ export default async function PlatformPage({ params }: { params: Promise<{ local
     },
     {
       key: 'missing',
+      role: 'column',
       header: t('admin.col5.missing'),
       numeric: true,
       width: '9rem',
@@ -196,11 +222,12 @@ export default async function PlatformPage({ params }: { params: Promise<{ local
         row.missing === 0 ? (
           '—'
         ) : (
-          <span className="text-danger-text">{formatNumber(row.missing, context)}</span>
+          <span className="text-c-bad">{formatNumber(row.missing, context)}</span>
         ),
     },
     {
       key: 'reviews',
+      role: 'end',
       header: t('admin.col5.reviews'),
       numeric: true,
       cell: (row) => formatNumber(row.reviews, context),
@@ -219,20 +246,19 @@ export default async function PlatformPage({ params }: { params: Promise<{ local
         {!audit.ok ? (
           <DataProblemNotice problem={audit.problem} t={t} title={t('admin.platform.audit')} />
         ) : (
-          <Panel title={t('admin.platform.audit')} mark="weave" flush>
-            <p className="flex items-start gap-2 px-6 pb-3 text-small text-text-muted">
-              <Mark name="compass" size={16} noFlip className="mt-1 shrink-0" />
+          <Panel title={t('admin.platform.audit')} flush>
+            <p className="flex items-start gap-2 px-4 pb-3 text-cMeta text-c-muted">
+              <Icon name="operators" size={16} />
               {t('admin.platform.auditSub')}
             </p>
             {audit.data.length === 0 ? (
-              <div className="flex items-center gap-4 px-6 pb-6">
-                <Illo name="seaTurtle" size={56} />
-                <p className="max-w-prose text-body text-text-muted">
+              <div className="flex items-center gap-4 px-4 pb-6">
+                <p className="max-w-prose text-cLabel text-c-text-muted">
                   {t('admin.platform.noAudit')}
                 </p>
               </div>
             ) : (
-              <DataTable
+              <RecordList
                 columns={auditColumns}
                 rows={audit.data}
                 rowKey={(row) => row.id}
@@ -249,15 +275,14 @@ export default async function PlatformPage({ params }: { params: Promise<{ local
             title={t('admin.platform.translations')}
           />
         ) : (
-          <Panel title={t('admin.platform.translations')} mark="chat" flush>
-            <p className="px-6 pb-3 text-small text-text-muted">
+          <Panel title={t('admin.platform.translations')} flush>
+            <p className="px-4 pb-2 pt-3 text-cMeta text-c-muted">
               {t('admin.platform.translationsSub')}
             </p>
-            <DataTable
+            <RecordList
               columns={translationColumns}
               rows={coverage.data}
               rowKey={(row) => row.locale}
-              density="compact"
               caption={t('admin.platform.translations')}
             />
           </Panel>
@@ -266,13 +291,12 @@ export default async function PlatformPage({ params }: { params: Promise<{ local
         {!flags.ok ? (
           <DataProblemNotice problem={flags.problem} t={t} title={t('admin.platform.flags')} />
         ) : (
-          <Panel title={t('admin.platform.flags')} mark="pass" flush>
-            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.platform.flagsSub')}</p>
-            <DataTable
+          <Panel title={t('admin.platform.flags')} flush>
+            <p className="px-4 pb-2 pt-3 text-cMeta text-c-muted">{t('admin.platform.flagsSub')}</p>
+            <RecordList
               columns={flagColumns}
               rows={flags.data}
               rowKey={(row) => row.key}
-              density="compact"
               caption={t('admin.platform.flags')}
             />
           </Panel>
@@ -281,13 +305,12 @@ export default async function PlatformPage({ params }: { params: Promise<{ local
         {!sites.ok ? (
           <DataProblemNotice problem={sites.problem} t={t} title={t('admin.platform.sites')} />
         ) : (
-          <Panel title={t('admin.platform.sites')} mark="depth" flush>
-            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.platform.sitesSub')}</p>
-            <DataTable
+          <Panel title={t('admin.platform.sites')} flush>
+            <p className="px-4 pb-2 pt-3 text-cMeta text-c-muted">{t('admin.platform.sitesSub')}</p>
+            <RecordList
               columns={siteColumns}
               rows={sites.data}
               rowKey={(row) => row.slug}
-              density="compact"
               caption={t('admin.platform.sites')}
             />
           </Panel>

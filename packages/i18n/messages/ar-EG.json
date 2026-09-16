@@ -435,7 +435,8 @@
       "noPayouts": "مفيش حاجة مستحقة للدفع.",
       "noLedger": "الدفتر مفيهوش قيود.",
       "period": "الفترة",
-      "noFxSource": "مفيش مصدر لسعر الصرف متوصّل"
+      "noFxSource": "مفيش مصدر لسعر الصرف متوصّل",
+      "legCount": "{count, plural, zero {مفيش قيود} one {قيد واحد} two {قيدين} few {# قيود} many {# قيد} other {# قيد}}"
     },
     "paymentStatus": {
       "initiated": "اتبدأ",

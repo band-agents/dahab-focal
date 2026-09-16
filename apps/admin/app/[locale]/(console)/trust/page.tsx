@@ -1,7 +1,13 @@
 import { formatCurrency, formatDate, money } from '@dahab/i18n/server';
-import { DataTable, Illo, Mark, Panel, StatusPill } from '@dahab/ui-web';
-import type { Column, MarkName, StatusTone } from '@dahab/ui-web';
 
+import {
+  Icon,
+  Panel,
+  Pill,
+  RecordList,
+  type RecordColumn,
+  type Tone,
+} from '@/components/console';
 import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
 import { api, load } from '@/lib/api';
@@ -24,21 +30,15 @@ type Incident = Awaited<ReturnType<typeof api.admin.incidents.query>>[number];
 type Dispute = Awaited<ReturnType<typeof api.admin.disputes.query>>[number];
 type Moderation = Awaited<ReturnType<typeof api.admin.moderationQueue.query>>[number];
 
-const SEVERITY_TONE: Record<Incident['severity'], StatusTone> = {
+const SEVERITY_TONE: Record<Incident['severity'], Tone> = {
   nearMiss: 'info',
   minor: 'warning',
   serious: 'danger',
   critical: 'danger',
 };
 
-const SEVERITY_MARK: Record<Incident['severity'], MarkName> = {
-  nearMiss: 'chat',
-  minor: 'firstAid',
-  serious: 'sos',
-  critical: 'sos',
-};
 
-const DISPUTE_TONE: Record<string, StatusTone> = {
+const DISPUTE_TONE: Record<string, Tone> = {
   open: 'warning',
   awaitingTraveler: 'info',
   awaitingVendor: 'info',
@@ -48,7 +48,7 @@ const DISPUTE_TONE: Record<string, StatusTone> = {
   closed: 'neutral',
 };
 
-const MODERATION_TONE: Record<Moderation['status'], StatusTone> = {
+const MODERATION_TONE: Record<Moderation['status'], Tone> = {
   published: 'success',
   pendingReview: 'warning',
   hidden: 'neutral',
@@ -76,42 +76,45 @@ export default async function TrustPage({ params }: { params: Promise<{ locale: 
     load(() => api.admin.moderationQueue.query()),
   ]);
 
-  const incidentColumns: readonly Column<Incident>[] = [
+  const incidentColumns: readonly RecordColumn<Incident>[] = [
     {
       key: 'kind',
+      role: 'primary',
       header: t('admin.col.service'),
       width: '18rem',
       cell: (row) => (
         <span className="block">
-          <span className="block text-body text-text">{t(`admin.incidentKind.${row.kind}`)}</span>
-          <span className="block text-small text-text-muted">
+          <span className="block text-cLabel text-c-text">{t(`admin.incidentKind.${row.kind}`)}</span>
+          <span className="block text-cMeta text-c-muted">
             {row.vendorName}
             {row.siteSlug === null ? '' : ` · ${t(siteNameKey(row.siteSlug))}`}
           </span>
-          <span className="block font-mono text-caption text-text-muted">{row.reference}</span>
+          <span className="block font-figure text-cFigureSm text-c-muted">{row.reference}</span>
         </span>
       ),
     },
     {
       key: 'at',
+      role: 'secondary',
       header: t('admin.col5.when'),
       cell: (row) => formatDate(new Date(row.occurredAt), context, 'date'),
       width: '11rem',
     },
     {
       key: 'severity',
+      role: 'column',
       header: t('admin.col5.severity'),
       width: '12rem',
       cell: (row) => (
         <span className="flex flex-col gap-1">
-          <StatusPill tone={SEVERITY_TONE[row.severity]} mark={SEVERITY_MARK[row.severity]}>
+          <Pill tone={SEVERITY_TONE[row.severity]}>
             {t(`admin.severity.${row.severity}`)}
-          </StatusPill>
+          </Pill>
           {row.chamberTreatment ? (
             // The chamber is six minutes away and its use is a material fact
             // about the incident, not a footnote.
-            <span className="flex items-center gap-2 text-caption text-danger-text-on-cream">
-              <Mark name="chamber" size={16} noFlip />
+            <span className="flex items-center gap-2 text-cMeta text-c-bad">
+              <Icon name="shield" size={16} />
               {t('admin.trust.chamber')}
             </span>
           ) : null}
@@ -120,71 +123,78 @@ export default async function TrustPage({ params }: { params: Promise<{ locale: 
     },
     {
       key: 'narrative',
+      role: 'column',
       header: t('admin.trust.narrative'),
       // The original wording, never summarised away: it is what an
       // investigation actually reads.
-      cell: (row) => <span className="text-small text-text-muted">{row.narrative}</span>,
+      cell: (row) => <span className="text-cMeta text-c-muted">{row.narrative}</span>,
     },
     {
       key: 'outcome',
+      role: 'end',
       header: t('admin.col5.outcome'),
       width: '20rem',
       cell: (row) =>
         row.resolution === null ? (
-          <span className="text-small text-text-muted">{t('admin.trust.outcomePending')}</span>
+          <span className="text-cMeta text-c-muted">{t('admin.trust.outcomePending')}</span>
         ) : (
-          <span className="text-small text-text">{row.resolution}</span>
+          <span className="text-cMeta text-c-text">{row.resolution}</span>
         ),
     },
   ];
 
-  const disputeColumns: readonly Column<Dispute>[] = [
+  const disputeColumns: readonly RecordColumn<Dispute>[] = [
     {
       key: 'ref',
+      role: 'primary',
       header: t('admin.col4.ref'),
       width: '8rem',
-      cell: (row) => <span className="font-mono text-small text-text">{row.bookingReference}</span>,
+      cell: (row) => <span className="font-mono text-cMeta text-c-text">{row.bookingReference}</span>,
     },
     {
       key: 'parties',
+      role: 'secondary',
       header: t('admin.col.vendor'),
       cell: (row) => row.vendorName,
       width: '14rem',
     },
     {
       key: 'reason',
+      role: 'column',
       header: t('admin.col5.reason'),
       cell: (row) => (
         <span className="block">
-          <span className="block font-mono text-caption text-text-muted">{row.reasonKey}</span>
-          <span className="block text-small text-text">{row.description}</span>
+          <span className="block font-figure text-cFigureSm text-c-muted">{row.reasonKey}</span>
+          <span className="block text-cMeta text-c-text">{row.description}</span>
           {row.resolutionNote === null ? null : (
-            <span className="mt-1 block text-small text-text-muted">{row.resolutionNote}</span>
+            <span className="mt-1 block text-cMeta text-c-muted">{row.resolutionNote}</span>
           )}
         </span>
       ),
     },
     {
       key: 'opened',
+      role: 'column',
       header: t('admin.col5.when'),
       cell: (row) => formatDate(new Date(row.openedAt), context, 'date'),
       width: '11rem',
     },
     {
       key: 'status',
+      role: 'column',
       header: t('admin.col.status'),
       width: '13rem',
       cell: (row) => (
-        <StatusPill
+        <Pill
           tone={DISPUTE_TONE[row.status] ?? 'neutral'}
-          mark={row.status === 'escalated' ? 'sos' : 'chat'}
         >
           {t(`admin.disputeStatus.${row.status}`)}
-        </StatusPill>
+        </Pill>
       ),
     },
     {
       key: 'amount',
+      role: 'end',
       header: t('admin.col5.claimed'),
       numeric: true,
       width: '11rem',
@@ -192,13 +202,13 @@ export default async function TrustPage({ params }: { params: Promise<{ locale: 
       // subject of the row.
       cell: (row) => (
         <span className="flex flex-col items-end">
-          <span className="text-body text-text">
+          <span className="text-cLabel text-c-text">
             {row.claimedMinor === null
               ? '—'
               : formatCurrency(money(row.claimedMinor, row.currency), context)}
           </span>
           {row.resolvedMinor === null ? null : (
-            <span className="text-caption text-text-muted">
+            <span className="text-cMeta text-c-muted">
               {formatCurrency(money(row.resolvedMinor, row.currency), context)}
             </span>
           )}
@@ -207,50 +217,54 @@ export default async function TrustPage({ params }: { params: Promise<{ locale: 
     },
   ];
 
-  const moderationColumns: readonly Column<Moderation>[] = [
+  const moderationColumns: readonly RecordColumn<Moderation>[] = [
     {
       key: 'subject',
+      role: 'primary',
       header: t('admin.col.vendor'),
       cell: (row) => row.vendorName,
       width: '14rem',
     },
     {
       key: 'body',
+      role: 'secondary',
       header: t('admin.trust.narrative'),
       cell: (row) => (
         <span className="block">
           {row.title === null ? null : (
-            <span className="block text-body text-text">{row.title}</span>
+            <span className="block text-cLabel text-c-text">{row.title}</span>
           )}
-          <span className="block text-small text-text-muted">{row.body ?? '—'}</span>
+          <span className="block text-cMeta text-c-muted">{row.body ?? '—'}</span>
         </span>
       ),
     },
     {
       key: 'locale',
+      role: 'column',
       header: t('admin.col5.locale'),
       // The language it was written in, which is what decides who can read it
       // before deciding on it.
-      cell: (row) => <span className="font-mono text-small text-text-muted">{row.sourceLocale}</span>,
+      cell: (row) => <span className="font-mono text-cMeta text-c-muted">{row.sourceLocale}</span>,
       width: '8rem',
     },
     {
       key: 'at',
+      role: 'column',
       header: t('admin.col5.when'),
       cell: (row) => formatDate(new Date(row.at), context, 'date'),
       width: '11rem',
     },
     {
       key: 'status',
+      role: 'end',
       header: t('admin.col.status'),
       width: '13rem',
       cell: (row) => (
-        <StatusPill
+        <Pill
           tone={MODERATION_TONE[row.status]}
-          mark={row.status === 'removed' ? 'sos' : row.status === 'published' ? 'eco' : 'chat'}
         >
           {t(`admin.moderationStatus.${row.status}`)}
-        </StatusPill>
+        </Pill>
       ),
     },
   ];
@@ -266,15 +280,14 @@ export default async function TrustPage({ params }: { params: Promise<{ locale: 
         {!incidents.ok ? (
           <DataProblemNotice problem={incidents.problem} t={t} title={t('admin.trust.incidents')} />
         ) : (
-          <Panel title={t('admin.trust.incidents')} mark="chamber" flush>
-            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.trust.incidentsSub')}</p>
+          <Panel title={t('admin.trust.incidents')} flush>
+            <p className="px-4 pb-2 pt-3 text-cMeta text-c-muted">{t('admin.trust.incidentsSub')}</p>
             {incidents.data.length === 0 ? (
-              <div className="flex items-center gap-4 px-6 pb-6">
-                <Illo name="seaTurtle" size={56} />
-                <p className="text-body text-text-muted">{t('admin.trust.noIncidents')}</p>
+              <div className="flex items-center gap-4 px-4 pb-6">
+                <p className="text-cLabel text-c-text-muted">{t('admin.trust.noIncidents')}</p>
               </div>
             ) : (
-              <DataTable
+              <RecordList
                 columns={incidentColumns}
                 rows={incidents.data}
                 rowKey={(row) => row.id}
@@ -287,15 +300,14 @@ export default async function TrustPage({ params }: { params: Promise<{ locale: 
         {!disputes.ok ? (
           <DataProblemNotice problem={disputes.problem} t={t} title={t('admin.trust.disputes')} />
         ) : (
-          <Panel title={t('admin.trust.disputes')} mark="sos" flush>
-            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.trust.disputesSub')}</p>
+          <Panel title={t('admin.trust.disputes')} flush>
+            <p className="px-4 pb-2 pt-3 text-cMeta text-c-muted">{t('admin.trust.disputesSub')}</p>
             {disputes.data.length === 0 ? (
-              <div className="flex items-center gap-4 px-6 pb-6">
-                <Illo name="coralFan" size={56} />
-                <p className="text-body text-text-muted">{t('admin.trust.noDisputes')}</p>
+              <div className="flex items-center gap-4 px-4 pb-6">
+                <p className="text-cLabel text-c-text-muted">{t('admin.trust.noDisputes')}</p>
               </div>
             ) : (
-              <DataTable
+              <RecordList
                 columns={disputeColumns}
                 rows={disputes.data}
                 rowKey={(row) => row.id}
@@ -312,18 +324,16 @@ export default async function TrustPage({ params }: { params: Promise<{ locale: 
             title={t('admin.trust.moderation')}
           />
         ) : (
-          <Panel title={t('admin.trust.moderation')} mark="chat" flush>
+          <Panel title={t('admin.trust.moderation')} flush>
             {moderation.data.length === 0 ? (
-              <div className="flex items-center gap-4 px-6 pb-6">
-                <Illo name="jellyfish" size={56} />
-                <p className="text-body text-text-muted">{t('admin.trust.noModeration')}</p>
+              <div className="flex items-center gap-4 px-4 pb-6">
+                <p className="text-cLabel text-c-text-muted">{t('admin.trust.noModeration')}</p>
               </div>
             ) : (
-              <DataTable
+              <RecordList
                 columns={moderationColumns}
                 rows={moderation.data}
                 rowKey={(row) => row.id}
-                density="compact"
                 caption={t('admin.trust.moderation')}
               />
             )}
@@ -335,8 +345,8 @@ export default async function TrustPage({ params }: { params: Promise<{ locale: 
           admin role holds every permission, and this is the one that most
           needs its limits visible on the screen that offers it.
         */}
-        <Panel title={t('admin.trust.impersonation')} mark="mask">
-          <p className="max-w-prose text-body text-text-muted">
+        <Panel title={t('admin.trust.impersonation')}>
+          <p className="max-w-prose text-cLabel text-c-text-muted">
             {t('admin.trust.impersonationSub', { minutes: IMPERSONATION_MAX_MINUTES })}
           </p>
         </Panel>

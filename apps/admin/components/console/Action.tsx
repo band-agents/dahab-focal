@@ -45,6 +45,14 @@ export type ActionProps =
       readonly href?: never;
       readonly type?: 'button' | 'submit';
       readonly disabled?: boolean;
+      /**
+       * Two submit buttons in one form, told apart by their own name/value.
+       * That is how the review panel offers approve and reject without a
+       * dialog, any JavaScript, or a hidden field that has to be kept in step
+       * with whichever button was pressed.
+       */
+      readonly name?: string;
+      readonly value?: string;
     });
 
 export function Action({
@@ -71,7 +79,13 @@ export function Action({
   }
 
   return (
-    <button type={rest.type ?? 'button'} disabled={rest.disabled} className={className}>
+    <button
+      type={rest.type ?? 'button'}
+      disabled={rest.disabled}
+      name={rest.name}
+      value={rest.value}
+      className={className}
+    >
       {body}
     </button>
   );

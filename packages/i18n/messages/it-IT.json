@@ -566,7 +566,8 @@
       "noPayouts": "Non c’è nulla da liquidare.",
       "noLedger": "Il libro mastro non ha registrazioni.",
       "period": "Periodo",
-      "noFxSource": "Nessuna fonte di cambio collegata"
+      "noFxSource": "Nessuna fonte di cambio collegata",
+      "legCount": "{count, plural, one {# movimento} other {# movimenti}}"
     },
     "paymentStatus": {
       "initiated": "Avviato",

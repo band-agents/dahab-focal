@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 
-import { Button, Mark } from '@dahab/ui-web';
-
+import { Action, Banner, Icon } from '@/components/console';
 import { resolveLocale } from '@/components/ConsoleShell';
 import { translator } from '@/lib/i18n';
 
@@ -25,8 +24,10 @@ export const dynamic = 'force-dynamic';
  * is the screen an operator reaches when something else is broken, and it
  * works with no JavaScript, no client bundle and no hydration.
  *
- * The page is the same cream ground as every board, with the same rail
- * identity block, so signing in does not feel like a different product.
+ * The page is the same Daylight ground as every board, with the same rail
+ * identity block, so signing in does not feel like a different product. It
+ * used to be cream and blush — the traveller palette — which meant the first
+ * screen anyone saw promised a holiday booking app and then opened a console.
  */
 export default async function SignInPage({
   params,
@@ -41,46 +42,48 @@ export default async function SignInPage({
   const t = translator(locale);
 
   const field =
-    'min-h-11 w-full rounded-input border border-border-strong bg-surface px-4 font-ui text-body text-text placeholder:text-text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring';
+    'min-h-11 w-full rounded-c-sm border border-c-edge-strong bg-c-surface px-3 font-console text-cBody text-c-text placeholder:text-c-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-c-focus';
 
   return (
-    <main className="grid min-h-screen place-items-center bg-bg px-6 py-12">
+    <main className="grid min-h-screen place-items-center bg-c-bg px-4 py-10 font-console">
       <div className="w-full max-w-[26rem]">
         <div className="flex items-center gap-3">
-          <span className="grid size-11 shrink-0 place-items-center rounded-md bg-info-surface">
-            <Mark name="compass" size={24} noFlip />
+          <span className="grid size-9 shrink-0 place-items-center rounded-c-sm bg-c-accent text-c-on-accent">
+            <Icon name="pin" size={19} />
           </span>
           <span className="min-w-0">
-            <span className="block truncate font-display text-h3 text-text">
-              {t('admin.console')}
-            </span>
-            <span className="block truncate text-caption text-text-muted">
+            <span className="block truncate text-cHeading text-c-text">{t('admin.console')}</span>
+            <span className="block truncate text-cMeta text-c-muted">
               {t('admin.consoleSub')}
             </span>
           </span>
         </div>
 
-        <h1 className="mt-8 font-display text-displayL text-text">{t('admin.signIn.title')}</h1>
-        <p className="mt-1 text-body text-text-muted">{t('admin.signIn.subtitle')}</p>
+        <h1 className="mt-7 text-cTitle text-c-text">{t('admin.signIn.title')}</h1>
+        <p className="mt-1 text-cBody text-c-muted">{t('admin.signIn.subtitle')}</p>
 
         {error === undefined ? null : (
-          <p
+          <div
             // Announced, not merely coloured: status is never colour alone, so
-            // the strip carries a mark and a sentence as well as its tint.
+            // the strip carries an icon and a sentence as well as its tint.
             role="alert"
-            className="mt-6 flex items-start gap-2 rounded-lg bg-danger-surface p-4 font-ui text-small text-danger-text"
+            className="mt-5"
           >
-            <Mark name="sos" size={20} className="mt-0.5 shrink-0" />
-            {t(error === 'unreachable' ? 'admin.signIn.unreachable' : 'admin.signIn.invalid')}
-          </p>
+            <Banner
+              tone="danger"
+              title={t(
+                error === 'unreachable' ? 'admin.signIn.unreachable' : 'admin.signIn.invalid',
+              )}
+            />
+          </div>
         )}
 
         <form action={signIn} className="mt-6 flex flex-col gap-4">
           <input type="hidden" name="locale" value={locale} />
           {next === undefined ? null : <input type="hidden" name="next" value={next} />}
 
-          <label className="flex flex-col gap-2">
-            <span className="font-ui text-small text-text">{t('admin.signIn.email')}</span>
+          <label className="flex flex-col gap-1.5">
+            <span className="text-cLabel text-c-text">{t('admin.signIn.email')}</span>
             <input
               name="email"
               type="email"
@@ -93,8 +96,8 @@ export default async function SignInPage({
             />
           </label>
 
-          <label className="flex flex-col gap-2">
-            <span className="font-ui text-small text-text">{t('admin.signIn.password')}</span>
+          <label className="flex flex-col gap-1.5">
+            <span className="text-cLabel text-c-text">{t('admin.signIn.password')}</span>
             <input
               name="password"
               type="password"
@@ -105,12 +108,12 @@ export default async function SignInPage({
             />
           </label>
 
-          <Button type="submit" variant="primary" mark="compass">
+          <Action type="submit" intent="primary" icon="chevronEnd" block>
             {t('admin.signIn.submit')}
-          </Button>
+          </Action>
         </form>
 
-        <p className="mt-6 text-caption text-text-muted">{t('admin.signIn.noSelfServe')}</p>
+        <p className="mt-5 text-cMeta text-c-muted">{t('admin.signIn.noSelfServe')}</p>
       </div>
     </main>
   );

@@ -564,7 +564,8 @@
       "noPayouts": "No hay nada pendiente de pago.",
       "noLedger": "El libro mayor no tiene asientos.",
       "period": "Periodo",
-      "noFxSource": "Sin fuente de tipo de cambio conectada"
+      "noFxSource": "Sin fuente de tipo de cambio conectada",
+      "legCount": "{count, plural, one {# apunte} other {# apuntes}}"
     },
     "paymentStatus": {
       "initiated": "Iniciado",

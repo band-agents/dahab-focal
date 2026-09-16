@@ -2,15 +2,22 @@ import Link from 'next/link';
 import type { Route } from 'next';
 
 import { formatDate, formatNumber, isolate } from '@dahab/i18n/server';
-import { DataTable, Illo, Mark, Panel, StatusPill } from '@dahab/ui-web';
-import type { Column, StatusTone } from '@dahab/ui-web';
 
+import {
+  Icon,
+  Panel,
+  Pill,
+  RecordList,
+  type RecordColumn,
+  type Tone,
+} from '@/components/console';
 import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
 import { OutcomeNotice, ReviewPanel } from '@/components/ReviewPanel';
 import { reviewDocument } from '@/lib/actions';
 import { api, load } from '@/lib/api';
 import { translator } from '@/lib/i18n';
+import { neighborhoodKey, path } from '@/lib/nav';
 
 /**
  * A02 · Operators and verification.
@@ -18,7 +25,7 @@ import { translator } from '@/lib/i18n';
  * Two jobs on one screen because they are the same job: the roster of who is
  * licensed to run in Dahab, and the queue of documents the platform still owes
  * an answer on. A rejection has to carry a reason the operator actually
- * receives, so "reject" is never a bare button here.
+ * receives, so"reject" is never a bare button here.
  *
  * Both halves read from the API. Either can fail on its own — the roster
  * query and the queue query are separate procedures with separate permissions
@@ -29,7 +36,7 @@ import { translator } from '@/lib/i18n';
 type Vendor = Awaited<ReturnType<typeof api.admin.vendors.query>>[number];
 type QueueDocument = Awaited<ReturnType<typeof api.admin.verificationQueue.query>>[number];
 
-const VENDOR_TONE: Record<Vendor['status'], StatusTone> = {
+const VENDOR_TONE: Record<Vendor['status'], Tone> = {
   applied: 'info',
   inReview: 'warning',
   active: 'success',
@@ -37,7 +44,7 @@ const VENDOR_TONE: Record<Vendor['status'], StatusTone> = {
   closed: 'neutral',
 };
 
-const VERIFY_TONE: Record<QueueDocument['status'], StatusTone> = {
+const VERIFY_TONE: Record<QueueDocument['status'], Tone> = {
   pending: 'warning',
   inReview: 'info',
   verified: 'success',
@@ -66,40 +73,40 @@ export default async function VendorsPage({
     load(() => api.admin.verificationQueue.query()),
   ]);
 
-  const vendorColumns: readonly Column<Vendor>[] = [
+  const vendorColumns: readonly RecordColumn<Vendor>[] = [
     {
       key: 'name',
+      role: 'primary',
       header: t('admin.col.vendor'),
-      cell: (row) => (
-        <span className="block">
-          <span className="block text-body text-text">{row.displayName}</span>
-          <span className="block text-small text-text-muted">
-            {formatDate(new Date(row.joined), context, 'monthYear')}
-          </span>
-        </span>
-      ),
+      cell: (row) => row.displayName,
     },
     {
       key: 'area',
+      role: 'secondary',
       header: t('admin.col2.area'),
-      cell: (row) => row.neighborhood ?? '—',
+      cell: (row) =>
+        [
+          row.neighborhood === null ? null : t(neighborhoodKey(row.neighborhood)),
+          formatDate(new Date(row.joined), context, 'monthYear'),
+        ]
+          .filter((part): part is string => part !== null)
+          .join(' · '),
       width: '11rem',
     },
     {
       key: 'status',
+      role: 'end',
       header: t('admin.col.status'),
       width: '12rem',
       cell: (row) => (
-        <StatusPill
-          tone={VENDOR_TONE[row.status]}
-          mark={row.status === 'suspended' ? 'sos' : row.status === 'active' ? 'eco' : 'chat'}
-        >
+        <Pill tone={VENDOR_TONE[row.status]} icon={row.status === 'suspended' ? 'ban' : 'check'}>
           {t(`admin.vendorStatus.${row.status}`)}
-        </StatusPill>
+        </Pill>
       ),
     },
     {
       key: 'services',
+      role: 'column',
       header: t('admin.col2.services'),
       numeric: true,
       cell: (row) => formatNumber(row.services, context),
@@ -107,6 +114,7 @@ export default async function VendorsPage({
     },
     {
       key: 'staff',
+      role: 'column',
       header: t('admin.col2.staff'),
       numeric: true,
       cell: (row) => formatNumber(row.staff, context),
@@ -114,10 +122,11 @@ export default async function VendorsPage({
     },
     {
       key: 'rating',
+      role: 'column',
       header: t('admin.col2.rating'),
       numeric: true,
       width: '8rem',
-      // No reviews yet reads as "—", never as a zero: an operator nobody has
+      // No reviews yet reads as"—", never as a zero: an operator nobody has
       // reviewed and an operator rated zero are different facts.
       cell: (row) =>
         row.ratingHundredths === null
@@ -129,24 +138,26 @@ export default async function VendorsPage({
     },
   ];
 
-  const queueColumns: readonly Column<QueueDocument>[] = [
+  const queueColumns: readonly RecordColumn<QueueDocument>[] = [
     {
       key: 'vendor',
+      role: 'primary',
       header: t('admin.col.vendor'),
       cell: (row) => row.vendorName,
       width: '14rem',
     },
     {
       key: 'document',
+      role: 'secondary',
       header: t('admin.col.document'),
       cell: (row) => (
         <span className="block">
-          <span className="block text-body text-text">{t(`admin.docType.${row.type}`)}</span>
+          <span className="block text-cLabel text-c-text">{t(`admin.docType.${row.type}`)}</span>
           {row.issuer === null ? null : (
-            <span className="block text-small text-text-muted">{row.issuer}</span>
+            <span className="block text-cMeta text-c-muted">{row.issuer}</span>
           )}
           {row.documentNumber === null ? null : (
-            <span className="block font-mono text-caption text-text-muted">
+            <span className="block font-figure text-cFigureSm text-c-muted">
               {row.documentNumber}
             </span>
           )}
@@ -155,20 +166,21 @@ export default async function VendorsPage({
     },
     {
       key: 'status',
+      role: 'column',
       header: t('admin.col.status'),
       width: '13rem',
       cell: (row) => (
-        <StatusPill
+        <Pill
           tone={VERIFY_TONE[row.status]}
-          mark={row.status === 'rejected' ? 'sos' : row.status === 'pending' ? 'firstAid' : 'chat'}
         >
           {t(`admin.verify.${row.status}`)}
-        </StatusPill>
+        </Pill>
       ),
     },
     {
       key: 'action',
-      // Its own header, not a second "Status": two identical column headers in
+      role: 'end',
+      // Its own header, not a second"Status": two identical column headers in
       // one table are ambiguous to read and worse to navigate by screen reader.
       header: t('admin.action.review'),
       width: '9rem',
@@ -178,7 +190,7 @@ export default async function VendorsPage({
       cell: (row) => (
         <Link
           href={`/${locale}/vendors?review=${row.id}` as Route}
-          className="inline-flex min-h-11 items-center rounded-input border border-border-strong bg-surface px-4 font-ui text-body text-text hover:bg-surface-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+          className="inline-flex min-h-11 items-center rounded-input border border-c-edge-strong bg-c-surface px-4 font-ui text-cLabel text-c-text hover:bg-c-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
         >
           {t('admin.action.review')}
         </Link>
@@ -197,9 +209,9 @@ export default async function VendorsPage({
       subtitle={t('admin.vendors.subtitle')}
       headerEnd={
         roster.ok ? (
-          <span className="flex items-center gap-3 rounded-pill bg-info-surface ps-4 pe-5 py-2">
-            <Mark name="compass" size={20} noFlip />
-            <span className="font-display text-h3 text-text">
+          <span className="flex items-center gap-3 rounded-c-xs bg-c-info-bg ps-4 pe-5 py-2">
+            <Icon name="operators" size={20} />
+            <span className="font-console text-cHeading text-c-text">
               {formatNumber(roster.data.length, context)}
             </span>
           </span>
@@ -213,10 +225,9 @@ export default async function VendorsPage({
           <ReviewPanel
             t={t}
             title={t('admin.documentReview.title')}
-            mark="firstAid"
             summary={
               <span className="block">
-                <span className="block font-display text-h3 text-text">
+                <span className="block font-console text-cHeading text-c-text">
                   {t('admin.documentReview.of', {
                     type: t(`admin.docType.${reviewing.type}`),
                     // A Latin operator name inside an Arabic sentence walks to
@@ -225,10 +236,10 @@ export default async function VendorsPage({
                   })}
                 </span>
                 {reviewing.issuer === null ? null : (
-                  <span className="mt-1 block text-small text-text-muted">{reviewing.issuer}</span>
+                  <span className="mt-1 block text-cMeta text-c-muted">{reviewing.issuer}</span>
                 )}
                 {reviewing.expiresOn === null ? null : (
-                  <span className="block text-small text-text-muted">
+                  <span className="block text-cMeta text-c-muted">
                     {formatDate(new Date(reviewing.expiresOn), context, 'date')}
                   </span>
                 )}
@@ -236,8 +247,8 @@ export default async function VendorsPage({
             }
             action={reviewDocument}
             hidden={{ locale, documentId: reviewing.id }}
-            approve={{ value: 'verified', label: t('admin.documentReview.verify'), mark: 'eco' }}
-            reject={{ value: 'rejected', label: t('admin.documentReview.reject'), mark: 'sos' }}
+            approve={{ value: 'verified', label: t('admin.documentReview.verify'), icon: 'check' }}
+            reject={{ value: 'rejected', label: t('admin.documentReview.reject'), icon: 'ban' }}
             reasonLabel={t('admin.review.reason')}
             reasonHint={t('admin.review.reasonHint')}
             closeHref={`/${locale}/vendors` as Route}
@@ -249,18 +260,16 @@ export default async function VendorsPage({
         ) : (
           <Panel
             title={t('admin.vendors.queue')}
-            mark="chat"
-            eyebrow={t('admin.expiry.count', { count: queue.data.length })}
+            figure={t('admin.expiry.count', { count: queue.data.length })}
             flush
           >
-            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.vendors.queueSub')}</p>
+            <p className="px-4 pb-2 pt-3 text-cMeta text-c-muted">{t('admin.vendors.queueSub')}</p>
             {queue.data.length === 0 ? (
-              <div className="flex items-center gap-4 px-6 pb-6">
-                <Illo name="seaTurtle" size={56} />
-                <p className="text-body text-text-muted">{t('admin.vendors.noneQueue')}</p>
+              <div className="flex items-center gap-4 px-4 pb-6">
+                <p className="text-cLabel text-c-text-muted">{t('admin.vendors.noneQueue')}</p>
               </div>
             ) : (
-              <DataTable
+              <RecordList
                 columns={queueColumns}
                 rows={queue.data}
                 rowKey={(row) => row.id}
@@ -273,13 +282,21 @@ export default async function VendorsPage({
         {!roster.ok ? (
           <DataProblemNotice problem={roster.problem} t={t} title={t('admin.vendors.roster')} />
         ) : (
-          <Panel title={t('admin.vendors.roster')} mark="pass" flush>
-            <DataTable
+          <Panel
+            title={t('admin.vendors.roster')}
+            figure={formatNumber(roster.data.length, context)}
+            flush
+          >
+            <RecordList
               columns={vendorColumns}
               rows={roster.data}
               rowKey={(row) => row.id}
+              // The point of the roster: every operator opens its own page.
+              href={(row) => path(locale, `vendors/${row.id}`)}
               caption={t('admin.vendors.roster')}
-              empty={<p className="text-body text-text-muted">{t('admin.vendors.none')}</p>}
+              empty={
+                <p className="font-console text-cBody text-c-muted">{t('admin.vendors.none')}</p>
+              }
             />
           </Panel>
         )}

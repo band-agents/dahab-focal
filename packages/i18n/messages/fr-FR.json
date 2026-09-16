@@ -576,7 +576,8 @@
       "noPayouts": "Rien n’est à reverser.",
       "noLedger": "Le grand livre ne contient aucune écriture.",
       "period": "Période",
-      "noFxSource": "Aucune source de taux de change connectée"
+      "noFxSource": "Aucune source de taux de change connectée",
+      "legCount": "{count, plural, one {# écriture} other {# écritures}}"
     },
     "paymentStatus": {
       "initiated": "Initié",

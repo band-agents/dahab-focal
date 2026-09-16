@@ -1,7 +1,12 @@
-import { formatCurrency, formatDate, formatNumber, money } from '@dahab/i18n/server';
-import { DataTable, Illo, Panel, StatusPill } from '@dahab/ui-web';
-import type { Column, MarkName, StatusTone } from '@dahab/ui-web';
+import { formatCurrency, formatDate, money } from '@dahab/i18n/server';
 
+import {
+  Panel,
+  Pill,
+  RecordList,
+  type RecordColumn,
+  type Tone,
+} from '@/components/console';
 import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
 import { api, load } from '@/lib/api';
@@ -30,7 +35,7 @@ type Payment = Awaited<ReturnType<typeof api.admin.payments.query>>[number];
 type Payout = Awaited<ReturnType<typeof api.admin.payouts.query>>[number];
 type LedgerEvent = Awaited<ReturnType<typeof api.admin.ledger.query>>[number];
 
-const PAYMENT_TONE: Record<string, StatusTone> = {
+const PAYMENT_TONE: Record<string, Tone> = {
   initiated: 'neutral',
   pending: 'warning',
   authorized: 'info',
@@ -42,16 +47,13 @@ const PAYMENT_TONE: Record<string, StatusTone> = {
   chargeback: 'danger',
 };
 
-const PAYOUT_TONE: Record<string, StatusTone> = {
+const PAYOUT_TONE: Record<string, Tone> = {
   scheduled: 'info',
   processing: 'warning',
   paid: 'success',
   failed: 'danger',
   cancelled: 'neutral',
 };
-
-const toneMark = (tone: StatusTone): MarkName =>
-  tone === 'danger' ? 'sos' : tone === 'success' ? 'eco' : tone === 'warning' ? 'firstAid' : 'chat';
 
 export default async function MoneyPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: raw } = await params;
@@ -76,54 +78,58 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
     ? balances.data.reduce((total, row) => total + row.balanceMinor, 0)
     : null;
 
-  const balanceColumns: readonly Column<Balance>[] = [
+  const balanceColumns: readonly RecordColumn<Balance>[] = [
     {
       key: 'account',
+      role: 'primary',
       header: t('admin.col5.account'),
-      cell: (row) => (
-        <span className="block">
-          <span className="block text-body text-text">{t(`admin.account.${row.account}`)}</span>
-          <span className="block font-mono text-caption text-text-muted">{row.account}</span>
-        </span>
-      ),
+      // The name only. The account code and the leg count share the quiet
+      // line below it — an accountant wants the code, but a phone row that
+      // stacks a name, a code and then a bare "42" reads as three facts with
+      // two labels between them.
+      cell: (row) => t(`admin.account.${row.account}`),
     },
     {
       key: 'legs',
+      role: 'secondary',
       header: t('admin.col5.legs'),
-      numeric: true,
       width: '8rem',
-      cell: (row) => formatNumber(row.legs, context),
+      cell: (row) =>
+        `${row.account} · ${t('admin.money.legCount', { count: row.legs })}`,
     },
     {
       key: 'balance',
+      role: 'end',
       header: t('admin.col5.balance'),
       numeric: true,
       width: '14rem',
       cell: (row) => (
-        <span className="font-display tabular-nums text-text">
+        <span className="font-figure tabular-nums text-c-text">
           {cash(row.balanceMinor, row.currency)}
         </span>
       ),
     },
   ];
 
-  const paymentColumns: readonly Column<Payment>[] = [
+  const paymentColumns: readonly RecordColumn<Payment>[] = [
     {
       key: 'ref',
+      role: 'primary',
       header: t('admin.col4.ref'),
       width: '8rem',
-      cell: (row) => <span className="font-mono text-small text-text">{row.bookingReference}</span>,
+      cell: (row) => <span className="font-mono text-cMeta text-c-text">{row.bookingReference}</span>,
     },
     {
       key: 'provider',
+      role: 'secondary',
       header: t('admin.col5.provider'),
       cell: (row) => (
         <span className="block">
-          <span className="block text-body text-text">{t(`admin.provider.${row.provider}`)}</span>
+          <span className="block text-cLabel text-c-text">{t(`admin.provider.${row.provider}`)}</span>
           {row.providerReference === null ? null : (
             // The provider's own reference, because reconciling against their
             // statement is the only reason this row is on the screen.
-            <span className="block font-mono text-caption text-text-muted">
+            <span className="block font-figure text-cFigureSm text-c-muted">
               {row.providerReference}
             </span>
           )}
@@ -132,25 +138,27 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
     },
     {
       key: 'at',
+      role: 'column',
       header: t('admin.col5.when'),
       cell: (row) => formatDate(new Date(row.at), context, 'dateTime'),
       width: '12rem',
     },
     {
       key: 'status',
+      role: 'column',
       header: t('admin.col.status'),
       width: '13rem',
       cell: (row) => (
-        <StatusPill
+        <Pill
           tone={PAYMENT_TONE[row.status] ?? 'neutral'}
-          mark={toneMark(PAYMENT_TONE[row.status] ?? 'neutral')}
         >
           {t(`admin.paymentStatus.${row.status}`)}
-        </StatusPill>
+        </Pill>
       ),
     },
     {
       key: 'amount',
+      role: 'end',
       header: t('admin.col4.total'),
       numeric: true,
       width: '10rem',
@@ -158,20 +166,28 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
     },
   ];
 
-  const payoutColumns: readonly Column<Payout>[] = [
-    { key: 'vendor', header: t('admin.col.vendor'), cell: (row) => row.vendorName, width: '14rem' },
+  const payoutColumns: readonly RecordColumn<Payout>[] = [
+    {
+      key: 'vendor',
+      role: 'primary',
+      header: t('admin.col.vendor'),
+      cell: (row) => row.vendorName,
+      width: '14rem',
+    },
     {
       key: 'provider',
+      role: 'column',
       header: t('admin.col5.provider'),
       cell: (row) => t(`admin.provider.${row.provider}`),
       width: '9rem',
     },
     {
       key: 'period',
+      role: 'secondary',
       header: t('admin.money.period'),
       width: '13rem',
       cell: (row) => (
-        <span className="text-small text-text-muted">
+        <span className="text-cMeta text-c-muted">
           {formatDate(new Date(row.periodStart), context, 'dateShort')} —{' '}
           {formatDate(new Date(row.periodEnd), context, 'dateShort')}
         </span>
@@ -179,41 +195,45 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
     },
     {
       key: 'status',
+      role: 'column',
       header: t('admin.col.status'),
       width: '11rem',
       cell: (row) => (
-        <StatusPill
+        <Pill
           tone={PAYOUT_TONE[row.status] ?? 'neutral'}
-          mark={toneMark(PAYOUT_TONE[row.status] ?? 'neutral')}
         >
           {t(`admin.payoutStatus.${row.status}`)}
-        </StatusPill>
+        </Pill>
       ),
     },
     {
       key: 'gross',
+      role: 'column',
       header: t('admin.money.gross'),
       numeric: true,
       cell: (row) => cash(row.grossMinor, row.currency),
     },
     {
       key: 'commission',
+      role: 'column',
       header: t('admin.money.commission'),
       numeric: true,
       cell: (row) => cash(row.commissionMinor, row.currency),
     },
     {
       key: 'fees',
+      role: 'column',
       header: t('admin.money.fees'),
       numeric: true,
       cell: (row) => cash(row.feesMinor, row.currency),
     },
     {
       key: 'net',
+      role: 'column',
       header: t('admin.money.net'),
       numeric: true,
       cell: (row) => (
-        <span className="font-display tabular-nums text-text">
+        <span className="font-figure tabular-nums text-c-text">
           {cash(row.netMinor, row.currency)}
         </span>
       ),
@@ -230,9 +250,9 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
         // No exchange-rate feed is wired up, so no rate is shown. A stale or
         // invented EUR/EGP rate on the money screen would be quoted at a
         // counter in Masbat within a week.
-        <span className="flex flex-col items-end rounded-lg bg-info-surface px-4 py-2">
-          <span className="text-caption text-text-muted">{t('admin.money.fxTitle')}</span>
-          <span className="text-small text-text">{t('admin.money.noFxSource')}</span>
+        <span className="flex flex-col items-end rounded-c-sm bg-c-info-bg px-4 py-2">
+          <span className="text-cMeta text-c-muted">{t('admin.money.fxTitle')}</span>
+          <span className="text-cMeta text-c-text">{t('admin.money.noFxSource')}</span>
         </span>
       }
     >
@@ -242,25 +262,23 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
         ) : (
           <Panel
             title={t('admin.money.balances')}
-            mark="compass"
             flush
-            action={
-              <StatusPill
-                tone={wholeLedger === 0 ? 'success' : 'danger'}
-                mark={wholeLedger === 0 ? 'eco' : 'sos'}
-              >
+            // Whether the books are whole. It rides in the header slot
+            // rather than as a panel action, because it is the answer this
+            // panel exists to give and not somewhere else to go.
+            figure={
+              <Pill tone={wholeLedger === 0 ? 'success' : 'danger'}>
                 {wholeLedger === 0 ? t('admin.money.balanced') : t('admin.money.unbalanced')}
-              </StatusPill>
+              </Pill>
             }
           >
-            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.money.balancesSub')}</p>
-            <DataTable
+            <p className="px-4 pb-2 pt-3 text-cMeta text-c-muted">{t('admin.money.balancesSub')}</p>
+            <RecordList
               columns={balanceColumns}
               rows={balances.data}
               rowKey={(row) => row.account}
-              density="compact"
               caption={t('admin.money.balances')}
-              empty={<p className="text-body text-text-muted">{t('admin.money.noLedger')}</p>}
+              empty={<p className="text-cLabel text-c-text-muted">{t('admin.money.noLedger')}</p>}
             />
           </Panel>
         )}
@@ -268,15 +286,14 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
         {!payouts.ok ? (
           <DataProblemNotice problem={payouts.problem} t={t} title={t('admin.money.payouts')} />
         ) : (
-          <Panel title={t('admin.money.payouts')} mark="shell" flush>
-            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.money.payoutsSub')}</p>
-            <DataTable
+          <Panel title={t('admin.money.payouts')} flush>
+            <p className="px-4 pb-2 pt-3 text-cMeta text-c-muted">{t('admin.money.payoutsSub')}</p>
+            <RecordList
               columns={payoutColumns}
               rows={payouts.data}
               rowKey={(row) => row.id}
-              density="compact"
               caption={t('admin.money.payouts')}
-              empty={<p className="text-body text-text-muted">{t('admin.money.noPayouts')}</p>}
+              empty={<p className="text-cLabel text-c-text-muted">{t('admin.money.noPayouts')}</p>}
             />
           </Panel>
         )}
@@ -284,12 +301,11 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
         {!ledger.ok ? (
           <DataProblemNotice problem={ledger.problem} t={t} title={t('admin.money.ledger')} />
         ) : (
-          <Panel title={t('admin.money.ledger')} mark="weave" flush>
-            <p className="px-6 pb-4 text-small text-text-muted">{t('admin.money.ledgerSub')}</p>
+          <Panel title={t('admin.money.ledger')} flush>
+            <p className="px-4 pb-3 text-cMeta text-c-muted">{t('admin.money.ledgerSub')}</p>
             {ledger.data.length === 0 ? (
-              <div className="flex items-center gap-4 px-6 pb-6">
-                <Illo name="coralFan" size={56} />
-                <p className="text-body text-text-muted">{t('admin.money.noLedger')}</p>
+              <div className="flex items-center gap-4 px-4 pb-6">
+                <p className="text-cLabel text-c-text-muted">{t('admin.money.noLedger')}</p>
               </div>
             ) : (
               <div className="flex flex-col">
@@ -304,13 +320,13 @@ export default async function MoneyPage({ params }: { params: Promise<{ locale: 
         {!payments.ok ? (
           <DataProblemNotice problem={payments.problem} t={t} title={t('admin.money.payments')} />
         ) : (
-          <Panel title={t('admin.money.payments')} mark="pass" flush>
-            <DataTable
+          <Panel title={t('admin.money.payments')} flush>
+            <RecordList
               columns={paymentColumns}
               rows={payments.data}
               rowKey={(row) => row.id}
               caption={t('admin.money.payments')}
-              empty={<p className="text-body text-text-muted">{t('admin.money.noPayments')}</p>}
+              empty={<p className="text-cLabel text-c-text-muted">{t('admin.money.noPayments')}</p>}
             />
           </Panel>
         )}
@@ -331,26 +347,26 @@ function LedgerCard({
   const balance = event.legs.reduce((total, leg) => total + leg.amountMinor, 0);
 
   return (
-    <article className="border-t border-border px-6 py-4">
+    <article className="border-t border-c-edge px-4 py-4">
       <header className="flex flex-wrap items-baseline justify-between gap-3">
         <span className="flex items-baseline gap-3">
           {/* The group id, shortened. It is a UUID v7, so the leading bytes
               still sort by time and are enough to find the row. */}
-          <span className="font-mono text-small text-text">{event.entryGroupId.slice(0, 8)}</span>
-          <span className="text-body text-text">{t(`admin.event.${event.eventKind}`)}</span>
+          <span className="font-mono text-cMeta text-c-text">{event.entryGroupId.slice(0, 8)}</span>
+          <span className="text-cLabel text-c-text">{t(`admin.event.${event.eventKind}`)}</span>
           {event.bookingReference === null ? null : (
-            <span className="font-mono text-small text-text-muted">{event.bookingReference}</span>
+            <span className="font-mono text-cMeta text-c-muted">{event.bookingReference}</span>
           )}
         </span>
         <span className="flex items-center gap-3">
-          <span className="text-small text-text-muted">
+          <span className="text-cMeta text-c-muted">
             {formatDate(new Date(event.occurredAt), context, 'dateTime')}
           </span>
           {/* Balance is shown, not assumed. A ledger that says it balances
               without proving it is worth nothing. */}
-          <StatusPill tone={balance === 0 ? 'success' : 'danger'} mark={balance === 0 ? 'eco' : 'sos'}>
+          <Pill tone={balance === 0 ? 'success' : 'danger'}>
             {balance === 0 ? t('admin.money.balanced') : t('admin.money.unbalanced')}
-          </StatusPill>
+          </Pill>
         </span>
       </header>
 
@@ -358,10 +374,10 @@ function LedgerCard({
         {event.legs.map((leg) => (
           <li
             key={leg.id}
-            className="flex items-baseline justify-between gap-4 rounded-sm bg-bg px-3 py-2"
+            className="flex items-baseline justify-between gap-4 rounded-c-sm bg-c-bg px-3 py-2"
           >
-            <span className="text-small text-text">{t(`admin.account.${leg.account}`)}</span>
-            <span className="font-display text-small tabular-nums text-text">
+            <span className="text-cMeta text-c-text">{t(`admin.account.${leg.account}`)}</span>
+            <span className="font-figure text-cMeta tabular-nums text-c-text">
               {formatCurrency(money(leg.amountMinor, leg.currency), context)}
             </span>
           </li>

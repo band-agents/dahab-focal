@@ -568,7 +568,8 @@
       "noPayouts": "Es steht nichts zur Auszahlung an.",
       "noLedger": "Das Hauptbuch enthält keine Buchungen.",
       "period": "Zeitraum",
-      "noFxSource": "Keine Wechselkursquelle verbunden"
+      "noFxSource": "Keine Wechselkursquelle verbunden",
+      "legCount": "{count, plural, one {# Buchung} other {# Buchungen}}"
     },
     "paymentStatus": {
       "initiated": "Eingeleitet",

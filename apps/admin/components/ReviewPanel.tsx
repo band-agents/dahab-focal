@@ -1,10 +1,7 @@
-import Link from 'next/link';
 import type { Route } from 'next';
 import type { ReactNode } from 'react';
 
-import { Button, Mark, Panel } from '@dahab/ui-web';
-import type { MarkName } from '@dahab/ui-web';
-
+import { Action, Banner, Panel, type IconName } from '@/components/console';
 import type { Translate } from '@/lib/i18n';
 
 /**
@@ -20,19 +17,22 @@ import type { Translate } from '@/lib/i18n';
  * `name`/`value`. No JavaScript, no dialog, nothing to hydrate. The reason
  * field is `required` and the API checks the length again, because a
  * client-side rule is a courtesy and the server's is the rule.
+ *
+ * On a phone the two decisions stack full-width rather than sitting side by
+ * side — `ActionRow`'s own behaviour — so neither is the one your thumb
+ * reaches by accident.
  */
 export interface ReviewPanelProps {
   readonly t: Translate;
   readonly title: string;
-  readonly mark: MarkName;
   /** What is about to change, in the operator's words rather than ids. */
   readonly summary: ReactNode;
   readonly action: (formData: FormData) => Promise<void>;
   /** Hidden fields: the locale, and whatever identifies the row. */
   readonly hidden: Readonly<Record<string, string>>;
-  readonly approve: { value: string; label: string; mark: MarkName };
+  readonly approve: { value: string; label: string; icon: IconName };
   /** Absent where there is only one way forward, as with a cancellation. */
-  readonly reject?: { value: string; label: string; mark: MarkName };
+  readonly reject?: { value: string; label: string; icon: IconName };
   readonly reasonLabel: string;
   readonly reasonHint: string;
   readonly closeHref: Route;
@@ -41,7 +41,6 @@ export interface ReviewPanelProps {
 export function ReviewPanel({
   t,
   title,
-  mark,
   summary,
   action,
   hidden,
@@ -52,43 +51,45 @@ export function ReviewPanel({
   closeHref,
 }: ReviewPanelProps) {
   return (
-    <Panel title={title} mark={mark}>
-      <div className="flex flex-col gap-5">
-        <div className="text-body text-text">{summary}</div>
+    <Panel title={title}>
+      <div className="flex flex-col gap-4">
+        <div className="font-console text-cBody text-c-text">{summary}</div>
 
-        <form action={action} className="flex flex-col gap-4">
+        <form action={action} className="flex flex-col gap-3">
           {Object.entries(hidden).map(([name, value]) => (
             <input key={name} type="hidden" name={name} value={value} />
           ))}
 
-          <label className="flex flex-col gap-2">
-            <span className="font-ui text-small text-text">{reasonLabel}</span>
+          <label className="flex flex-col gap-1.5">
+            <span className="font-console text-cLabel text-c-text">{reasonLabel}</span>
             <textarea
               name="reason"
               required
               minLength={8}
               maxLength={2000}
               rows={3}
-              className="w-full rounded-input border border-border-strong bg-surface p-4 font-ui text-body text-text placeholder:text-text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+              className="w-full rounded-c-sm border border-c-edge-strong bg-c-surface p-3 font-console text-cBody text-c-text placeholder:text-c-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-c-focus"
             />
-            <span className="text-caption text-text-muted">{reasonHint}</span>
+            <span className="font-console text-cMeta text-c-muted">{reasonHint}</span>
           </label>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <Button type="submit" name="decision" value={approve.value} variant="primary" mark={approve.mark}>
+          {/*
+            Two decisions and a way out. They stack on a phone, where a row of
+            three small targets next to a reason field is how somebody rejects
+            a permit they meant to approve.
+          */}
+          <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
+            <Action type="submit" name="decision" value={approve.value} intent="primary" icon={approve.icon}>
               {approve.label}
-            </Button>
+            </Action>
             {reject === undefined ? null : (
-              <Button type="submit" name="decision" value={reject.value} variant="secondary" mark={reject.mark}>
+              <Action type="submit" name="decision" value={reject.value} intent="danger" icon={reject.icon}>
                 {reject.label}
-              </Button>
+              </Action>
             )}
-            <Link
-              href={closeHref}
-              className="inline-flex min-h-11 items-center rounded-input px-4 font-ui text-body text-text-link focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
-            >
+            <Action href={closeHref} intent="quiet">
               {t('admin.review.close')}
-            </Link>
+            </Action>
           </div>
         </form>
       </div>
@@ -103,16 +104,13 @@ export function OutcomeNotice({ outcome, t }: { outcome: string; t: Translate })
 
   const good = outcome === 'done';
   return (
-    <p
-      // Announced rather than only coloured: status here is a colour, a mark
-      // and a sentence, never one of the three on its own.
-      role="status"
-      className={`flex items-start gap-2 rounded-lg p-4 font-ui text-small ${
-        good ? 'bg-success-surface text-success-text' : 'bg-warning-surface text-warning-text'
-      }`}
-    >
-      <Mark name={good ? 'eco' : 'sos'} size={20} className="mt-0.5 shrink-0" />
-      {t(`admin.review.outcome.${outcome}`)}
-    </p>
+    // Announced rather than only coloured: status here is a colour, an icon
+    // and a sentence, never one of the three on its own.
+    <div role="status">
+      <Banner
+        tone={good ? 'success' : 'warning'}
+        title={t(`admin.review.outcome.${outcome}`)}
+      />
+    </div>
   );
 }
