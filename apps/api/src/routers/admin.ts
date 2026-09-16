@@ -11,6 +11,7 @@ import { LOCALES, SOURCE_LOCALE } from '@dahab/i18n';
 import { requirePermission, router } from '../trpc.ts';
 import { asCurrency, cairoDay, requireDb } from './_shared.ts';
 import { adminPeopleRouter } from './admin-people.ts';
+import { adminUserWritesRouter } from './admin-user-writes.ts';
 import { adminWritesRouter } from './admin-writes.ts';
 import type { Context } from '../context.ts';
 
@@ -1534,6 +1535,9 @@ export const adminRouter = router({
   // Travellers, and the operator record seen whole — the two things the
   // console could never open.
   ...adminPeopleRouter,
+
+  // Accounts, roles and operator status — the console's writes on people.
+  ...adminUserWritesRouter,
 });
 
 // --- Shared shapes and small helpers -------------------------------------

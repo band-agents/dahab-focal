@@ -1,7 +1,22 @@
 import { formatDate, formatNumber, isolate } from '@dahab/i18n/server';
 
 import { ConsolePage, Stack, resolveLocale } from '@/components/ConsoleShell';
-import { Panel, Pill, RecordList, Stat, StatRow, type RecordColumn } from '@/components/console';
+import type { Route } from 'next';
+
+import {
+  Action,
+  ActionPanel,
+  ActionRow,
+  Panel,
+  Pill,
+  RecordList,
+  Stat,
+  StatRow,
+  type ActionField,
+  type RecordColumn,
+} from '@/components/console';
+import { OutcomeNotice } from '@/components/ReviewPanel';
+import { createUser } from '@/lib/actions';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
 import { api, load } from '@/lib/api';
 import { translator } from '@/lib/i18n';
@@ -24,13 +39,25 @@ import { path } from '@/lib/nav';
 
 type Person = Awaited<ReturnType<typeof api.admin.people.query>>[number];
 
-export default async function PeoplePage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function PeoplePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ act?: string; outcome?: string }>;
+}) {
   const { locale: raw } = await params;
+  const { act, outcome } = await searchParams;
   const locale = resolveLocale(raw);
   const t = translator(locale);
   const context = { locale } as const;
 
-  const people = await load(() => api.admin.people.query());
+  const [people, roster] = await Promise.all([
+    load(() => api.admin.people.query()),
+    // The operators, so a new guide can be scoped to one as they are created.
+    load(() => api.admin.vendors.query()),
+  ]);
+  const here = (query = ''): Route => path(locale, `people${query}`);
 
   const rows = people.ok ? people.data : [];
   const clearance = rows.filter((row) => row.clearanceOutstanding).length;
@@ -129,6 +156,79 @@ export default async function PeoplePage({ params }: { params: Promise<{ locale:
       subtitle={t('admin.people.subtitle')}
     >
       <Stack>
+        {outcome === undefined ? null : <OutcomeNotice outcome={outcome} t={t} />}
+
+        <ActionRow>
+          <Action intent="primary" icon="plus" href={here('?act=new')}>
+            {t('admin.act.addAccount')}
+          </Action>
+        </ActionRow>
+
+        {act !== 'new' ? null : (
+          <ActionPanel
+            title={t('admin.act.addAccount')}
+            summary={t('admin.act.addSummary')}
+            action={createUser}
+            hidden={{ locale }}
+            fields={
+              [
+                {
+                  name: 'displayName',
+                  label: t('admin.act.field.name'),
+                  type: 'text',
+                },
+                {
+                  name: 'email',
+                  label: t('admin.act.field.email'),
+                  type: 'email',
+                  hint: t('admin.act.field.contactHint'),
+                  ltr: true,
+                },
+                { name: 'phone', label: t('admin.act.field.phone'), type: 'tel', ltr: true },
+                {
+                  name: 'countryCode',
+                  label: t('admin.act.field.country'),
+                  type: 'text',
+                  hint: t('admin.act.field.countryHint'),
+                  ltr: true,
+                },
+                {
+                  name: 'role',
+                  label: t('admin.act.field.role'),
+                  type: 'select',
+                  options: [
+                    { value: '', label: t('admin.act.field.noRole') },
+                    { value: 'traveler', label: t('role.traveler') },
+                    { value: 'vendorStaff', label: t('role.vendorStaff') },
+                    { value: 'vendorOwner', label: t('role.vendorOwner') },
+                    { value: 'admin', label: t('role.admin') },
+                  ],
+                },
+                {
+                  name: 'vendorId',
+                  label: t('admin.act.field.operator'),
+                  type: 'select',
+                  hint: t('admin.act.field.operatorHint'),
+                  options: [
+                    { value: '', label: t('admin.act.field.noOperator') },
+                    ...(roster.ok
+                      ? roster.data.map((vendor) => ({
+                          value: vendor.id,
+                          label: vendor.displayName,
+                        }))
+                      : []),
+                  ],
+                },
+              ] satisfies ActionField[]
+            }
+            confirm={{ value: 'create', label: t('admin.act.create'), icon: 'plus' }}
+            reasonLabel={t('admin.act.reasonLabel')}
+            reasonHint={t('admin.act.createReasonHint')}
+            closeHref={here()}
+            closeLabel={t('admin.review.close')}
+          />
+        )}
+
         {!people.ok ? (
           <DataProblemNotice problem={people.problem} t={t} title={t('admin.nav.people')} />
         ) : (

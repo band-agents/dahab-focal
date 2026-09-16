@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { and, count, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 
@@ -216,6 +216,28 @@ export const adminPeopleRouter = {
             hasMedications: z.boolean(),
           })
           .nullable(),
+        /**
+         * The accounts under this one.
+         *
+         * "Sub-users" is not a column: it is `user_roles.vendor_id`. Somebody
+         * holding `vendorOwner` at Fanous Divers has beneath them every other
+         * account holding a role scoped to Fanous Divers, and that is the
+         * hierarchy the console shows rather than a second one that could
+         * disagree with the permission check.
+         */
+        team: z.array(
+          z.object({
+            id: z.string().uuid(),
+            displayName: z.string().nullable(),
+            email: z.string().nullable(),
+            role: z.string(),
+            vendorId: z.string().uuid(),
+            vendorName: z.string(),
+            suspended: z.boolean(),
+          }),
+        ),
+        /** The operators this account holds a scoped role at. */
+        vendors: z.array(z.object({ id: z.string().uuid(), name: z.string(), role: z.string() })),
         /** Presence only — the number is read at 3 a.m., not browsed. */
         emergencyContacts: z.number().int(),
         bookings: z.array(personBookingSchema),
@@ -251,9 +273,47 @@ export const adminPeopleRouter = {
         .limit(1);
 
       const roleRows = await db
-        .select({ role: schema.userRoles.role })
+        .select({
+          role: schema.userRoles.role,
+          vendorId: schema.userRoles.vendorId,
+          vendorName: schema.vendors.displayName,
+        })
         .from(schema.userRoles)
+        .leftJoin(schema.vendors, eq(schema.vendors.id, schema.userRoles.vendorId))
         .where(eq(schema.userRoles.userId, input.id));
+
+      /*
+       * Everybody else scoped to an operator this account is scoped to. Only
+       * fetched when there is an operator to ask about — a traveller has no
+       * team, and a query with an empty IN list is a round trip for nothing.
+       */
+      const vendorIds = roleRows
+        .map((row) => row.vendorId)
+        .filter((id): id is string => id !== null);
+
+      const teamRows =
+        vendorIds.length === 0
+          ? []
+          : await db
+              .select({
+                id: schema.users.id,
+                displayName: schema.userProfiles.displayName,
+                email: schema.users.email,
+                role: schema.userRoles.role,
+                vendorId: schema.userRoles.vendorId,
+                vendorName: schema.vendors.displayName,
+                deletedAt: schema.users.deletedAt,
+              })
+              .from(schema.userRoles)
+              .innerJoin(schema.users, eq(schema.users.id, schema.userRoles.userId))
+              .innerJoin(schema.vendors, eq(schema.vendors.id, schema.userRoles.vendorId))
+              .leftJoin(schema.userProfiles, eq(schema.userProfiles.userId, schema.users.id))
+              .where(
+                and(
+                  inArray(schema.userRoles.vendorId, vendorIds),
+                  ne(schema.userRoles.userId, input.id),
+                ),
+              );
 
       if (account === undefined) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'No such person.' });
@@ -309,7 +369,11 @@ export const adminPeopleRouter = {
               and(
                 eq(schema.sessions.userId, input.id),
                 isNull(schema.sessions.revokedAt),
-                sql`${schema.sessions.expiresAt} > ${ctx.now}`,
+                // `gt`, not a raw `sql` template. A Date interpolated into raw
+                // SQL reaches the driver as an object and throws — this exact
+                // bug has already cost this project a 500 on every signed-in
+                // request once, and the operator builders bind properly.
+                gt(schema.sessions.expiresAt, ctx.now),
               ),
             ),
         ]);
@@ -392,6 +456,22 @@ export const adminPeopleRouter = {
                 hasAllergies: medical.allergies !== null && medical.allergies.length > 0,
                 hasMedications: medical.medications !== null && medical.medications.length > 0,
               },
+        team: teamRows.map((row) => ({
+          id: row.id,
+          displayName: row.displayName,
+          email: row.email,
+          role: row.role,
+          vendorId: row.vendorId as string,
+          vendorName: row.vendorName,
+          suspended: row.deletedAt !== null,
+        })),
+        vendors: roleRows
+          .filter((row) => row.vendorId !== null)
+          .map((row) => ({
+            id: row.vendorId as string,
+            name: row.vendorName ?? '',
+            role: row.role,
+          })),
         emergencyContacts: Number(contactRows[0]?.total ?? 0),
         bookings: bookingRows.map((row) => ({
           id: row.id,

@@ -5,6 +5,7 @@ import { formatCurrency, formatDate, formatNumber, money } from '@dahab/i18n/ser
 import { ConsolePage, Stack, resolveLocale } from '@/components/ConsoleShell';
 import {
   Action,
+  ActionPanel,
   ActionRow,
   Banner,
   KeyValue,
@@ -22,7 +23,10 @@ import { DataProblemNotice } from '@/components/DataProblemNotice';
 import { api, load } from '@/lib/api';
 import { bandFor } from '@/lib/expiry';
 import { translator } from '@/lib/i18n';
-import { neighborhoodKey, sectionHref } from '@/lib/nav';
+import { OutcomeNotice } from '@/components/ReviewPanel';
+import { setVendorStatus } from '@/lib/actions';
+import { neighborhoodKey, path, sectionHref } from '@/lib/nav';
+import type { Route } from 'next';
 
 /**
  * One operator, seen whole.
@@ -52,10 +56,13 @@ const DAY_MS = 86_400_000;
 
 export default async function VendorPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; id: string }>;
+  searchParams: Promise<{ act?: string; outcome?: string }>;
 }) {
   const { locale: raw, id } = await params;
+  const { act, outcome } = await searchParams;
   const locale = resolveLocale(raw);
   const t = translator(locale);
   const context = { locale } as const;
@@ -86,6 +93,7 @@ export default async function VendorPage({
     (row) => bandFor(row.expiresOn, now) === 'expired' && row.blocksPublishing,
   );
   const staffExpiring = v.staff.reduce((total, row) => total + row.certificationsExpiring, 0);
+  const here = (query = ''): Route => path(locale, `vendors/${id}${query}`);
 
   const documentColumns: readonly RecordColumn<Document>[] = [
     {
@@ -179,17 +187,55 @@ export default async function VendorPage({
           that asks for a reason before it commits — the reason is what makes
           the audit row worth having.
         */}
+{outcome === undefined ? null : <OutcomeNotice outcome={outcome} t={t} />}
+
         <ActionRow>
-          <Action intent="primary" icon="shield" href={sectionHref(locale, 'vendors')}>
+          <Action icon="shield" href={sectionHref(locale, 'vendors')}>
             {t('admin.action.verify')}
           </Action>
           <Action icon="money" href={sectionHref(locale, 'money')}>
             {t('admin.vendor.payOut')}
           </Action>
-          <Action intent="danger" icon="ban" href={sectionHref(locale, 'vendors')}>
-            {t('admin.vendor.suspend')}
-          </Action>
+          {v.status === 'suspended' ? (
+            <Action intent="primary" icon="check" href={here('?act=activate')}>
+              {t('admin.vendor.reactivate')}
+            </Action>
+          ) : (
+            <Action intent="danger" icon="ban" href={here('?act=suspend')}>
+              {t('admin.vendor.suspend')}
+            </Action>
+          )}
         </ActionRow>
+
+        {act === 'suspend' || act === 'activate' ? (
+          <ActionPanel
+            title={
+              act === 'suspend' ? t('admin.vendor.suspend') : t('admin.vendor.reactivate')
+            }
+            /*
+             * Suspending the operator is not suspending the person who owns
+             * it. The summary says so, because an admin who means one and does
+             * the other finds out from a phone call.
+             */
+            summary={
+              act === 'suspend'
+                ? t('admin.vendor.suspendSummary', { name: v.displayName })
+                : t('admin.vendor.reactivateSummary', { name: v.displayName })
+            }
+            action={setVendorStatus}
+            hidden={{ locale, vendorId: id, returnTo: `vendors/${id}` }}
+            confirm={
+              act === 'suspend'
+                ? { value: 'suspended', label: t('admin.vendor.suspend'), icon: 'ban' }
+                : { value: 'active', label: t('admin.vendor.reactivate'), icon: 'check' }
+            }
+            intent={act === 'suspend' ? 'danger' : 'primary'}
+            reasonLabel={t('admin.act.reasonLabel')}
+            reasonHint={t('admin.vendor.statusReasonHint')}
+            closeHref={here()}
+            closeLabel={t('admin.review.close')}
+          />
+        ) : null}
 
         <StatRow>
           <Stat

@@ -68,6 +68,26 @@ export const permissionSchema = z.enum([
   'review.moderate',
   'taxonomy.manage',
   'user.readAny',
+  /**
+   * Create an account, edit it, suspend it, end its sessions.
+   *
+   * Separate from `user.readAny` because reading a traveller's record to
+   * answer a support question and suspending that traveller are different
+   * acts, and a support role should be able to do the first without the
+   * second.
+   */
+  'user.manage',
+  /**
+   * Grant or revoke a role — including `admin`.
+   *
+   * Its own permission, and deliberately the narrowest one here, because this
+   * is the escalation path: anybody who can grant a role can grant themselves
+   * every other permission in this list. Holding `user.manage` lets you
+   * suspend an account; it does not let you promote one. Both are in the ADMIN
+   * set today, but they can be pulled apart without a migration the moment
+   * there is a support role that should not be able to mint admins.
+   */
+  'role.grant',
   'user.impersonate',
   'audit.read',
   'featureFlag.manage',

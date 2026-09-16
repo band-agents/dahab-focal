@@ -99,3 +99,161 @@ export async function cancelDeparture(formData: FormData): Promise<void> {
   }
   back(locale, 'bookings', outcome);
 }
+
+/**
+ * Back to wherever the operator was, rather than to a board.
+ *
+ * The three writes above all live on boards, so landing on the board was the
+ * right answer. The account writes live on a person's own page, and sending
+ * somebody back to the roster after suspending one account means they lose
+ * their place and cannot see whether it worked. `to` is a path under the
+ * locale, so a detail page names its own way home.
+ */
+function backTo(locale: string, to: string, outcome: Outcome): never {
+  revalidatePath(`/${locale}/${to}`);
+  redirect(`/${locale}/${to}?outcome=${outcome}` as Route);
+}
+
+/** Where a form says it came from, or the roster if it did not say. */
+function returnTo(formData: FormData, fallback: string): string {
+  const raw = String(formData.get('returnTo') ?? '').trim();
+  // Only a path under this console. A `returnTo` off an open form is an open
+  // redirect, and this one is reachable by anyone who can reach the console.
+  return /^[a-z0-9/_-]{1,120}$/i.test(raw) ? raw : fallback;
+}
+
+export async function createUser(formData: FormData): Promise<void> {
+  const locale = localeOf(formData);
+  const email = String(formData.get('email') ?? '').trim();
+  const phone = String(formData.get('phone') ?? '').trim();
+  const displayName = String(formData.get('displayName') ?? '').trim();
+  const countryCode = String(formData.get('countryCode') ?? '').trim();
+  const role = String(formData.get('role') ?? '').trim();
+  const vendorId = String(formData.get('vendorId') ?? '').trim();
+  const reason = String(formData.get('reason') ?? '').trim();
+
+  let outcome: Outcome = 'done';
+  let created: string | null = null;
+  try {
+    const result = await api.admin.createUser.mutate({
+      ...(email === '' ? {} : { email }),
+      ...(phone === '' ? {} : { phone }),
+      ...(displayName === '' ? {} : { displayName }),
+      ...(countryCode === '' ? {} : { countryCode }),
+      roles:
+        role === ''
+          ? []
+          : [
+              {
+                role: role as 'admin' | 'traveler' | 'vendorOwner' | 'vendorStaff',
+                ...(vendorId === '' ? {} : { vendorId }),
+              },
+            ],
+      reason,
+    });
+    created = result.id;
+  } catch (error) {
+    outcome = classify(error);
+  }
+
+  // Straight to the account that was just made. The next thing anybody does
+  // after creating one is look at it.
+  backTo(locale, created === null ? 'people' : `people/${created}`, outcome);
+}
+
+export async function updateUser(formData: FormData): Promise<void> {
+  const locale = localeOf(formData);
+  const userId = String(formData.get('userId') ?? '');
+  const displayName = String(formData.get('displayName') ?? '').trim();
+  const countryCode = String(formData.get('countryCode') ?? '').trim();
+  const reason = String(formData.get('reason') ?? '').trim();
+
+  let outcome: Outcome = 'done';
+  try {
+    await api.admin.updateUser.mutate({
+      userId,
+      // An empty box means "clear it", which is a different instruction from
+      // "leave it alone" — the form always posts both fields, so an empty one
+      // is deliberate.
+      displayName: displayName === '' ? null : displayName,
+      countryCode: countryCode === '' ? null : countryCode,
+      reason,
+    });
+  } catch (error) {
+    outcome = classify(error);
+  }
+  backTo(locale, returnTo(formData, `people/${userId}`), outcome);
+}
+
+export async function setUserSuspended(formData: FormData): Promise<void> {
+  const locale = localeOf(formData);
+  const userId = String(formData.get('userId') ?? '');
+  const suspended = String(formData.get('decision') ?? '') === 'suspend';
+  const reason = String(formData.get('reason') ?? '').trim();
+
+  let outcome: Outcome = 'done';
+  try {
+    await api.admin.setUserSuspended.mutate({ userId, suspended, reason });
+  } catch (error) {
+    outcome = classify(error);
+  }
+  backTo(locale, returnTo(formData, `people/${userId}`), outcome);
+}
+
+export async function endUserSessions(formData: FormData): Promise<void> {
+  const locale = localeOf(formData);
+  const userId = String(formData.get('userId') ?? '');
+  const reason = String(formData.get('reason') ?? '').trim();
+
+  let outcome: Outcome = 'done';
+  try {
+    await api.admin.endUserSessions.mutate({ userId, reason });
+  } catch (error) {
+    outcome = classify(error);
+  }
+  backTo(locale, returnTo(formData, `people/${userId}`), outcome);
+}
+
+export async function changeRole(formData: FormData): Promise<void> {
+  const locale = localeOf(formData);
+  const userId = String(formData.get('userId') ?? '');
+  const role = String(formData.get('role') ?? '').trim();
+  const vendorId = String(formData.get('vendorId') ?? '').trim();
+  const reason = String(formData.get('reason') ?? '').trim();
+  const revoking = String(formData.get('decision') ?? '') === 'revoke';
+
+  const grant = {
+    userId,
+    role: role as 'admin' | 'traveler' | 'vendorOwner' | 'vendorStaff' | 'guest',
+    ...(vendorId === '' ? {} : { vendorId }),
+    reason,
+  };
+
+  let outcome: Outcome = 'done';
+  try {
+    if (revoking) await api.admin.revokeRole.mutate(grant);
+    else await api.admin.grantRole.mutate(grant);
+  } catch (error) {
+    outcome = classify(error);
+  }
+  backTo(locale, returnTo(formData, `people/${userId}`), outcome);
+}
+
+export async function setVendorStatus(formData: FormData): Promise<void> {
+  const locale = localeOf(formData);
+  const vendorId = String(formData.get('vendorId') ?? '');
+  const status = String(formData.get('decision') ?? '');
+  const reason = String(formData.get('reason') ?? '').trim();
+
+  let outcome: Outcome = 'done';
+  try {
+    await api.admin.setVendorStatus.mutate({
+      vendorId,
+      status: status === 'active' ? 'active' : status === 'closed' ? 'closed' : 'suspended',
+      reason,
+    });
+  } catch (error) {
+    outcome = classify(error);
+  }
+  backTo(locale, returnTo(formData, `vendors/${vendorId}`), outcome);
+}

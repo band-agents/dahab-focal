@@ -5,6 +5,7 @@ import { formatCurrency, formatDate, formatNumber, isolate, money } from '@dahab
 import { ConsolePage, Stack, resolveLocale } from '@/components/ConsoleShell';
 import {
   Action,
+  ActionPanel,
   ActionRow,
   Banner,
   KeyValue,
@@ -12,11 +13,21 @@ import {
   Panel,
   Pill,
   RecordList,
+  type ActionField,
   type RecordColumn,
 } from '@/components/console';
+import { OutcomeNotice } from '@/components/ReviewPanel';
+import {
+  changeRole,
+  endUserSessions,
+  setUserSuspended,
+  updateUser,
+} from '@/lib/actions';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
 import { api, load } from '@/lib/api';
 import { translator } from '@/lib/i18n';
+import type { Route } from 'next';
+
 import { path, sectionHref } from '@/lib/nav';
 
 /**
@@ -47,10 +58,14 @@ const CERT_TONE = {
 
 export default async function PersonPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; id: string }>;
+  /** `act` opens a panel; `outcome` reports what the last one did. */
+  searchParams: Promise<{ act?: string; role?: string; vendor?: string; outcome?: string }>;
 }) {
   const { locale: raw, id } = await params;
+  const { act, role: actRole, vendor: actVendor, outcome } = await searchParams;
   const locale = resolveLocale(raw);
   const t = translator(locale);
   const context = { locale } as const;
@@ -73,6 +88,17 @@ export default async function PersonPage({
 
   const { person, certifications, medical, bookings, spend, emergencyContacts, activeSessions } =
     result.data;
+  const { team, vendors } = result.data;
+
+  /** This page, with a panel open or closed. Every action link goes through it. */
+  const here = (query = ''): Route => path(locale, `people/${id}${query}`);
+  const shared = { locale, userId: id, returnTo: `people/${id}` };
+  const reasonLabel = t('admin.act.reasonLabel');
+  const reasonHint = t('admin.act.reasonHint');
+  const closeLabel = t('admin.review.close');
+
+  /** The operators this account is scoped to, for the role panel's select. */
+  const vendorOptions = vendors.map((vendor) => ({ value: vendor.id, label: vendor.name }));
 
   const certColumns: readonly RecordColumn<Certification>[] = [
     {
@@ -144,6 +170,39 @@ export default async function PersonPage({
     },
   ];
 
+  type TeamMember = Person['team'][number];
+  const teamColumns: readonly RecordColumn<TeamMember>[] = [
+    {
+      key: 'name',
+      header: t('admin.col.person'),
+      role: 'primary',
+      cell: (row) =>
+        row.displayName ?? (row.email === null ? t('admin.people.unnamed') : isolate(row.email)),
+    },
+    {
+      key: 'where',
+      header: t('admin.col.role'),
+      role: 'secondary',
+      cell: (row) => `${t(`role.${row.role}`)} · ${row.vendorName}`,
+    },
+    {
+      key: 'state',
+      header: t('admin.col.status'),
+      role: 'end',
+      width: '11rem',
+      cell: (row) =>
+        row.suspended ? (
+          <Pill tone="danger" icon="ban">
+            {t('admin.people.suspended')}
+          </Pill>
+        ) : (
+          <Pill tone="success" icon="check">
+            {t('admin.people.clear')}
+          </Pill>
+        ),
+    },
+  ];
+
   const contact = person.email ?? person.phone;
 
   return (
@@ -178,17 +237,164 @@ export default async function PersonPage({
           />
         ) : null}
 
+        {outcome === undefined ? null : <OutcomeNotice outcome={outcome} t={t} />}
+
+        {/*
+          The actions on this account, on this account's own page. Each opens a
+          panel below rather than firing on a tap: every one requires a reason,
+          and a suspend that happened from a single press is a suspend nobody
+          can explain afterwards.
+        */}
         <ActionRow>
-          <Action intent="primary" icon="money" href={sectionHref(locale, 'money')}>
-            {t('admin.person.refund')}
+          <Action icon="doc" href={here('?act=edit')}>
+            {t('admin.act.edit')}
           </Action>
-          <Action icon="ban" href={sectionHref(locale, 'platform')}>
-            {t('admin.person.endSessions', { count: activeSessions })}
+          <Action icon="key" href={here('?act=grant')}>
+            {t('admin.act.grantRole')}
           </Action>
-          <Action intent="danger" icon="ban" href={sectionHref(locale, 'people')}>
-            {t('admin.person.suspend')}
-          </Action>
+          {activeSessions === 0 ? null : (
+            <Action icon="ban" href={here('?act=sessions')}>
+              {t('admin.person.endSessions', { count: activeSessions })}
+            </Action>
+          )}
+          {person.suspended ? (
+            <Action intent="primary" icon="check" href={here('?act=restore')}>
+              {t('admin.act.restore')}
+            </Action>
+          ) : (
+            <Action intent="danger" icon="ban" href={here('?act=suspend')}>
+              {t('admin.act.suspend')}
+            </Action>
+          )}
         </ActionRow>
+
+        {act === 'edit' ? (
+          <ActionPanel
+            title={t('admin.act.edit')}
+            summary={t('admin.act.editSummary')}
+            action={updateUser}
+            hidden={shared}
+            fields={
+              [
+                {
+                  name: 'displayName',
+                  label: t('admin.act.field.name'),
+                  type: 'text',
+                  value: person.displayName ?? '',
+                },
+                {
+                  name: 'countryCode',
+                  label: t('admin.act.field.country'),
+                  type: 'text',
+                  value: person.countryCode ?? '',
+                  hint: t('admin.act.field.countryHint'),
+                  ltr: true,
+                },
+              ] satisfies ActionField[]
+            }
+            confirm={{ value: 'save', label: t('admin.act.save'), icon: 'check' }}
+            reasonLabel={reasonLabel}
+            reasonHint={reasonHint}
+            closeHref={here()}
+            closeLabel={closeLabel}
+          />
+        ) : null}
+
+        {act === 'grant' || act === 'revoke' ? (
+          <ActionPanel
+            title={act === 'revoke' ? t('admin.act.revokeRole') : t('admin.act.grantRole')}
+            summary={act === 'revoke' ? t('admin.act.revokeSummary') : t('admin.act.grantSummary')}
+            action={changeRole}
+            hidden={{
+              ...shared,
+              ...(actRole === undefined ? {} : { role: actRole }),
+              ...(actVendor === undefined ? {} : { vendorId: actVendor }),
+            }}
+            fields={
+              actRole !== undefined
+                ? []
+                : ([
+                    {
+                      name: 'role',
+                      label: t('admin.act.field.role'),
+                      type: 'select',
+                      required: true,
+                      options: [
+                        { value: 'traveler', label: t('role.traveler') },
+                        { value: 'vendorStaff', label: t('role.vendorStaff') },
+                        { value: 'vendorOwner', label: t('role.vendorOwner') },
+                        { value: 'admin', label: t('role.admin') },
+                      ],
+                    },
+                    /*
+                     * Only the operators this account is already scoped to.
+                     * Attaching somebody to a centre they have no connection
+                     * with is an act that belongs on the operator's own page,
+                     * beside the team it is changing.
+                     */
+                    ...(vendorOptions.length === 0
+                      ? []
+                      : [
+                          {
+                            name: 'vendorId',
+                            label: t('admin.act.field.operator'),
+                            type: 'select' as const,
+                            options: [
+                              { value: '', label: t('admin.act.field.noOperator') },
+                              ...vendorOptions,
+                            ],
+                          },
+                        ]),
+                  ] satisfies ActionField[])
+            }
+            confirm={
+              act === 'revoke'
+                ? { value: 'revoke', label: t('admin.act.revokeRole'), icon: 'ban' }
+                : { value: 'grant', label: t('admin.act.grantRole'), icon: 'key' }
+            }
+            intent={act === 'revoke' ? 'danger' : 'primary'}
+            reasonLabel={reasonLabel}
+            reasonHint={t('admin.act.roleReasonHint')}
+            closeHref={here()}
+            closeLabel={closeLabel}
+          />
+        ) : null}
+
+        {act === 'sessions' ? (
+          <ActionPanel
+            title={t('admin.person.endSessions', { count: activeSessions })}
+            summary={t('admin.act.sessionsSummary', { count: activeSessions })}
+            action={endUserSessions}
+            hidden={shared}
+            confirm={{ value: 'end', label: t('admin.act.endNow'), icon: 'ban' }}
+            intent="danger"
+            reasonLabel={reasonLabel}
+            reasonHint={reasonHint}
+            closeHref={here()}
+            closeLabel={closeLabel}
+          />
+        ) : null}
+
+        {act === 'suspend' || act === 'restore' ? (
+          <ActionPanel
+            title={act === 'suspend' ? t('admin.act.suspend') : t('admin.act.restore')}
+            summary={
+              act === 'suspend' ? t('admin.act.suspendSummary') : t('admin.act.restoreSummary')
+            }
+            action={setUserSuspended}
+            hidden={shared}
+            confirm={
+              act === 'suspend'
+                ? { value: 'suspend', label: t('admin.act.suspend'), icon: 'ban' }
+                : { value: 'restore', label: t('admin.act.restore'), icon: 'check' }
+            }
+            intent={act === 'suspend' ? 'danger' : 'primary'}
+            reasonLabel={reasonLabel}
+            reasonHint={reasonHint}
+            closeHref={here()}
+            closeLabel={closeLabel}
+          />
+        ) : null}
 
         <Panel title={t('admin.person.account')} flush>
           <KeyValueList>
@@ -229,6 +435,33 @@ export default async function PersonPage({
             />
           </KeyValueList>
         </Panel>
+
+        {/*
+          The accounts under this one.
+          .
+          Not a second hierarchy: these are the other accounts holding a role
+          scoped to an operator this account is scoped to, which is the same
+          fact the permission check reads. A centre owner sees their guides
+          here; a traveller has nobody and the panel does not render.
+        */}
+        {vendors.length === 0 ? null : (
+          <Panel
+            title={t('admin.person.team')}
+            figure={formatNumber(team.length, context)}
+            flush
+          >
+            <RecordList
+              columns={teamColumns}
+              rows={team}
+              rowKey={(row) => `${row.id}:${row.vendorId}:${row.role}`}
+              href={(row) => path(locale, `people/${row.id}`)}
+              caption={t('admin.person.team')}
+              empty={
+                <p className="font-console text-cBody text-c-muted">{t('admin.person.noTeam')}</p>
+              }
+            />
+          </Panel>
+        )}
 
         <Panel
           title={t('admin.person.certifications')}
