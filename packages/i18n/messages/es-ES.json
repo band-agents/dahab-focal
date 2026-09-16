@@ -17,12 +17,87 @@
       "admin.col.person",
       "admin.col.reference",
       "admin.col.staff",
+      "admin.home.degradedTitle",
+      "admin.home.group.demand",
+      "admin.home.group.money",
+      "admin.home.group.platform",
+      "admin.home.group.run",
+      "admin.home.group.supply",
+      "admin.home.health.degraded",
+      "admin.home.health.ok",
+      "admin.home.healthDown",
+      "admin.home.live",
+      "admin.home.partial",
+      "admin.home.planned",
+      "admin.home.state.partial",
+      "admin.home.state.planned",
+      "admin.home.subtitle",
+      "admin.home.title",
+      "admin.module.access.name",
+      "admin.module.access.purpose",
+      "admin.module.availability.name",
+      "admin.module.availability.purpose",
+      "admin.module.bookings.name",
+      "admin.module.bookings.purpose",
+      "admin.module.catalog.name",
+      "admin.module.catalog.purpose",
+      "admin.module.compare.name",
+      "admin.module.compare.purpose",
+      "admin.module.conditions.name",
+      "admin.module.conditions.purpose",
+      "admin.module.disputes.name",
+      "admin.module.disputes.purpose",
+      "admin.module.expiry.name",
+      "admin.module.expiry.purpose",
+      "admin.module.fleet.name",
+      "admin.module.fleet.purpose",
+      "admin.module.fx.name",
+      "admin.module.fx.purpose",
+      "admin.module.health.name",
+      "admin.module.health.purpose",
+      "admin.module.integrations.name",
+      "admin.module.integrations.purpose",
+      "admin.module.jobs.name",
+      "admin.module.jobs.purpose",
+      "admin.module.locales.name",
+      "admin.module.locales.purpose",
+      "admin.module.messages.name",
+      "admin.module.messages.purpose",
+      "admin.module.money.name",
+      "admin.module.money.purpose",
+      "admin.module.options.name",
+      "admin.module.options.purpose",
+      "admin.module.paymentMethods.name",
+      "admin.module.paymentMethods.purpose",
+      "admin.module.payoutAccounts.name",
+      "admin.module.payoutAccounts.purpose",
+      "admin.module.people.name",
+      "admin.module.people.purpose",
+      "admin.module.places.name",
+      "admin.module.places.purpose",
+      "admin.module.platform.name",
+      "admin.module.platform.purpose",
+      "admin.module.pricing.name",
+      "admin.module.pricing.purpose",
+      "admin.module.reports.name",
+      "admin.module.reports.purpose",
+      "admin.module.reviews.name",
+      "admin.module.reviews.purpose",
+      "admin.module.team.name",
+      "admin.module.team.purpose",
+      "admin.module.today.name",
+      "admin.module.today.purpose",
+      "admin.module.trust.name",
+      "admin.module.trust.purpose",
+      "admin.module.vendors.name",
+      "admin.module.vendors.purpose",
       "admin.more.bookings",
       "admin.more.catalog",
       "admin.more.expiry",
       "admin.more.platform",
       "admin.more.subtitle",
       "admin.more.trust",
+      "admin.nav.home",
       "admin.nav.more",
       "admin.nav.people",
       "admin.people.cardsPending",
@@ -294,7 +369,8 @@
       "trust": "Seguridad y confianza",
       "platform": "Plataforma",
       "people": "People",
-      "more": "More"
+      "more": "More",
+      "home": "Home"
     },
     "today": {
       "title": "Hoy",
@@ -843,6 +919,148 @@
       "noCards": "No certifications on file.",
       "bookings": "Bookings",
       "noBookings": "Nothing booked yet."
+    },
+    "home": {
+      "title": "Home",
+      "subtitle": "Every module the platform runs on.",
+      "live": "Modules live",
+      "partial": "Inside another screen",
+      "planned": "Not built yet",
+      "state": {
+        "partial": "Inside another screen",
+        "planned": "Not built"
+      },
+      "group": {
+        "run": "Run the day",
+        "supply": "Operators",
+        "demand": "Catalogue & travellers",
+        "money": "Money",
+        "platform": "Platform"
+      },
+      "degradedTitle": "The platform is answering, but not from everything",
+      "health": {
+        "ok": "OK",
+        "degraded": "Degraded"
+      },
+      "healthDown": "No answer"
+    },
+    "module": {
+      "today": {
+        "name": "Today",
+        "purpose": "What needs a decision before the boats go out"
+      },
+      "bookings": {
+        "name": "Bookings",
+        "purpose": "Departures, manifests and the cancellation cascade"
+      },
+      "availability": {
+        "name": "Availability",
+        "purpose": "Which days run, and which are blacked out"
+      },
+      "messages": {
+        "name": "Inbox",
+        "purpose": "Threads between travellers and operators"
+      },
+      "conditions": {
+        "name": "Conditions",
+        "purpose": "Wind and sea — no source connected yet"
+      },
+      "vendors": {
+        "name": "Operators",
+        "purpose": "The roster, and the documents waiting on us"
+      },
+      "expiry": {
+        "name": "Expiry board",
+        "purpose": "Everything running out, across every operator"
+      },
+      "fleet": {
+        "name": "Fleet & kit",
+        "purpose": "Boats, vans and tanks, with their test dates"
+      },
+      "team": {
+        "name": "Staff",
+        "purpose": "Guides and instructors, and their ratings"
+      },
+      "payoutAccounts": {
+        "name": "Payout accounts",
+        "purpose": "Where each operator's money is sent"
+      },
+      "catalog": {
+        "name": "Catalogue",
+        "purpose": "Categories, services and comparable attributes"
+      },
+      "compare": {
+        "name": "Comparison engine",
+        "purpose": "Weights, normalisation and hidden costs"
+      },
+      "options": {
+        "name": "Options & tiers",
+        "purpose": "Variants, add-ons and party tiers"
+      },
+      "people": {
+        "name": "Accounts",
+        "purpose": "Travellers, centre staff and platform admins"
+      },
+      "reviews": {
+        "name": "Reviews",
+        "purpose": "Ratings, replies and moderation"
+      },
+      "places": {
+        "name": "Places",
+        "purpose": "Dive sites, pickups and neighbourhoods"
+      },
+      "money": {
+        "name": "Money",
+        "purpose": "Ledger, payments and payouts"
+      },
+      "pricing": {
+        "name": "Pricing",
+        "purpose": "Models, tiers and the rules behind every price"
+      },
+      "fx": {
+        "name": "Exchange rates",
+        "purpose": "EGP to EUR, and the rate each booking used"
+      },
+      "disputes": {
+        "name": "Disputes",
+        "purpose": "Chargebacks and contested refunds"
+      },
+      "paymentMethods": {
+        "name": "Payment methods",
+        "purpose": "Cards, wallets and cash on the day"
+      },
+      "trust": {
+        "name": "Safety & trust",
+        "purpose": "Incidents, the chamber, and disputes"
+      },
+      "platform": {
+        "name": "Platform",
+        "purpose": "Audit log and feature flags"
+      },
+      "access": {
+        "name": "Access",
+        "purpose": "Roles, sessions and impersonation"
+      },
+      "health": {
+        "name": "System health",
+        "purpose": "API, database and integrations"
+      },
+      "integrations": {
+        "name": "Integrations",
+        "purpose": "Payments, SMS, email and maps"
+      },
+      "jobs": {
+        "name": "Scheduled jobs",
+        "purpose": "Expiry sweeps, payout runs and reminders"
+      },
+      "locales": {
+        "name": "Translations",
+        "purpose": "Coverage across the seven locales"
+      },
+      "reports": {
+        "name": "Reports",
+        "purpose": "Exports for finance, operations and tax"
+      }
     }
   },
   "vendor": {

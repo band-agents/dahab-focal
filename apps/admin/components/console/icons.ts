@@ -79,6 +79,37 @@ export const ICONS = {
   pin: { d: 'M12 21.5c4.3-4.7 6.5-8.1 6.5-10.5a6.5 6.5 0 1 0-13 0c0 2.4 2.2 5.8 6.5 10.5ZM12 13.2a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8Z' },
   search: { d: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14ZM16 16l4.5 4.5' },
   filter: { d: 'M3.5 6.5h17l-6.5 7.2v5.3l-4 2v-7.3z' },
+
+  // ── The modules ────────────────────────────────────────────────────────
+  /** The launcher itself: every module at once. */
+  home: { d: 'M3.5 3.5h7v7h-7zM13.5 3.5h7v7h-7zM3.5 13.5h7v7h-7zM13.5 13.5h7v7h-7z' },
+  /** Which days are open, which are blacked out. */
+  calendar: { d: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4M7.5 13.5h3M13.5 13.5h3M7.5 17h3' },
+  /** A traveller asking an operator a question, and the answer. */
+  chat: { d: 'M3.5 5.5h17v11h-11l-4.5 4v-4h-1.5zM8 9.5h8M8 12.5h5' },
+  /**
+   * The comparison engine — the reason this product exists. Two columns and
+   * the rule that decides between them, which is what the engine is.
+   */
+  compare: { d: 'M5.5 20.5v-14M18.5 20.5v-9M12 3.5v17M3 6.5h5M16 11.5h5M9.5 8h5' },
+  /** Boats, vans, tanks: things with a test date and a service record. */
+  wrench: { d: 'M15.2 3.6a5.5 5.5 0 0 0-6.7 7.1L3.5 15.7l2.8 2.8 5-5a5.5 5.5 0 0 0 7.1-6.7l-3.2 3.2-2.5-2.5z' },
+  /** A provider on the other end of a key: payments, SMS, maps. */
+  plug: { d: 'M9 3v5M15 3v5M6.5 8h11v3.5a5.5 5.5 0 0 1-11 0zM12 17v4' },
+  /** Is it up. The one module that answers with a live probe. */
+  pulse: { d: 'M2.5 12.5h4l2.5-7 4 14 2.5-7h6' },
+  /** What a thing costs, and the rule that got it there. */
+  tag: { d: 'M11.5 3.5H20v8.5l-8.7 8.7-8.5-8.5zM16.2 7.8v.02' },
+  /** EGP to EUR, and the rate it happened at. */
+  exchange: { d: 'M4 8.5h14l-3.5-3.5M20 15.5H6l3.5 3.5', directional: true },
+  /** Who may do what, and who is pretending to be whom. */
+  key: { d: 'M15.5 3.5a5 5 0 1 0-4.2 7.7l-7.8 7.8v2h3v-2h2v-2h2v-2.4l2.5-2.5a5 5 0 0 0 2.5-8.6ZM16.5 7.5v.02' },
+  /** Something that runs on its own schedule and can fail on its own. */
+  jobs: { d: 'M12 20.5a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17ZM12 7.5V12l3 1.8M12 3.5V2M20.5 12H22' },
+  /** A rating somebody left. */
+  star: { d: 'M12 3.5l2.7 5.6 6.1.85-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.85z' },
+  /** A report somebody takes away with them. */
+  export: { d: 'M12 3.5v11M8 11l4 3.5 4-3.5M4.5 17v3.5h15V17' },
 } as const satisfies Record<string, IconShape>;
 
 export type IconName = keyof typeof ICONS;

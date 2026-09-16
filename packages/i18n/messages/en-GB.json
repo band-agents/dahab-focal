@@ -159,7 +159,8 @@
       "trust": "Safety & trust",
       "platform": "Platform",
       "people": "People",
-      "more": "More"
+      "more": "More",
+      "home": "Home"
     },
     "today": {
       "title": "Today",
@@ -708,6 +709,148 @@
       "noCards": "No certifications on file.",
       "bookings": "Bookings",
       "noBookings": "Nothing booked yet."
+    },
+    "home": {
+      "title": "Home",
+      "subtitle": "Every module the platform runs on.",
+      "live": "Modules live",
+      "partial": "Inside another screen",
+      "planned": "Not built yet",
+      "state": {
+        "partial": "Inside another screen",
+        "planned": "Not built"
+      },
+      "group": {
+        "run": "Run the day",
+        "supply": "Operators",
+        "demand": "Catalogue & travellers",
+        "money": "Money",
+        "platform": "Platform"
+      },
+      "degradedTitle": "The platform is answering, but not from everything",
+      "health": {
+        "ok": "OK",
+        "degraded": "Degraded"
+      },
+      "healthDown": "No answer"
+    },
+    "module": {
+      "today": {
+        "name": "Today",
+        "purpose": "What needs a decision before the boats go out"
+      },
+      "bookings": {
+        "name": "Bookings",
+        "purpose": "Departures, manifests and the cancellation cascade"
+      },
+      "availability": {
+        "name": "Availability",
+        "purpose": "Which days run, and which are blacked out"
+      },
+      "messages": {
+        "name": "Inbox",
+        "purpose": "Threads between travellers and operators"
+      },
+      "conditions": {
+        "name": "Conditions",
+        "purpose": "Wind and sea — no source connected yet"
+      },
+      "vendors": {
+        "name": "Operators",
+        "purpose": "The roster, and the documents waiting on us"
+      },
+      "expiry": {
+        "name": "Expiry board",
+        "purpose": "Everything running out, across every operator"
+      },
+      "fleet": {
+        "name": "Fleet & kit",
+        "purpose": "Boats, vans and tanks, with their test dates"
+      },
+      "team": {
+        "name": "Staff",
+        "purpose": "Guides and instructors, and their ratings"
+      },
+      "payoutAccounts": {
+        "name": "Payout accounts",
+        "purpose": "Where each operator's money is sent"
+      },
+      "catalog": {
+        "name": "Catalogue",
+        "purpose": "Categories, services and comparable attributes"
+      },
+      "compare": {
+        "name": "Comparison engine",
+        "purpose": "Weights, normalisation and hidden costs"
+      },
+      "options": {
+        "name": "Options & tiers",
+        "purpose": "Variants, add-ons and party tiers"
+      },
+      "people": {
+        "name": "Accounts",
+        "purpose": "Travellers, centre staff and platform admins"
+      },
+      "reviews": {
+        "name": "Reviews",
+        "purpose": "Ratings, replies and moderation"
+      },
+      "places": {
+        "name": "Places",
+        "purpose": "Dive sites, pickups and neighbourhoods"
+      },
+      "money": {
+        "name": "Money",
+        "purpose": "Ledger, payments and payouts"
+      },
+      "pricing": {
+        "name": "Pricing",
+        "purpose": "Models, tiers and the rules behind every price"
+      },
+      "fx": {
+        "name": "Exchange rates",
+        "purpose": "EGP to EUR, and the rate each booking used"
+      },
+      "disputes": {
+        "name": "Disputes",
+        "purpose": "Chargebacks and contested refunds"
+      },
+      "paymentMethods": {
+        "name": "Payment methods",
+        "purpose": "Cards, wallets and cash on the day"
+      },
+      "trust": {
+        "name": "Safety & trust",
+        "purpose": "Incidents, the chamber, and disputes"
+      },
+      "platform": {
+        "name": "Platform",
+        "purpose": "Audit log and feature flags"
+      },
+      "access": {
+        "name": "Access",
+        "purpose": "Roles, sessions and impersonation"
+      },
+      "health": {
+        "name": "System health",
+        "purpose": "API, database and integrations"
+      },
+      "integrations": {
+        "name": "Integrations",
+        "purpose": "Payments, SMS, email and maps"
+      },
+      "jobs": {
+        "name": "Scheduled jobs",
+        "purpose": "Expiry sweeps, payout runs and reminders"
+      },
+      "locales": {
+        "name": "Translations",
+        "purpose": "Coverage across the seven locales"
+      },
+      "reports": {
+        "name": "Reports",
+        "purpose": "Exports for finance, operations and tax"
+      }
     }
   },
   "vendor": {

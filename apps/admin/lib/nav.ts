@@ -10,10 +10,10 @@ import type { IconName } from '@/components/console';
  * Two things changed when the console stopped being desktop-only.
  *
  * The first is `tab`. A phone gets five slots and no more — a sixth is where
- * thumb reach stops being reliable — so five sections are marked as tabs and
- * the other four are reached through "More", which is a real screen. The rail
- * above `lg` still shows everything flat, because a desktop has the room and
- * hiding four of nine sections there would be hiding the product.
+ * thumb reach stops being reliable — so four sections are marked as tabs and
+ * everything else is reached through Home, which is a grid of every module the
+ * business has rather than a list of the sections that did not fit. The rail
+ * above `lg` still shows the sections flat, because a desktop has the room.
  *
  * The second is `people`. The platform had eight screens and not one of them
  * was about a traveller: `users`, `user_profiles`, `certifications`,
@@ -33,6 +33,7 @@ export interface Section {
 }
 
 export const SECTIONS: readonly Section[] = [
+  { key: 'home', path: 'home', icon: 'home', labelKey: 'admin.nav.home', tab: true },
   { key: 'today', path: '', icon: 'today', labelKey: 'admin.nav.today', tab: true },
   { key: 'vendors', path: 'vendors', icon: 'operators', labelKey: 'admin.nav.vendors', tab: true },
   { key: 'people', path: 'people', icon: 'people', labelKey: 'admin.nav.people', tab: true },
@@ -42,7 +43,6 @@ export const SECTIONS: readonly Section[] = [
   { key: 'bookings', path: 'bookings', icon: 'boat', labelKey: 'admin.nav.bookings' },
   { key: 'trust', path: 'trust', icon: 'shield', labelKey: 'admin.nav.trust' },
   { key: 'platform', path: 'platform', icon: 'filter', labelKey: 'admin.nav.platform' },
-  { key: 'more', path: 'more', icon: 'more', labelKey: 'admin.nav.more', tab: true },
 ];
 
 /**
@@ -52,11 +52,6 @@ export const SECTIONS: readonly Section[] = [
  */
 export const TAB_KEYS: readonly string[] = SECTIONS.filter(
   (section) => section.tab === true,
-).map((section) => section.key);
-
-/** The sections "More" lists: everything the tab bar could not carry. */
-export const MORE_KEYS: readonly string[] = SECTIONS.filter(
-  (section) => section.tab !== true,
 ).map((section) => section.key);
 
 /**
