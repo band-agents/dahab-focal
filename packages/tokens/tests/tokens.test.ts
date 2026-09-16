@@ -186,6 +186,22 @@ describe('required contrast — recomputed from the hexes, never annotated', () 
       'text on bg (dark)',
       'text-muted on bg (dark)',
       'cta-label on cta-fill (dark)',
+      // The console is a second visual system on the same token file: the
+      // admin console and the operator app read `c-*` and never the traveller
+      // semantics. Its pairings are gated here for the same reason the
+      // traveller ones are — a palette edit that dims a status strip is
+      // invisible until someone cannot read "expired" on a phone at the dock.
+      'c-text on c-surface (light)',
+      'c-muted on c-surface (light)',
+      'c-on-accent on c-accent (light)',
+      'c-link on c-bg (light)',
+      'c-ok on c-ok-bg (light)',
+      'c-warn on c-warn-bg (light)',
+      'c-bad on c-bad-bg (light)',
+      'c-info on c-info-bg (light)',
+      'c-text on c-surface (dark)',
+      'c-muted on c-surface (dark)',
+      'c-on-accent on c-accent (dark)',
     ]);
   });
 

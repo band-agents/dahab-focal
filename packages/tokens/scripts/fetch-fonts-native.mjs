@@ -68,6 +68,17 @@ const FACES = [
   { family: 'Rubik', weight: 500, file: 'Rubik-Medium.ttf' },
   { family: 'Baloo 2', weight: 600, file: 'Baloo2-SemiBold.ttf' },
   { family: 'Baloo Bhaijaan 2', weight: 600, file: 'BalooBhaijaan2-SemiBold.ttf' },
+  /*
+   * The console superfamily, for the operator app. Native has no
+   * unicode-range, so each weight is a whole file and only the weights the
+   * console actually sets are fetched — 400 and 600 for the two sans faces,
+   * one 400 for the figures.
+   */
+  { family: 'IBM Plex Sans', weight: 400, file: 'IBMPlexSans-Regular.ttf' },
+  { family: 'IBM Plex Sans', weight: 600, file: 'IBMPlexSans-SemiBold.ttf' },
+  { family: 'IBM Plex Sans Arabic', weight: 400, file: 'IBMPlexSansArabic-Regular.ttf' },
+  { family: 'IBM Plex Sans Arabic', weight: 600, file: 'IBMPlexSansArabic-SemiBold.ttf' },
+  { family: 'IBM Plex Mono', weight: 400, file: 'IBMPlexMono-Regular.ttf' },
 ];
 
 /** The first `src: url(…)` Google offers for a single weight. */
