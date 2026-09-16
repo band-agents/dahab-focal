@@ -1,7 +1,9 @@
+import { fileURLToPath } from 'node:url';
+
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import { sql } from 'drizzle-orm';
 
-import { createDatabase } from './client';
+import { createDatabase } from './client.ts';
 
 /**
  * Runs every migration, then asserts the two things a silent failure would
@@ -14,7 +16,9 @@ async function main(): Promise<void> {
 
   try {
     console.log('Running migrations…');
-    await migrate(db, { migrationsFolder: new URL('../migrations', import.meta.url).pathname });
+    await migrate(db, {
+      migrationsFolder: fileURLToPath(new URL('../migrations', import.meta.url)),
+    });
 
     const [postgis] = await db.execute<{ version: string }>(
       sql`SELECT postgis_lib_version() AS version`,

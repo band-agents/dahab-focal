@@ -3,7 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { CATEGORY_SLUGS, attributeDefinitionSchema, pointSchema } from '@dahab/api-contract';
 
 import { CATEGORY_ATTRIBUTES, DIVING_INCLUSIONS } from '../src/seed/attributes';
-import { CATEGORIES, DIVE_SITES, NEIGHBORHOODS, VENDORS } from '../src/seed/dahab';
+import {
+  CATEGORIES,
+  DIVE_SITES,
+  NEIGHBORHOODS,
+  SEED_TODAY,
+  VENDORS,
+  inDays,
+} from '../src/seed/dahab';
 
 /**
  * The seed is content, so it gets the same treatment as content: validated
@@ -238,5 +245,41 @@ describe('no lorem ipsum reaches a fixture', () => {
     for (const banned of ['lorem', 'ipsum', 'dolor sit', 'foo bar', 'example.com', 'Test Vendor']) {
       expect(corpus.toLowerCase()).not.toContain(banned.toLowerCase());
     }
+  });
+});
+
+describe('the seed dates its days in Cairo, not in UTC', () => {
+  /**
+   * `local_date` is a Cairo date and every console board filters it against
+   * one. Deriving it from `toISOString()` gives the UTC day, which between
+   * 22:00 UTC and midnight is the previous Cairo day — so a seed run late in
+   * the evening wrote the whole operating week a day early and the Today
+   * board showed yesterday's boats. Nothing failed; the numbers were simply
+   * wrong, which is why this is pinned rather than left to be noticed.
+   */
+  const cairoDay = (at: Date) =>
+    new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo' }).format(at);
+
+  it('agrees with the formatter every board reads', () => {
+    expect(inDays(0)).toBe(cairoDay(SEED_TODAY));
+  });
+
+  it('steps one calendar day at a time, forwards and back', () => {
+    for (const offset of [-30, -7, -1, 0, 1, 7, 30]) {
+      const expected = cairoDay(new Date(SEED_TODAY.getTime() + offset * 86_400_000));
+      expect(inDays(offset)).toBe(expected);
+    }
+  });
+
+  it('returns a bare YYYY-MM-DD, which is what the column holds', () => {
+    expect(inDays(0)).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('is one day ahead of the UTC date during the Cairo evening', () => {
+    // 22:30 UTC is 00:30 the next morning in Cairo. This is the window the
+    // bug lived in, and the case a UTC-derived day gets wrong.
+    const evening = new Date('2026-09-14T22:30:00Z');
+    expect(evening.toISOString().slice(0, 10)).toBe('2026-09-14');
+    expect(cairoDay(evening)).toBe('2026-09-15');
   });
 });

@@ -13,8 +13,8 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-import { services } from './catalog';
-import { vendors } from './vendors';
+import { services } from './catalog.ts';
+import { vendors } from './vendors.ts';
 import {
   geographyPoint,
   geographyPolygon,
@@ -22,7 +22,7 @@ import {
   moneyCurrency,
   primaryId,
   timestamps,
-} from './_shared';
+} from './_shared.ts';
 
 /**
  * GEOGRAPHY, in PostGIS.

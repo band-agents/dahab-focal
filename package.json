@@ -21,7 +21,8 @@
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "verify": "pnpm typecheck && pnpm lint:hardcoded && pnpm test:tokens && pnpm test:i18n && pnpm test",
-    "shoot": "pnpm --filter @dahab/gallery shoot:build"
+    "shoot": "pnpm --filter @dahab/gallery shoot:build",
+    "staff:create": "pnpm --filter @dahab/api staff:create"
   },
   "devDependencies": {
     "@dahab/config": "workspace:*",

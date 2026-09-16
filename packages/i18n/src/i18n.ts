@@ -15,7 +15,6 @@
 
 import i18next, { type i18n as I18nInstance, type Resource } from 'i18next';
 import ICU from 'i18next-icu';
-import { initReactI18next } from 'react-i18next';
 
 import {
   LOCALES,
@@ -24,17 +23,36 @@ import {
   resolveLocale,
   type Locale,
   type NumberingSystem,
-} from './locales';
+} from './locales.ts';
 
-import deDE from '../messages/de-DE.json';
-import enGB from '../messages/en-GB.json';
-import esES from '../messages/es-ES.json';
-import frFR from '../messages/fr-FR.json';
-import itIT from '../messages/it-IT.json';
-import arEG from '../messages/ar-EG.json';
-import ruRU from '../messages/ru-RU.json';
+// The `with { type: 'json' }` attribute is required by Node's own ESM loader
+// (apps/api runs on raw node, not a bundler) and is a no-op everywhere else.
+import deDE from '../messages/de-DE.json' with { type: 'json' };
+import enGB from '../messages/en-GB.json' with { type: 'json' };
+import esES from '../messages/es-ES.json' with { type: 'json' };
+import frFR from '../messages/fr-FR.json' with { type: 'json' };
+import itIT from '../messages/it-IT.json' with { type: 'json' };
+import arEG from '../messages/ar-EG.json' with { type: 'json' };
+import ruRU from '../messages/ru-RU.json' with { type: 'json' };
 
 export const DEFAULT_NAMESPACE = 'common';
+
+/**
+ * The React binding is INJECTED, never imported here.
+ *
+ * `react-i18next`'s module body calls `createContext()` as a side effect of
+ * being imported, which throws in a React Server Component. Importing it from
+ * this module would make the whole i18n package unusable on the server — and
+ * the Next.js admin console renders its screens there. So `./react` registers
+ * the binding for the client surfaces, and `./server` never loads it.
+ */
+type I18nPlugin = Parameters<I18nInstance['use']>[0];
+let reactBinding: I18nPlugin | null = null;
+
+/** Called for its side effect by `./react`. Idempotent. */
+export function registerReactBinding(plugin: I18nPlugin): void {
+  reactBinding = plugin;
+}
 
 type MessageFile = Record<string, unknown>;
 
@@ -141,14 +159,15 @@ export function createI18nSync(options: CreateI18nOptions = {}): I18nInstance {
   };
   preferences.set(instance, preference);
 
-  void instance
-    .use(
-      new ICU({
-        parseLngForICU: (lng: string) => `${lng}-u-nu-${preference.current}`,
-        parseErrorHandler: makeParseErrorHandler(debug),
-      }),
-    )
-    .use(initReactI18next)
+  const configured = instance.use(
+    new ICU({
+      parseLngForICU: (lng: string) => `${lng}-u-nu-${preference.current}`,
+      parseErrorHandler: makeParseErrorHandler(debug),
+    }),
+  );
+  if (reactBinding !== null) configured.use(reactBinding);
+
+  void configured
     .init({
       resources: buildResources(),
       lng: locale,

@@ -10,8 +10,8 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-import { services } from './catalog';
-import { moneyAmount, moneyCurrency, primaryId, timestamps } from './_shared';
+import { services } from './catalog.ts';
+import { moneyAmount, moneyCurrency, primaryId, timestamps } from './_shared.ts';
 
 /**
  * THE OPTIONS TREE — service_variants -> service_tiers -> option_groups ->

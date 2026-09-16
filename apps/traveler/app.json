@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Dahab Focal",
+    "slug": "dahab-focal-traveler",
+    "version": "0.1.0",
+    "scheme": "dahabfocal",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": ["expo-router", "expo-font"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

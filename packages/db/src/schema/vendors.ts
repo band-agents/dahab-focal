@@ -14,14 +14,14 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-import { users } from './identity';
+import { users } from './identity.ts';
 import {
   deletedAt,
   geographyPoint,
   primaryId,
   timestamps,
   verificationStatusEnum,
-} from './_shared';
+} from './_shared.ts';
 
 /**
  * VENDORS — the operators, their people, their kit, and every document that
@@ -105,8 +105,21 @@ export const vendorDocuments = pgTable(
     type: vendorDocumentTypeEnum('type').notNull(),
     fileUrl: text('file_url').notNull(),
     documentNumber: varchar('document_number', { length: 80 }),
+    /**
+     * Who issued it — "South Sinai Governorate", "CDWS", "Misr Insurance".
+     * The admin verification queue shows this, and it cannot be derived from
+     * the type: two operating permits can come from different authorities.
+     */
+    issuer: varchar('issuer', { length: 160 }),
     issuedOn: date('issued_on'),
     expiresOn: date('expires_on'),
+    /**
+     * Whether a lapse STOPS the operator rather than merely warning them. An
+     * expired public liability certificate blocks publishing; an overdue tank
+     * test does not, it blocks that cylinder. Stored per document because the
+     * answer depends on the vendor's own licence mix, not only on the type.
+     */
+    blocksPublishing: boolean('blocks_publishing').notNull().default(false),
     verificationStatus: verificationStatusEnum('verification_status')
       .notNull()
       .default('pending'),

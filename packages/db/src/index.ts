@@ -1,2 +1,2 @@
-export * from './client';
-export * as schema from './schema/index';
+export * from './client.ts';
+export * as schema from './schema/index.ts';

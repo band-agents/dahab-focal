@@ -4,9 +4,19 @@ A services marketplace for Dahab, South Sinai, Egypt. Experiences, not food: div
 freediving, snorkeling, desert safari, kitesurfing, wellness, Bedouin culture, boat
 trips, courses, rentals, transfers, photography.
 
-Three surfaces are planned: the traveler app (Expo), the vendor app (Expo), the admin
-dashboard (Next.js). Only the traveler app is designed so far. All three will share
-one design system, one token package, one i18n package and one API.
+Three surfaces: the traveler app (Expo, designed but not built — Board 03 Home is
+approved), the vendor app (`apps/vendor`, Expo, four screens), and the admin
+console (`apps/admin`, Next.js 15, eight screens). All three share one design
+system, one token package, one i18n package and one API.
+
+**New here? Read `docs/HANDOVER.md` first.** It is the whole project in one
+file — history, architecture, the exact design values, every bug already
+produced, what is real versus fixtures, and the one open blocker.
+
+**Read `docs/SESSION-ADMIN-VENDOR.md` before touching either dashboard.** It
+records what is real, what is fixtures, and the handful of decisions — semantic
+tokens versus ramp steps, the three i18n entry points, bidi isolation — that are
+invisible until they break something.
 
 ## Non-negotiables
 
@@ -19,17 +29,28 @@ rewritten to match v3. v1 and v2 are history.
 
 **Design tokens.** `packages/tokens/tokens.json` is the only place a visual value is
 defined. No hex color, no raw font size, no magic spacing number anywhere else in
-the repo. `pnpm lint:hardcoded` enforces this — do not disable it. Every value in
-it is filled from v3; two hexes carry a documented in-code correction that is not
-yet reflected in the canvas (`clay-700` and `danger-text` — see
-`docs/CANVAS-FIXES.md`, which is the single worklist for everything owed to the
-design board).
+the repo. `pnpm lint:hardcoded` enforces this — do not disable it. Every value in it is
+filled from v3 and from the board's **section 09** corrections, which superseded
+the earlier interim in-code fixes: `clay-700` is #7D6D5E, and danger text is now
+two tokens picked by ground — `danger-text` #A82B2B on its own tint,
+`danger-text-on-cream` #C13333 on the page. `docs/CANVAS-FIXES.md` remains the
+worklist for what is still owed to the design board.
 
 **One hand.** Every mark, illustration, the logo and the loading state are drawn
 the same way: a 3px soft-charcoal line (`ink-line` #3B4A48, never pure black) over
 a flat pastel silhouette, filled, offset +4/+4 down-right. Never fatten the line
-and reuse it as the shape. Purely abstract marks (sea, wind, weave, reef, depth,
-the coral fan) carry no silhouette. Six strokes or fewer.
+and reuse it as the shape. Purely abstract marks — **sea, wind, reef, depth,
+palm, offline and the coral fan** — carry no silhouette. Six strokes or fewer.
+(An earlier version of this list named `weave` and omitted `palm` and `offline`;
+the board disagrees and wins — `weave` is the Bedouin divider and is a filled
+repeating diamond. `packages/ui-web` asserts the real set against the board.)
+
+The marks are **data, generated from the board**, never hand-drawn in a
+component: `packages/ui-web/src/marks/data.ts` is produced by
+`scripts/generate-marks.mjs` from the approved `Board 03 - Home.dc.html`, and
+`<Mark>` is the only place the construction rule is expressed. At 24px and
+below the line thickens to 4.6 so the mark survives at rail and table size;
+nothing else changes with size.
 
 **Four families and one ink: cream, mint, blush, sand.** No pure white anywhere —
 the page is `cream-50` #FDFAF6. Primary text is `ink-900` #2E3B3A (11.2:1). If a
@@ -52,16 +73,22 @@ system stack (`ui-monospace, …`) — there is no bundled mono face. Display tr
 is positive. Read sizes, line-heights and tracking from the type-scale role by
 name; never an ad-hoc `fontSize`.
 
-**Night Dive is the dark theme.** The same three pastels dimmed onto a warm
-green-black (`bg` #0A2422). The mark line inverts to cream; the offset shape stays
-pastel. The CTA fill becomes `#C98A7E` with a near-black label. Five night
-semantic tokens (`text-link`, `text-brand`, `focus-ring`, `cta-edge`,
-`cta-fill-pressed`) exist in the canvas CSS but not in its DTCG JSON, which is
-what this repo imports — so they are missing here and fall back to their light
-values. `text-link` and `focus-ring` are unreadable in dark as a result. The
-status strips and category surfaces have no night value in either export. All
-of it is `docs/CANVAS-FIXES.md`; until it lands, dark mode is incomplete and
-`gallery-dark-ltr-en.png` shows exactly where.
+**Night Dive is the dark theme, and it is now complete enough to ship.** The
+same three pastels dimmed onto a warm green-black (`bg` #0A2422). The mark line
+inverts to cream; the offset shape stays pastel. The CTA fill becomes `#C98A7E`
+with a near-black label. Design System **section 09** (7 Sep 2026) added the
+night `text-link` #8FE0D8, `focus-ring` #7FD8D0, `cta-edge` / `cta-fill-pressed`
+#E8A99C and the four status strips, and those are imported here — `pnpm
+test:tokens` asserts each clears 4.5:1 against both night grounds. Night
+`text-brand` (coral text at night) still has no value in any export; nothing
+uses coral text in dark until it does. See `docs/CANVAS-FIXES.md`.
+
+**Use the semantic tokens, not the ramp steps.** `bg`, `surface`,
+`surface-raised`, `text`, `text-muted`, `info-surface`, `danger-text` and the
+rest carry a Night Dive value. The raw ramp steps — `cream-100`, `mint-50`,
+`ink-900` — do not, so a component built from them silently stays light on a
+dark ground. This is the easiest way to break dark mode and it type-checks
+perfectly.
 
 **RTL is not a feature, it is the layout model.** Never `marginLeft`, `marginRight`,
 `paddingLeft`, `paddingRight`, `left:`, `right:`. Always the logical equivalents

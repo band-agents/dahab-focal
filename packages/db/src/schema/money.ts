@@ -12,10 +12,10 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-import { bookings } from './booking';
-import { users } from './identity';
-import { vendors, vendorPayoutAccounts, payoutProviderEnum } from './vendors';
-import { moneyAmount, moneyCurrency, primaryId, timestamps } from './_shared';
+import { bookings } from './booking.ts';
+import { users } from './identity.ts';
+import { vendors, vendorPayoutAccounts, payoutProviderEnum } from './vendors.ts';
+import { moneyAmount, moneyCurrency, primaryId, timestamps } from './_shared.ts';
 
 /**
  * MONEY.
