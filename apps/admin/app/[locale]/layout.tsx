@@ -34,7 +34,14 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={directionOf(locale)}>
-      <body className="font-ui antialiased">{children}</body>
+      {/*
+        `font-console`, not `font-ui`. This is the console, and its face is
+        IBM Plex Sans — Rubik belongs to the traveller app. Arabic swaps to
+        Plex Sans Arabic through the `[lang]` rule in globals.css rather than
+        a class here, because the swap is a property of the document's
+        language and not of this element.
+      */}
+      <body className="font-console antialiased">{children}</body>
     </html>
   );
 }

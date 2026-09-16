@@ -6,9 +6,11 @@ import { z } from 'zod';
 import { currencySchema } from '@dahab/api-contract';
 import { schema } from '@dahab/db';
 import { LOCALES, SOURCE_LOCALE } from '@dahab/i18n';
-import type { CurrencyCode } from '@dahab/i18n';
+
 
 import { requirePermission, router } from '../trpc.ts';
+import { asCurrency, cairoDay, requireDb } from './_shared.ts';
+import { adminPeopleRouter } from './admin-people.ts';
 import { adminWritesRouter } from './admin-writes.ts';
 import type { Context } from '../context.ts';
 
@@ -25,17 +27,6 @@ import type { Context } from '../context.ts';
  * audit row, so they want their own pass rather than being bolted on here.
  */
 
-/** A procedure that needs the database says so honestly. */
-function requireDb(ctx: Context) {
-  if (ctx.db === null) {
-    throw new TRPCError({
-      code: 'PRECONDITION_FAILED',
-      message:
-        'The database is not configured. Set DATABASE_URL and run `pnpm db:migrate && pnpm db:seed`.',
-    });
-  }
-  return ctx.db;
-}
 
 const vendorSchema = z.object({
   id: z.string().uuid(),
@@ -1091,6 +1082,12 @@ export const adminRouter = router({
         z.object({
           id: z.string().uuid(),
           reference: z.string(),
+          /**
+           * The operator it happened at. The row carried only the name, so an
+           * incident could be read but never opened — and an incident record
+           * nobody can act from is a filing cabinet, not a safety system.
+           */
+          vendorId: z.string().uuid(),
           vendorName: z.string(),
           kind: z.string(),
           severity: z.enum(['nearMiss', 'minor', 'serious', 'critical']),
@@ -1110,6 +1107,7 @@ export const adminRouter = router({
         .select({
           id: schema.incidents.id,
           reference: schema.incidents.reference,
+          vendorId: schema.incidents.vendorId,
           vendorName: schema.vendors.displayName,
           kind: schema.incidents.kind,
           severity: schema.incidents.severity,
@@ -1128,6 +1126,7 @@ export const adminRouter = router({
       return rows.map((row) => ({
         id: row.id,
         reference: row.reference,
+        vendorId: row.vendorId,
         vendorName: row.vendorName,
         kind: row.kind,
         severity: row.severity,
@@ -1531,32 +1530,14 @@ export const adminRouter = router({
   // runs in a transaction and leaves an audit row, and keeping those three
   // rules in one place is what stops a fourth write being added without them.
   ...adminWritesRouter,
+
+  // Travellers, and the operator record seen whole — the two things the
+  // console could never open.
+  ...adminPeopleRouter,
 });
 
 // --- Shared shapes and small helpers -------------------------------------
 
-/**
- * The currency a money column carries.
- *
- * Every amount in the schema is paired with its own `char(3)` code rather
- * than assuming one currency, and that column is nullable. A row that reached
- * this point without a readable code is a broken row, so it fails loudly
- * here: defaulting it to EGP would put a number on a money screen that nobody
- * could reconcile.
- */
-function asCurrency(value: string | null): CurrencyCode {
-  const parsed = currencySchema.safeParse(value);
-  if (!parsed.success) {
-    throw new Error(`Unknown currency code stored on a money column: ${String(value)}`);
-  }
-  return parsed.data;
-}
-
-/** The Cairo calendar day an instant falls on, as YYYY-MM-DD. */
-function cairoDay(at: Date): string {
-  // `en-CA` formats as YYYY-MM-DD, which is what the `local_date` columns hold.
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo' }).format(at);
-}
 
 /**
  * Postgres returns `sum()` and `bigint` as strings through the driver, because

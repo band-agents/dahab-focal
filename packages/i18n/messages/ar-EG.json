@@ -163,7 +163,9 @@
       "bookings": "الحجوزات",
       "money": "المالية",
       "trust": "السلامة والثقة",
-      "platform": "المنصة"
+      "platform": "المنصة",
+      "people": "الناس",
+      "more": "المزيد"
     },
     "today": {
       "title": "اليوم",
@@ -180,7 +182,11 @@
       "weatherNote": "الريح تلغي القوارب، والإلغاء يمتد لما بعده.",
       "noDepartures": "مفيش أي رحلة خارجة النهارده.",
       "seats": "{booked} من {total} مكان",
-      "incidentsRecent": "اتبلّغ عنها في آخر سبع أيام"
+      "incidentsRecent": "اتبلّغ عنها في آخر سبع أيام",
+      "blockingTitle": "{count, plural, zero {مفيش مراكز متوقفة عن النشر} one {مركز مش قادر ينشر} two {مركزين مش قادرين ينشروا} few {# مراكز مش قادرين ينشروا} many {# مركز مش قادرين ينشروا} other {# مركز مش قادرين ينشروا}}",
+      "blockingDetail": "في ورقة لازم تكون معاهم وخلصت صلاحيتها.",
+      "takeRateShort": "بنسبة {rate}",
+      "payoutsCount": "{count, plural, zero {مفيش مراكز} one {لمركز واحد} two {لمركزين} few {لـ # مراكز} many {لـ # مركز} other {لـ # مركز}}"
     },
     "expiry": {
       "title": "لوحة الصلاحيات",
@@ -206,13 +212,28 @@
       "seats": "المقاعد",
       "amount": "المبلغ",
       "severity": "الخطورة",
-      "site": "الموقع"
+      "site": "الموقع",
+      "reference": "المرجع",
+      "issuer": "جهة الإصدار",
+      "number": "الرقم",
+      "staff": "الاسم",
+      "jobTitle": "الوظيفة",
+      "certsExpiring": "الشهادات",
+      "person": "المسافر",
+      "contact": "التواصل",
+      "country": "البلد",
+      "joined": "انضم",
+      "bookings": "الحجوزات",
+      "certification": "الشهادة",
+      "maxDepth": "أقصى عمق",
+      "role": "الصفة"
     },
     "action": {
       "review": "مراجعة",
       "open": "فتح",
       "verify": "توثيق",
-      "viewAll": "عرض الكل"
+      "viewAll": "عرض الكل",
+      "back": "رجوع"
     },
     "metric": {
       "today": "اليوم",
@@ -559,7 +580,8 @@
       "unreachable": "الـ API مردّش، فالشاشة دي مفيهاش حاجة تتعرض — دي مش نتيجة فاضية.",
       "noDatabase": "الـ API شغّال بس مفيش داتابيز متظبطة.",
       "forbidden": "الحساب ده معهوش الصلاحية اللي الشاشة دي محتاجاها.",
-      "unauthorized": "الكونسول ده مفيهوش جلسة صالحة."
+      "unauthorized": "الكونسول ده مفيهوش جلسة صالحة.",
+      "notFound": "مفيش سجل بالمعرّف ده. يمكن اللينك قديم."
     },
     "event": {
       "bookingConfirmed": "الحجز اتأكّد",
@@ -609,6 +631,88 @@
       "confirm": "ألغِ الرحلة",
       "warning": "ده هيرجّع فلوس {refunds, plural, zero {# حجز} one {حجز واحد} two {حجزين} few {# حجوزات} many {# حجز} other {# حجز}} ويفكّ {releases, plural, zero {# كمان} one {واحد كمان} two {اتنين كمان} few {# كمان} many {# كمان} other {# كمان}}. ومش هينفع يترجع من هنا.",
       "reasonHint": "بيتسجّل باسمك، وبيوصل للمركز ولكل اللي حاجزين."
+    },
+    "more": {
+      "subtitle": "باقي الكونسول.",
+      "expiry": "كل اللي بينتهي، في كل المراكز",
+      "catalog": "التصنيفات والخصائص القابلة للمقارنة ومواقع الغوص",
+      "bookings": "الرحلات وكشوف الركاب وسلسلة الإلغاء",
+      "trust": "الحوادث والنزاعات ومراجعة التقييمات",
+      "platform": "سجل التدقيق والمزايا وتغطية الترجمة"
+    },
+    "vendor": {
+      "noArea": "المنطقة مش مسجلة",
+      "noIssuer": "جهة الإصدار مش مسجلة",
+      "noJobTitle": "الوظيفة مش مسجلة",
+      "noLegalName": "مش مسجل",
+      "noExpiry": "مالهاش تاريخ انتهاء",
+      "noPapers": "مفيش أوراق محفوظة.",
+      "noStaff": "مفيش حد في الفريق لسه.",
+      "blockedTitle": "{count, plural, zero {النشر مش متوقف} one {النشر متوقف بسبب ورقة خلصت} two {النشر متوقف بسبب ورقتين خلصوا} few {النشر متوقف بسبب # أوراق خلصوا} many {النشر متوقف بسبب # ورقة خلصوا} other {النشر متوقف بسبب # ورقة خلصوا}}",
+      "payOut": "تحويل مستحقات",
+      "suspend": "إيقاف",
+      "departuresToday": "رحلات النهارده",
+      "services": "خدمات منشورة",
+      "ofTotal": "من {total}",
+      "incidents": "حوادث مفتوحة",
+      "staff": "الفريق",
+      "rating": "التقييم",
+      "reviews": "{count, plural, zero {مفيش تقييمات} one {تقييم واحد} two {تقييمين} few {# تقييمات} many {# تقييم} other {# تقييم}}",
+      "owed": "المستحق",
+      "papers": "الأوراق",
+      "paperDetail": "تفاصيل الأوراق",
+      "team": "الفريق",
+      "record": "السجل",
+      "legalName": "الاسم القانوني",
+      "joined": "على المنصة من",
+      "payoutPeriod": "الفترة لحد {date}",
+      "staffClear": "سارية",
+      "staffInactive": "مش على الورديات",
+      "staffExpiring": "{count, plural, zero {مفيش} one {واحدة بتخلص} two {اتنين بيخلصوا} few {# بيخلصوا} many {# بتخلص} other {# بتخلص}}",
+      "daysLeft": "{count, plural, zero {بتخلص النهارده} one {يوم} two {يومين} few {# أيام} many {# يوم} other {# يوم}}",
+      "expiredDays": "{count, plural, zero {خلصت النهارده} one {خلصت من يوم} two {خلصت من يومين} few {خلصت من # أيام} many {خلصت من # يوم} other {خلصت من # يوم}}"
+    },
+    "people": {
+      "subtitle": "كل حد عنده حساب — مسافرين وموظفين مراكز وأدمن المنصة.",
+      "roster": "الحسابات",
+      "unnamed": "مفيش اسم محفوظ",
+      "noContact": "مفيش بيانات تواصل",
+      "none": "محدش سجّل لسه.",
+      "suspended": "موقوف",
+      "clearance": "الموافقة الطبية ناقصة",
+      "clear": "تمام",
+      "cardsPending": "{count, plural, zero {مفيش كروت} one {كارت محتاج مراجعة} two {كارتين محتاجين مراجعة} few {# كروت محتاجين مراجعة} many {# كارت محتاجين مراجعة} other {# كارت محتاجين مراجعة}}",
+      "total": "الحسابات",
+      "clearanceShort": "موافقة ناقصة",
+      "cardsShort": "كروت للمراجعة",
+      "suspendedShort": "موقوفين"
+    },
+    "person": {
+      "noCountry": "البلد مش مسجلة",
+      "joined": "انضم {date}",
+      "noCardNumber": "مفيش رقم كارت",
+      "metres": "{depth} م",
+      "suspendedTitle": "الحساب ده موقوف",
+      "suspendedDetail": "مش هيقدر يدخل ولا يحجز لحد ما الإيقاف يترفع.",
+      "clearanceTitle": "مينفعش يغطس من غير موافقة دكتور",
+      "clearanceDetail": "{count, plural, zero {مفيش إقرارات محتاجة موافقة.} one {في إقرار في الاستمارة الطبية محتاج موافقة دكتور، ومفيش ورقة محفوظة.} two {في إقرارين محتاجين موافقة دكتور، ومفيش ورقة محفوظة.} few {في # إقرارات محتاجين موافقة دكتور، ومفيش ورقة محفوظة.} many {في # إقرار محتاجين موافقة دكتور، ومفيش ورقة محفوظة.} other {في # إقرار محتاجين موافقة دكتور، ومفيش ورقة محفوظة.}}",
+      "refund": "استرداد",
+      "endSessions": "{count, plural, zero {مفيش جلسات} one {إنهاء جلسة} two {إنهاء جلستين} few {إنهاء # جلسات} many {إنهاء # جلسة} other {إنهاء # جلسة}}",
+      "suspend": "إيقاف",
+      "account": "الحساب",
+      "contact": "التواصل",
+      "readsIn": "بيقرا التطبيق بـ",
+      "guest": "ضيف — محصلش تسجيل",
+      "paid": "المدفوع لحد دلوقتي",
+      "refunded": "المسترد",
+      "sessions": "داخل من",
+      "emergency": "اتصال الطوارئ",
+      "noEmergency": "مفيش",
+      "emergencyOnFile": "{count, plural, zero {مفيش} one {واحد محفوظ} two {اتنين محفوظين} few {# محفوظين} many {# محفوظ} other {# محفوظ}}",
+      "certifications": "الشهادات",
+      "noCards": "مفيش شهادات محفوظة.",
+      "bookings": "الحجوزات",
+      "noBookings": "مفيش حجوزات لسه."
     }
   },
   "vendor": {
@@ -896,5 +1000,20 @@
     "rasAbuGalum": "رأس أبو جالوم",
     "theIslands": "الجزر",
     "ummSid": "أم سيد"
+  },
+  "neighborhood": {
+    "assalah": "العسلة",
+    "masbat": "المسبط",
+    "mashraba": "المشربة",
+    "eelGarden": "جنينة الثعابين",
+    "lighthouse": "المنارة",
+    "blueBeach": "البلو بيتش"
+  },
+  "role": {
+    "guest": "ضيف",
+    "traveler": "مسافر",
+    "vendorOwner": "صاحب مركز",
+    "vendorStaff": "مرشد",
+    "admin": "أدمن المنصة"
   }
 }

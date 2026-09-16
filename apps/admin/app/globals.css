@@ -8,10 +8,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * The console is a `c-*` surface from the document down. Setting it here
+ * rather than on a wrapper means the ground behind an overscroll, a bottom
+ * sheet or the area under the tab bar is the console's own, not cream-50
+ * showing through from the traveller palette.
+ */
 html,
 body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  background-color: var(--color-c-bg);
+  color: var(--color-c-text);
+  font-family: var(--font-console);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Arabic swaps the face, not the layout. Plex Sans Arabic is the primary
+ * Arabic face here rather than a fallback — half this console's real users
+ * work in Arabic — and the +20% line-height is the type scale's own rule for
+ * Arabic body, applied once at the root instead of per component.
+ */
+[lang='ar'],
+[lang='ar-EG'] {
+  font-family: var(--font-consoleArabic);
+  line-height: 1.2;
 }
 
 /*
@@ -25,12 +45,16 @@ body {
   /*
    * PROPOSED, not yet tokens. The design system's `grid` section describes the
    * 390px phone reference only — it has never specified a desktop grid. These
-   * two are the admin console's working values and belong in tokens.json once
-   * the board ratifies them; they are declared here, once, rather than spread
+   * two are the console's working values and belong in tokens.json once the
+   * board ratifies them; they are declared here, once, rather than spread
    * through components as magic numbers.
+   *
+   * The rail is narrower than the 248px the old shell used, because it is now
+   * an enhancement above `lg` rather than the only navigation — below that
+   * breakpoint there is no rail at all and the tab bar takes over.
    */
-  --admin-rail: 248px;
-  --admin-content-max: 1120px;
+  --console-rail: 224px;
+  --console-content-max: 1180px;
 }
 
 [dir='rtl'] {

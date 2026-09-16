@@ -42,7 +42,14 @@ export type DataProblem =
   | { kind: 'unreachable'; detail: string }
   | { kind: 'noDatabase'; detail: string }
   | { kind: 'forbidden'; detail: string }
-  | { kind: 'unauthorized'; detail: string };
+  | { kind: 'unauthorized'; detail: string }
+  /**
+   * The row is not there. Only a detail route can produce this — a list
+   * cannot — and it must not be classified as `unreachable`, which would
+   * tell an admin the API is down when in fact the id in the URL is wrong.
+   * A detail page turns this into a 404 rather than an error panel.
+   */
+  | { kind: 'notFound'; detail: string };
 
 /**
  * Runs a query and returns either its rows or a reason there are none.
@@ -69,6 +76,7 @@ function classify(error: unknown): DataProblem {
     }
     if (code === 'FORBIDDEN') return { kind: 'forbidden', detail: error.message };
     if (code === 'UNAUTHORIZED') return { kind: 'unauthorized', detail: error.message };
+    if (code === 'NOT_FOUND') return { kind: 'notFound', detail: error.message };
   }
   return {
     kind: 'unreachable',

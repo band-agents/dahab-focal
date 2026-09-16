@@ -157,7 +157,9 @@
       "bookings": "Bookings",
       "money": "Money",
       "trust": "Safety & trust",
-      "platform": "Platform"
+      "platform": "Platform",
+      "people": "People",
+      "more": "More"
     },
     "today": {
       "title": "Today",
@@ -174,7 +176,11 @@
       "weatherNote": "Wind cancels boats, and a cancellation cascades.",
       "noDepartures": "Nothing is going out today.",
       "seats": "{booked} of {total} seats",
-      "incidentsRecent": "Reported in the last seven days"
+      "incidentsRecent": "Reported in the last seven days",
+      "blockingTitle": "{count, plural, one {# operator cannot publish} other {# operators cannot publish}}",
+      "blockingDetail": "A document they are required to hold has expired.",
+      "takeRateShort": "at {rate}",
+      "payoutsCount": "{count, plural, one {across # operator} other {across # operators}}"
     },
     "expiry": {
       "title": "The expiry board",
@@ -200,13 +206,28 @@
       "seats": "Seats",
       "amount": "Amount",
       "severity": "Severity",
-      "site": "Site"
+      "site": "Site",
+      "reference": "Reference",
+      "issuer": "Issued by",
+      "number": "Number",
+      "staff": "Name",
+      "jobTitle": "Role",
+      "certsExpiring": "Ratings",
+      "person": "Traveller",
+      "contact": "Contact",
+      "country": "Country",
+      "joined": "Joined",
+      "bookings": "Bookings",
+      "certification": "Certification",
+      "maxDepth": "Max depth",
+      "role": "Role"
     },
     "action": {
       "review": "Review",
       "open": "Open",
       "verify": "Verify",
-      "viewAll": "View all"
+      "viewAll": "View all",
+      "back": "Back"
     },
     "metric": {
       "today": "Today",
@@ -553,7 +574,8 @@
       "unreachable": "The API did not answer, so this screen has nothing to show — not an empty result.",
       "noDatabase": "The API is running but has no database configured.",
       "forbidden": "This account does not hold the permission this screen needs.",
-      "unauthorized": "This console has no valid session."
+      "unauthorized": "This console has no valid session.",
+      "notFound": "There is no such record. The link may be out of date."
     },
     "event": {
       "bookingConfirmed": "Booking confirmed",
@@ -603,6 +625,88 @@
       "confirm": "Cancel the departure",
       "warning": "This refunds {refunds, plural, one {# booking} other {# bookings}} and releases {releases, plural, one {# more} other {# more}}. It cannot be undone from here.",
       "reasonHint": "Recorded against your name, and sent to the operator and everyone booked."
+    },
+    "more": {
+      "subtitle": "The rest of the console.",
+      "expiry": "Everything running out, across every operator",
+      "catalog": "Categories, comparable attributes, dive sites",
+      "bookings": "Departures, manifests and the cancellation cascade",
+      "trust": "Incidents, disputes and review moderation",
+      "platform": "Audit log, feature flags and translation coverage"
+    },
+    "vendor": {
+      "noArea": "Area not recorded",
+      "noIssuer": "Issuer not recorded",
+      "noJobTitle": "No role recorded",
+      "noLegalName": "Not recorded",
+      "noExpiry": "Does not expire",
+      "noPapers": "No documents on file.",
+      "noStaff": "Nobody on the team yet.",
+      "blockedTitle": "{count, plural, one {Publishing is blocked by an expired document} other {Publishing is blocked by # expired documents}}",
+      "payOut": "Pay out",
+      "suspend": "Suspend",
+      "departuresToday": "Departures today",
+      "services": "Published services",
+      "ofTotal": "of {total}",
+      "incidents": "Open incidents",
+      "staff": "Team",
+      "rating": "Rating",
+      "reviews": "{count, plural, =0 {no reviews} one {# review} other {# reviews}}",
+      "owed": "Owed",
+      "papers": "Papers",
+      "paperDetail": "Papers in detail",
+      "team": "Team",
+      "record": "Record",
+      "legalName": "Legal name",
+      "joined": "On the platform since",
+      "payoutPeriod": "period to {date}",
+      "staffClear": "In date",
+      "staffInactive": "Not on shift",
+      "staffExpiring": "{count, plural, one {# expiring} other {# expiring}}",
+      "daysLeft": "{count, plural, =0 {expires today} one {# day} other {# days}}",
+      "expiredDays": "{count, plural, one {expired # day ago} other {expired # days ago}}"
+    },
+    "people": {
+      "subtitle": "Everyone with an account — travellers, centre staff and platform admins.",
+      "roster": "Accounts",
+      "unnamed": "No name on file",
+      "noContact": "No contact details",
+      "none": "Nobody has signed up yet.",
+      "suspended": "Suspended",
+      "clearance": "Clearance missing",
+      "clear": "Clear",
+      "cardsPending": "{count, plural, one {# card to check} other {# cards to check}}",
+      "total": "Accounts",
+      "clearanceShort": "Clearance missing",
+      "cardsShort": "Cards to check",
+      "suspendedShort": "Suspended"
+    },
+    "person": {
+      "noCountry": "Country not recorded",
+      "joined": "joined {date}",
+      "noCardNumber": "No card number",
+      "metres": "{depth} m",
+      "suspendedTitle": "This account is suspended",
+      "suspendedDetail": "They cannot sign in or book until it is lifted.",
+      "clearanceTitle": "Cannot dive without a doctor’s clearance",
+      "clearanceDetail": "{count, plural, one {# declaration on the medical form requires sign-off, and none is on file.} other {# declarations on the medical form require sign-off, and none is on file.}}",
+      "refund": "Refund",
+      "endSessions": "{count, plural, =0 {No sessions} one {End # session} other {End # sessions}}",
+      "suspend": "Suspend",
+      "account": "Account",
+      "contact": "Contact",
+      "readsIn": "Reads the app in",
+      "guest": "Guest — never claimed",
+      "paid": "Paid to date",
+      "refunded": "Refunded",
+      "sessions": "Signed in on",
+      "emergency": "Emergency contact",
+      "noEmergency": "None on file",
+      "emergencyOnFile": "{count, plural, one {# on file} other {# on file}}",
+      "certifications": "Certifications",
+      "noCards": "No certifications on file.",
+      "bookings": "Bookings",
+      "noBookings": "Nothing booked yet."
     }
   },
   "vendor": {
@@ -890,5 +994,20 @@
     "rasAbuGalum": "Ras Abu Galum",
     "theIslands": "The Islands",
     "ummSid": "Umm Sid"
+  },
+  "neighborhood": {
+    "assalah": "Assalah",
+    "masbat": "Masbat",
+    "mashraba": "Mashraba",
+    "eelGarden": "Eel Garden",
+    "lighthouse": "Lighthouse",
+    "blueBeach": "Blue Beach"
+  },
+  "role": {
+    "guest": "Guest",
+    "traveler": "Traveller",
+    "vendorOwner": "Centre owner",
+    "vendorStaff": "Guide",
+    "admin": "Platform admin"
   }
 }

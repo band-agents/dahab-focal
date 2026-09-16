@@ -1,16 +1,20 @@
-import Link from 'next/link';
-
 import { formatCurrency, formatDate, formatNumber, money } from '@dahab/i18n/server';
-import { DataTable, Illo, Mark, Panel, StatusPill } from '@dahab/ui-web';
-import type { Column } from '@dahab/ui-web';
 
-import { CategoryGlyph } from '@/components/CategoryGlyph';
-import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
+import { ConsolePage, Stack, resolveLocale } from '@/components/ConsoleShell';
+import {
+  Banner,
+  Panel,
+  Pill,
+  RecordList,
+  Stat,
+  StatRow,
+  type RecordColumn,
+} from '@/components/console';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
 import { api, load } from '@/lib/api';
 import { bandFor } from '@/lib/expiry';
 import { translator } from '@/lib/i18n';
-import { sectionHref } from '@/lib/nav';
+import { path, sectionHref } from '@/lib/nav';
 
 /**
  * A01 · Today.
@@ -18,6 +22,14 @@ import { sectionHref } from '@/lib/nav';
  * The one screen somebody opens before the boats go out, so every number on
  * it is counted across the whole platform rather than off the rows that
  * happen to be below it, and every panel fails on its own terms.
+ *
+ * Every figure here is a door. That is the change: the console used to state
+ * seven numbers and leave the reader to work out which of eight sections each
+ * one lived in, which is what made it read as a report rather than a place to
+ * work. "3 expiring" now opens the expiry board, and a document in the panel
+ * below opens the operator it belongs to — not a filtered list of documents,
+ * the operator, because that is where someone can actually do something about
+ * it.
  *
  * The conditions strip is deliberately absent. There is no weather provider
  * wired up, and a plausible wind speed on the screen that decides whether a
@@ -53,63 +65,26 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
       )
     : [];
 
-  const departureColumns: readonly Column<Departure>[] = [
-    {
-      key: 'when',
-      header: t('admin.col.when'),
-      cell: (row) => (
-        <span className="flex items-center gap-3">
-          <CategoryGlyph slug={row.categorySlug} />
-          <span className="font-display text-h3">
-            {formatDate(new Date(row.startsAt), context, 'time')}
-          </span>
-        </span>
-      ),
-      width: '10rem',
-    },
-    {
-      key: 'service',
-      header: t('admin.col.service'),
-      cell: (row) => (
-        <span className="block">
-          <span className="block text-body text-text">{row.serviceTitle}</span>
-          <span className="block text-small text-text-muted">{row.vendorName}</span>
-        </span>
-      ),
-    },
-    {
-      key: 'site',
-      header: t('admin.col.site'),
-      // The sites the trip visits, in the order it visits them. A dry service
-      // has none, and an em dash is the honest answer rather than a blank.
-      cell: (row) =>
-        row.siteNameKeys.length === 0
-          ? '—'
-          : row.siteNameKeys.map((key) => t(key)).join(' · '),
-    },
-    {
-      key: 'seats',
-      header: t('admin.col.seats'),
-      numeric: true,
-      cell: (row) => (
-        <span className={row.booked >= row.capacity ? 'text-danger-text' : undefined}>
-          {formatNumber(row.booked, context)}/{formatNumber(row.capacity, context)}
-        </span>
-      ),
-      width: '7rem',
-    },
-  ];
+  const blocking = overview.ok ? overview.data.blockingExpiries : 0;
 
-  const expiryColumns: readonly Column<ExpiringDocument>[] = [
-    { key: 'vendor', header: t('admin.col.vendor'), cell: (row) => row.vendorName, width: '14rem' },
+  const expiryColumns: readonly RecordColumn<ExpiringDocument>[] = [
     {
       key: 'document',
       header: t('admin.col.document'),
+      role: 'primary',
       cell: (row) => t(`admin.docType.${row.type}`),
+    },
+    {
+      key: 'vendor',
+      header: t('admin.col.vendor'),
+      role: 'secondary',
+      cell: (row) => row.vendorName,
+      width: '14rem',
     },
     {
       key: 'expires',
       header: t('admin.col.expires'),
+      role: 'column',
       cell: (row) =>
         row.expiresOn === null
           ? '—'
@@ -119,55 +94,101 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
     {
       key: 'status',
       header: t('admin.col.status'),
-      width: '15rem',
+      role: 'end',
+      width: '13rem',
       cell: (row) => {
         const band = bandFor(row.expiresOn, now);
         return band === 'expired' ? (
-          <StatusPill tone="danger" mark="sos">
+          <Pill tone="danger" icon="ban">
             {t('admin.expiry.expired')}
-          </StatusPill>
+          </Pill>
         ) : row.blocksPublishing ? (
-          <StatusPill tone="warning" mark="firstAid">
+          <Pill tone="warning" icon="alert">
             {t('admin.expiry.blocks')}
-          </StatusPill>
+          </Pill>
         ) : (
-          <StatusPill tone="neutral" mark="pass">
+          <Pill tone="neutral" icon="clock">
             {t(`admin.expiry.${band}`)}
-          </StatusPill>
+          </Pill>
         );
       },
     },
   ];
 
-  const incidentColumns: readonly Column<Incident>[] = [
+  const departureColumns: readonly RecordColumn<Departure>[] = [
     {
-      key: 'kind',
+      key: 'service',
       header: t('admin.col.service'),
-      cell: (row) => (
-        <span className="block">
-          <span className="block text-body text-text">{t(`admin.incidentKind.${row.kind}`)}</span>
-          <span className="block font-mono text-caption text-text-muted">{row.reference}</span>
-        </span>
-      ),
+      role: 'primary',
+      cell: (row) => row.serviceTitle,
     },
-    { key: 'vendor', header: t('admin.col.vendor'), cell: (row) => row.vendorName, width: '14rem' },
+    {
+      key: 'when',
+      header: t('admin.col.when'),
+      role: 'secondary',
+      cell: (row) =>
+        `${formatDate(new Date(row.startsAt), context, 'time')} · ${row.vendorName}`,
+      width: '13rem',
+    },
     {
       key: 'site',
       header: t('admin.col.site'),
-      cell: (row) => (row.siteSlug === null ? '—' : t(siteNameKey(row.siteSlug))),
-      width: '12rem',
+      role: 'column',
+      // The sites the trip visits, in the order it visits them. A dry service
+      // has none, and an em dash is the honest answer rather than a blank.
+      cell: (row) =>
+        row.siteNameKeys.length === 0 ? '—' : row.siteNameKeys.map((key) => t(key)).join(' · '),
+    },
+    {
+      key: 'seats',
+      header: t('admin.col.seats'),
+      role: 'end',
+      numeric: true,
+      cell: (row) => (
+        <span className={row.booked >= row.capacity ? 'text-c-bad' : undefined}>
+          {formatNumber(row.booked, context)}/{formatNumber(row.capacity, context)}
+        </span>
+      ),
+      width: '7rem',
+    },
+  ];
+
+  const incidentColumns: readonly RecordColumn<Incident>[] = [
+    {
+      key: 'kind',
+      header: t('admin.col.service'),
+      role: 'primary',
+      cell: (row) => t(`admin.incidentKind.${row.kind}`),
+    },
+    {
+      key: 'where',
+      header: t('admin.col.vendor'),
+      role: 'secondary',
+      cell: (row) =>
+        row.siteSlug === null
+          ? row.vendorName
+          : `${row.vendorName} · ${t(siteNameKey(row.siteSlug))}`,
+      width: '18rem',
+    },
+    {
+      key: 'reference',
+      header: t('admin.col.reference'),
+      role: 'column',
+      cell: (row) => row.reference,
+      width: '10rem',
     },
     {
       key: 'severity',
       header: t('admin.col.severity'),
+      role: 'end',
       width: '11rem',
       cell: (row) => (
-        <StatusPill
+        <Pill
           tone={row.severity === 'critical' || row.severity === 'serious' ? 'danger' : 'warning'}
-          mark={row.severity === 'nearMiss' ? 'eco' : 'firstAid'}
+          icon={row.severity === 'nearMiss' ? 'alert' : 'shield'}
         >
           {t(`admin.severity.${row.severity}`)}
-        </StatusPill>
+        </Pill>
       ),
     },
   ];
@@ -178,101 +199,106 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
       current="today"
       title={t('admin.today.title')}
       subtitle={t('admin.today.subtitle')}
-      headerEnd={
-        // No weather provider is connected, so the strip says that rather
-        // than showing a reading nobody measured.
-        <span className="flex items-center gap-3 rounded-pill bg-info-surface ps-4 pe-5 py-2">
-          <Mark name="offline" size={20} noFlip />
-          <span className="flex flex-col">
-            <span className="text-caption text-text-muted">{t('admin.today.weather')}</span>
-            <span className="text-small text-text">{t('admin.cond.noSource')}</span>
-          </span>
-        </span>
-      }
+      {...(overview.ok
+        ? { badges: { vendors: overview.data.needsAction, expiry: overview.data.expiringSoon } }
+        : {})}
     >
-      <div className="flex flex-col gap-8">
+      <Stack>
+        {/*
+          One banner, and only for state that is already costing somebody
+          something. A blocking expiry means an operator cannot publish right
+          now, which is different in kind from the counter above it.
+        */}
+        {blocking === 0 ? null : (
+          <Banner
+            tone="danger"
+            icon="ban"
+            title={t('admin.today.blockingTitle', { count: blocking })}
+            detail={t('admin.today.blockingDetail')}
+            href={sectionHref(locale, 'expiry')}
+            actionLabel={t('admin.action.viewAll')}
+          />
+        )}
+
         {!overview.ok ? (
           <DataProblemNotice problem={overview.problem} t={t} title={t('admin.today.title')} />
         ) : (
-          <section aria-label={t('admin.today.title')} className="grid grid-cols-4 gap-4">
-            <Kpi
+          <StatRow>
+            <Stat
               label={t('admin.today.departures')}
               value={formatNumber(overview.data.departuresToday, context)}
               note={t('admin.today.seats', {
                 booked: formatNumber(overview.data.seatsBookedToday, context),
                 total: formatNumber(overview.data.seatsCapacityToday, context),
               })}
-              mark="sail"
+              href={sectionHref(locale, 'bookings')}
             />
-            <Kpi
+            <Stat
               label={t('admin.today.needsAction')}
               value={formatNumber(overview.data.needsAction, context)}
-              mark="chat"
+              href={sectionHref(locale, 'vendors')}
+              {...(overview.data.needsAction > 0 ? { tone: 'warning' as const } : {})}
             />
-            <Kpi
+            <Stat
               label={t('admin.today.incidents')}
               value={formatNumber(overview.data.incidentsOpen, context)}
-              mark="firstAid"
+              href={sectionHref(locale, 'trust')}
+              {...(overview.data.incidentsOpen > 0 ? { tone: 'danger' as const } : {})}
             />
-            <Kpi
+            <Stat
               label={t('admin.today.expiring')}
               value={formatNumber(overview.data.expiringSoon, context)}
-              mark="tank"
-              tone={overview.data.blockingExpiries > 0 ? 'danger' : 'neutral'}
+              href={sectionHref(locale, 'expiry')}
+              {...(overview.data.blockingExpiries > 0 ? { tone: 'danger' as const } : {})}
             />
-            <Kpi
+            <Stat
               label={t('admin.today.revenue')}
               value={formatCurrency(
                 money(overview.data.grossMinor, overview.data.currency),
                 context,
               )}
-              mark="star"
+              note={t('admin.today.takeRateShort', {
+                rate: formatNumber(
+                  overview.data.takeRateBasisPoints / BASIS_POINTS,
+                  context,
+                  { style: 'percent', maximumFractionDigits: 1 },
+                ),
+              })}
+              href={sectionHref(locale, 'money')}
               wide
             />
-            <Kpi
-              label={t('admin.today.takeRate')}
-              value={formatNumber(overview.data.takeRateBasisPoints / BASIS_POINTS, context, {
-                style: 'percent',
-                maximumFractionDigits: 1,
-              })}
-              mark="compass"
-            />
-            <Kpi
+            <Stat
               label={t('admin.today.payouts')}
               value={formatCurrency(
                 money(overview.data.payoutsDueMinor, overview.data.currency),
                 context,
               )}
-              note={formatNumber(overview.data.payoutsDueCount, context)}
-              mark="shell"
+              note={t('admin.today.payoutsCount', { count: overview.data.payoutsDueCount })}
+              href={sectionHref(locale, 'money')}
+              wide
             />
-          </section>
+          </StatRow>
         )}
 
         {!expiring.ok ? (
           <DataProblemNotice problem={expiring.problem} t={t} title={t('admin.expiry.title')} />
         ) : (
           <Panel
-            eyebrow={t('admin.expiry.count', { count: expiring.data.length })}
             title={t('admin.expiry.title')}
-            mark="firstAid"
+            figure={formatNumber(expiring.data.length, context)}
+            action={{ label: t('admin.action.viewAll'), href: sectionHref(locale, 'expiry') }}
             flush
-            action={
-              <Link
-                href={sectionHref(locale, 'expiry')}
-                className="rounded-pill px-4 py-2 text-small text-text-link underline-offset-4 hover:underline"
-              >
-                {t('admin.action.viewAll')}
-              </Link>
-            }
           >
-            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.expiry.subtitle')}</p>
-            <DataTable
+            <RecordList
               columns={expiryColumns}
               rows={expiring.data}
               rowKey={(row) => row.id}
+              // The operator, not a document detail: a certificate that has
+              // run out is dealt with on the operator's page, beside the
+              // button that suspends them and the papers that are still good.
+              href={(row) => path(locale, `vendors/${row.vendorId}`)}
               caption={t('admin.expiry.title')}
-              empty={<p className="text-body text-text-muted">{t('admin.expiryPage.none')}</p>}
+              empty={<p className="font-console text-cBody text-c-muted">{t('admin.expiryPage.none')}</p>}
             />
           </Panel>
         )}
@@ -284,21 +310,23 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
             title={t('admin.departures.title')}
           />
         ) : (
-          <Panel title={t('admin.departures.title')} mark="sail" flush>
-            <p className="px-6 pb-3 text-small text-text-muted">{t('admin.departures.subtitle')}</p>
-            {departures.data.length === 0 ? (
-              <div className="flex items-center gap-4 px-6 pb-6">
-                <Illo name="dhow" size={56} />
-                <p className="text-body text-text-muted">{t('admin.today.noDepartures')}</p>
-              </div>
-            ) : (
-              <DataTable
-                columns={departureColumns}
-                rows={departures.data}
-                rowKey={(row) => row.id}
-                caption={t('admin.departures.title')}
-              />
-            )}
+          <Panel
+            title={t('admin.departures.title')}
+            figure={formatNumber(departures.data.length, context)}
+            action={{ label: t('admin.action.viewAll'), href: sectionHref(locale, 'bookings') }}
+            flush
+          >
+            <RecordList
+              columns={departureColumns}
+              rows={departures.data}
+              rowKey={(row) => row.id}
+              caption={t('admin.departures.title')}
+              empty={
+                <p className="font-console text-cBody text-c-muted">
+                  {t('admin.today.noDepartures')}
+                </p>
+              }
+            />
           </Panel>
         )}
 
@@ -306,39 +334,30 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
           <DataProblemNotice problem={incidents.problem} t={t} title={t('admin.today.incidents')} />
         ) : (
           <Panel
-            eyebrow={t('admin.today.incidentsRecent')}
-            // The record, not the counter above it: the KPI counts what is
-            // still open, this panel lists what was reported. Two different
-            // questions, and giving both the same title made the screen look
-            // as though it disagreed with itself.
+            // The record, not the counter above it: the stat counts what is
+            // still open, this panel lists what was reported this week. Two
+            // different questions, and giving both the same title made the
+            // screen look as though it disagreed with itself.
             title={t('admin.trust.incidents')}
-            mark="chamber"
+            figure={formatNumber(recentIncidents.length, context)}
+            action={{ label: t('admin.action.viewAll'), href: sectionHref(locale, 'trust') }}
             flush
-            action={
-              <Link
-                href={sectionHref(locale, 'trust')}
-                className="rounded-pill px-4 py-2 text-small text-text-link underline-offset-4 hover:underline"
-              >
-                {t('admin.action.viewAll')}
-              </Link>
-            }
           >
-            {recentIncidents.length === 0 ? (
-              <div className="flex items-center gap-4 px-6 pb-6 pt-2">
-                <Illo name="seaTurtle" size={56} />
-                <p className="text-body text-text-muted">{t('admin.trust.noIncidents')}</p>
-              </div>
-            ) : (
-              <DataTable
-                columns={incidentColumns}
-                rows={recentIncidents}
-                rowKey={(row) => row.id}
-                caption={t('admin.today.incidents')}
-              />
-            )}
+            <RecordList
+              columns={incidentColumns}
+              rows={recentIncidents}
+              rowKey={(row) => row.id}
+              href={(row) => path(locale, `vendors/${row.vendorId}`)}
+              caption={t('admin.today.incidents')}
+              empty={
+                <p className="font-console text-cBody text-c-muted">
+                  {t('admin.trust.noIncidents')}
+                </p>
+              }
+            />
           </Panel>
         )}
-      </div>
+      </Stack>
     </ConsolePage>
   );
 }
@@ -353,43 +372,4 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
 function siteNameKey(slug: string): string {
   const camel = slug.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase());
   return `diveSite.${camel}`;
-}
-
-function Kpi({
-  label,
-  value,
-  note,
-  mark,
-  tone = 'neutral',
-  wide = false,
-}: {
-  label: string;
-  value: string;
-  note?: string;
-  mark: Parameters<typeof Mark>[0]['name'];
-  tone?: 'neutral' | 'danger';
-  wide?: boolean;
-}) {
-  return (
-    <div
-      className={`flex flex-col gap-3 rounded-xl bg-surface px-5 py-4 shadow-sm ${
-        wide ? 'col-span-2' : ''
-      }`}
-    >
-      <span className="flex items-center gap-2 text-overline uppercase text-text-muted">
-        <Mark name={mark} size={20} />
-        {label}
-      </span>
-      <span
-        className={`font-display text-displayL tabular-nums ${
-          tone === 'danger' ? 'text-danger-text' : 'text-text'
-        }`}
-      >
-        {value}
-      </span>
-      {note === undefined ? null : (
-        <span className="text-small text-text-muted tabular-nums">{note}</span>
-      )}
-    </div>
-  );
 }
