@@ -47,6 +47,8 @@ export async function signIn(formData: FormData): Promise<void> {
   const password = String(formData.get('password') ?? '');
 
   let credentials: Credentials | null = null;
+  /** The API could not answer the question at all — distinct from "no". */
+  let unanswered = false;
 
   if (email !== '' && password !== '') {
     try {
@@ -56,14 +58,40 @@ export async function signIn(formData: FormData): Promise<void> {
         body: JSON.stringify({ email, password }),
         cache: 'no-store',
       });
-      const payload = (await response.json()) as { result?: { data?: Credentials } };
+      const payload = (await response.json()) as {
+        result?: { data?: Credentials };
+        error?: { data?: { code?: string } };
+      };
       credentials = payload.result?.data ?? null;
+
+      /*
+       * Only a refusal of the credentials themselves is "invalid". The API
+       * answers UNAUTHORIZED for a wrong password and BAD_REQUEST for a form
+       * it could not read; anything else — the database unreachable, a paused
+       * Postgres, a 500 — means the question was never asked.
+       *
+       * This used to read "no data" as "wrong password", so a paused database
+       * told a signed-out admin their correct password did not match, and the
+       * obvious next step was to reset a password that had never been wrong.
+       */
+      const code = payload.error?.data?.code;
+      unanswered =
+        credentials === null &&
+        code !== undefined &&
+        code !== 'UNAUTHORIZED' &&
+        code !== 'BAD_REQUEST';
     } catch {
-      // The API being unreachable is a different failure from a wrong
-      // password, and the page says so rather than blaming the operator for
-      // their own credentials.
-      redirectTo(locale, next, 'unreachable');
+      unanswered = true;
     }
+  }
+
+  // Outside the try on purpose: `redirect()` works by throwing, and a
+  // redirect raised inside that block would be caught by its own catch.
+  // The API being unreachable is a different failure from a wrong password,
+  // and the page says so rather than blaming the operator for their own
+  // credentials.
+  if (unanswered) {
+    redirectTo(locale, next, 'unreachable');
   }
 
   if (credentials === null) {
