@@ -1,0 +1,85 @@
+import { createTRPCClient, httpBatchLink, TRPCClientError } from '@trpc/client';
+import type { TRPCClient } from '@trpc/client';
+
+import type { AppRouter } from '@dahab/api/router';
+
+import { accessToken } from './session';
+
+/**
+ * The dashboard's client for the one API (adapted from the admin console's).
+ *
+ * The admin talks to `apps/api` over HTTP like every other surface will,
+ * rather than importing the router and calling it in-process. That keeps the
+ * boundary real: if a query is slow or a permission is wrong, the console
+ * finds out the same way the traveler app would.
+ *
+ * Calls run in server components and carry **the signed-in operator's own
+ * token**, read from the request's cookie. There is deliberately no service
+ * credential to fall back on: a long-lived admin token in an environment
+ * variable is the same "anyone who reaches this is in" problem the sign-in
+ * exists to close, only harder to notice and impossible to revoke per person.
+ * A call with no session is a 401, which is the truthful answer.
+ */
+
+export const API_URL = process.env['DAHAB_API_URL'] ?? 'http://127.0.0.1:4000';
+
+export const api: TRPCClient<AppRouter> = createTRPCClient<AppRouter>({
+  links: [
+    httpBatchLink({
+      // The standalone adapter in apps/api serves procedures at the root, so
+      // `health` is `/health` and stays a usable uptime URL. No `/trpc` prefix.
+      url: API_URL,
+      headers: async () => {
+        const token = await accessToken();
+        return token === null ? {} : { authorization: `Bearer ${token}` };
+      },
+    }),
+  ],
+});
+
+/** Why a screen has no data, in terms a person can act on. */
+export type DataProblem =
+  | { kind: 'unreachable'; detail: string }
+  | { kind: 'noDatabase'; detail: string }
+  | { kind: 'forbidden'; detail: string }
+  | { kind: 'unauthorized'; detail: string }
+  /**
+   * The row is not there. Only a detail route can produce this — a list
+   * cannot — and it must not be classified as `unreachable`, which would
+   * tell an admin the API is down when in fact the id in the URL is wrong.
+   * A detail page turns this into a 404 rather than an error panel.
+   */
+  | { kind: 'notFound'; detail: string };
+
+/**
+ * Runs a query and returns either its rows or a reason there are none.
+ *
+ * A console that renders an empty table when the API is down is lying: "no
+ * operators are expiring" and "we could not ask" are different facts and have
+ * to look different. Everything that reads from the API goes through here.
+ */
+export async function load<T>(
+  query: () => Promise<T>,
+): Promise<{ ok: true; data: T } | { ok: false; problem: DataProblem }> {
+  try {
+    return { ok: true, data: await query() };
+  } catch (error) {
+    return { ok: false, problem: classify(error) };
+  }
+}
+
+function classify(error: unknown): DataProblem {
+  if (error instanceof TRPCClientError) {
+    const code = (error.data as { code?: string } | null)?.code;
+    if (code === 'PRECONDITION_FAILED') {
+      return { kind: 'noDatabase', detail: error.message };
+    }
+    if (code === 'FORBIDDEN') return { kind: 'forbidden', detail: error.message };
+    if (code === 'UNAUTHORIZED') return { kind: 'unauthorized', detail: error.message };
+    if (code === 'NOT_FOUND') return { kind: 'notFound', detail: error.message };
+  }
+  return {
+    kind: 'unreachable',
+    detail: error instanceof Error ? error.message : String(error),
+  };
+}

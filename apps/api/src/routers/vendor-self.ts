@@ -144,8 +144,27 @@ export const vendorSelfRouter = {
     .query(async ({ ctx }) => {
       const db = requireDatabase(ctx.db);
 
+      // Named columns, not the whole row: `vendors.location` is a PostGIS
+      // point, and the driver hands a geography back as hex WKB that the
+      // column's text parser cannot read. This screen has no use for it.
+      const v = schema.vendors;
       const [vendor] = await db
-        .select()
+        .select({
+          id: v.id,
+          displayName: v.displayName,
+          tagline: v.tagline,
+          about: v.about,
+          logoUrl: v.logoUrl,
+          coverUrl: v.coverUrl,
+          phone: v.phone,
+          whatsapp: v.whatsapp,
+          email: v.email,
+          website: v.website,
+          addressLine: v.addressLine,
+          neighborhood: v.neighborhood,
+          status: v.status,
+          verificationStatus: v.verificationStatus,
+        })
         .from(schema.vendors)
         .where(eq(schema.vendors.id, ctx.vendorId))
         .limit(1);

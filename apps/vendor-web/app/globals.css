@@ -1,0 +1,101 @@
+/* Self-hosted faces — IBM Plex is this dashboard's; one @font-face per script. */
+@import '@dahab/tokens/fonts.css';
+
+/* The token custom properties (light + dark), generated from tokens.json. */
+@import '@dahab/tokens/tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * The operator dashboard shares the admin console's Daylight colours — the
+ * `c-*` tokens — and not its density. The people using this run a dive centre,
+ * not a platform: bigger text, bigger targets, fewer things per screen. The
+ * palette says "same product"; the scale says "made for you".
+ */
+html,
+body {
+  background-color: var(--color-c-bg);
+  color: var(--color-c-text);
+  font-family: var(--font-console);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Arabic is the primary language here, not a translation. Plex Sans Arabic,
+ * and the type scale's own +20% line-height for Arabic body applied once at
+ * the root.
+ */
+[lang='ar'],
+[lang='ar-EG'] {
+  font-family: var(--font-consoleArabic);
+  line-height: 1.2;
+}
+
+:root {
+  --mark-flip: 1;
+  /*
+   * PROPOSED, not yet tokens — the design system has no desktop grid for the
+   * operator surface. Declared once here rather than spread through
+   * components; they belong in tokens.json once the board ratifies them.
+   */
+  --partner-rail: 248px;
+  --partner-content-max: 920px;
+}
+
+[dir='rtl'] {
+  --mark-flip: -1;
+}
+
+/*
+ * A screen arriving rises the last few pixels into place. Position only,
+ * never opacity: an entrance that starts invisible and is paused in a
+ * background tab is a blank screen. Nothing moves under reduced motion.
+ */
+@keyframes partner-rise {
+  from {
+    transform: translateY(6px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .partner-enter {
+    animation: partner-rise var(--duration-standard) var(--ease-silk);
+  }
+}
+
+/*
+ * The one-line result of a save floats above the tab bar, because the save
+ * button is usually at the bottom of a long form and the top of the page is
+ * out of sight. It stays readable for seven seconds, then fades and stops
+ * catching taps. Fading is not motion, so it happens under reduced motion
+ * too; only the rise is skipped. A paused animation (a background tab)
+ * leaves it showing, which is the safe way round.
+ */
+@keyframes partner-toast-out {
+  0%,
+  90% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.partner-toast {
+  animation: partner-toast-out 7.5s linear forwards;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .partner-toast {
+    animation:
+      partner-rise var(--duration-standard) var(--ease-silk),
+      partner-toast-out 7.5s linear forwards;
+  }
+}

@@ -65,6 +65,11 @@ export const geographyPoint = customType<{
     return `SRID=4326;POINT(${value.longitude} ${value.latitude})`;
   },
   fromDriver(value) {
+    // A plain column read comes back as hex EWKB, which is what Postgres
+    // sends for geography unless the query wraps it in ST_AsText. Selecting
+    // a whole row with this column in it used to throw here.
+    const wkb = pointFromHexEwkb(value);
+    if (wkb !== null) return wkb;
     const match = /POINT\s*\(\s*(-?[\d.]+)\s+(-?[\d.]+)\s*\)/i.exec(value);
     if (match === null) {
       throw new Error(`Could not read a point from PostGIS output: ${value}`);
@@ -72,6 +77,29 @@ export const geographyPoint = customType<{
     return { longitude: Number(match[1]), latitude: Number(match[2]) };
   },
 });
+
+/**
+ * Reads a point out of (E)WKB hex: a byte-order byte, a type word whose low
+ * bits are 1 for Point and whose 0x20000000 flag says an SRID follows, then X
+ * and Y as doubles. Null for anything that is not a 2D point in that form.
+ */
+export function pointFromHexEwkb(hex: string): { latitude: number; longitude: number } | null {
+  if (!/^[0-9a-fA-F]+$/.test(hex) || hex.length < 42) return null;
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let index = 0; index < bytes.length; index += 1) {
+    bytes[index] = Number.parseInt(hex.slice(index * 2, index * 2 + 2), 16);
+  }
+  const view = new DataView(bytes.buffer);
+  const little = view.getUint8(0) === 1;
+  const type = view.getUint32(1, little);
+  if ((type & 0xff) !== 1) return null;
+  const offset = (type & 0x20000000) !== 0 ? 9 : 5;
+  if (bytes.length < offset + 16) return null;
+  return {
+    longitude: view.getFloat64(offset, little),
+    latitude: view.getFloat64(offset + 8, little),
+  };
+}
 
 export const geographyPolygon = customType<{
   data: string;
