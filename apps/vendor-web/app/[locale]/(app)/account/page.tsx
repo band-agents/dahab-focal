@@ -4,24 +4,36 @@ import { Card } from '@/components/ui/Card';
 import { Field } from '@/components/ui/Field';
 import { Icon } from '@/components/ui/Icon';
 import { LocaleSwitch } from '@/components/ui/LocaleSwitch';
+import { PasswordField } from '@/components/ui/PasswordField';
 import { Uploader } from '@/components/ui/Uploader';
 import { getMe, getProfile } from '@/lib/data';
 import { translator } from '@/lib/i18n';
+import { MIN_PASSWORD_LENGTH } from '@/lib/password';
 import { Heading, Outcome, resolveLocale } from '@/lib/page';
 import { uploaderLabels } from '@/lib/uploader';
 
 import { signOut } from '../../sign-in/actions';
-import { saveMe } from '../actions';
+import { saveMe, setSignIn } from '../actions';
 
 /**
  * My account: the person, not the centre. Their own photo and name — what the
  * team sees beside a story they posted — how they sign in, the language, and
  * the way out.
+ *
+ * The sign-in card sets up an email and a password, or changes them. It asks
+ * for the current password only when there is one, and for the new one twice,
+ * because a typo in a password nobody can see is a locked-out owner.
  */
 
 const MESSAGES = {
   saved: 'partner.common.saved',
   emptyName: 'partner.account.emptyName',
+  passwordSaved: 'partner.account.passwordSaved',
+  badEmail: 'partner.account.badEmail',
+  shortPassword: 'partner.account.shortPassword',
+  notSame: 'partner.account.notSame',
+  wrongCurrent: 'partner.account.wrongCurrent',
+  emailTaken: 'partner.account.emailTaken',
   notAllowed: 'partner.common.notAllowed',
   unreachable: 'partner.common.unreachable',
   failed: 'partner.common.failed',
@@ -79,22 +91,65 @@ export default async function AccountPage({
         </form>
       </Card>
 
-      <Card title={t('partner.account.contact')} icon="key">
-        <ul className="flex flex-col gap-2 text-bodyL text-c-text">
+      <div id="sign-in" className="scroll-mt-20">
+        <Card title={t('partner.account.signInTitle')} icon="key">
+          <p className="mb-4 text-body text-c-muted">
+            {m.hasPassword ? t('partner.account.signInHas') : t('partner.account.signInNone')}
+          </p>
+          <form action={setSignIn} className="flex flex-col gap-5">
+            <input type="hidden" name="locale" value={locale} />
+            <Field
+              name="email"
+              type="email"
+              label={t('partner.account.email')}
+              value={m.email}
+              inputMode="email"
+              autoComplete="username"
+              ltr
+              required
+            />
+            {m.hasPassword ? (
+              <PasswordField
+                name="currentPassword"
+                label={t('partner.account.currentPassword')}
+                autoComplete="current-password"
+                showLabel={t('partner.signIn.show')}
+                hideLabel={t('partner.signIn.hide')}
+                required
+              />
+            ) : null}
+            <PasswordField
+              name="newPassword"
+              label={m.hasPassword ? t('partner.account.newPassword') : t('partner.account.password')}
+              hint={t('partner.account.passwordHint')}
+              autoComplete="new-password"
+              minLength={MIN_PASSWORD_LENGTH}
+              showLabel={t('partner.signIn.show')}
+              hideLabel={t('partner.signIn.hide')}
+              required
+            />
+            <PasswordField
+              name="repeatPassword"
+              label={t('partner.account.repeatPassword')}
+              autoComplete="new-password"
+              minLength={MIN_PASSWORD_LENGTH}
+              showLabel={t('partner.signIn.show')}
+              hideLabel={t('partner.signIn.hide')}
+              required
+            />
+            <Button type="submit" intent="primary" icon="key" block>
+              {m.hasPassword ? t('partner.account.changePassword') : t('partner.account.setPassword')}
+            </Button>
+          </form>
           {m.phone === null ? null : (
-            <li className="flex items-center gap-3">
-              <Icon name="phone" size={20} className="text-c-muted" />
-              <span dir="ltr">{m.phone}</span>
-            </li>
+            <p className="mt-4 flex items-center gap-2 border-t border-c-edge pt-4 text-body text-c-muted">
+              <Icon name="phone" size={18} />
+              {t('partner.account.phoneToo')}
+              <span dir="ltr" className="font-semibold text-c-text">{m.phone}</span>
+            </p>
           )}
-          {m.email === null ? null : (
-            <li className="flex items-center gap-3">
-              <Icon name="chat" size={20} className="text-c-muted" />
-              <span dir="ltr" className="truncate">{m.email}</span>
-            </li>
-          )}
-        </ul>
-      </Card>
+        </Card>
+      </div>
 
       <Card title={t('partner.account.language')} icon="globe">
         <LocaleSwitch current={locale} rest="account" />

@@ -6,15 +6,16 @@ import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { Icon } from '@/components/ui/Icon';
 import { LocaleSwitch } from '@/components/ui/LocaleSwitch';
+import { PasswordField } from '@/components/ui/PasswordField';
 import { translator } from '@/lib/i18n';
 import { resolveLocale } from '@/lib/page';
 
 import { changeNumber, passwordSignIn, sendCode, verifyCode } from './actions';
 
 /**
- * The door. A phone number, then the code that arrives on it — the way every
- * app on an operator's phone already signs them in. Email and a password are
- * there too, one tap away, for an owner who was set up that way.
+ * The door. An email and a password first: text messages are not wired up
+ * yet, so a code sent to a phone would never arrive. Signing in by phone is
+ * one tap away and becomes the easy door once they are.
  *
  * One question per screen. The code step does not show the number box again,
  * and the email form does not sit beside the phone one: two forms at once is
@@ -35,7 +36,7 @@ export default async function SignInPage({
   const query = await searchParams;
   const t = translator(locale);
 
-  const method = query.method === 'email' ? 'email' : 'phone';
+  const method = query.method === 'phone' ? 'phone' : 'email';
   const step = method === 'phone' && query.step === 'code' ? 'code' : 'number';
   const error = query.error !== undefined && ERRORS.has(query.error) ? query.error : null;
 
@@ -94,18 +95,26 @@ export default async function SignInPage({
               <form action={passwordSignIn} className="flex flex-col gap-4">
                 <input type="hidden" name="locale" value={locale} />
                 <Field name="email" type="email" label={t('partner.signIn.email')} autoComplete="email" inputMode="email" ltr required />
-                <Field name="password" type="password" label={t('partner.signIn.password')} autoComplete="current-password" ltr required />
+                <PasswordField
+                  name="password"
+                  label={t('partner.signIn.password')}
+                  autoComplete="current-password"
+                  showLabel={t('partner.signIn.show')}
+                  hideLabel={t('partner.signIn.hide')}
+                  required
+                />
                 <Button type="submit" intent="primary" icon="key" block>
                   {t('partner.signIn.verify')}
                 </Button>
               </form>
               <Link
-                href={`/${locale}/sign-in` as Route}
+                href={`/${locale}/sign-in?method=phone` as Route}
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md text-body font-semibold text-c-link hover:bg-c-raised"
               >
                 <Icon name="phone" size={18} />
                 {t('partner.signIn.usePhone')}
               </Link>
+              <p className="text-center text-small text-c-muted">{t('partner.signIn.forgot')}</p>
             </>
           ) : step === 'code' ? (
             <>
@@ -152,7 +161,7 @@ export default async function SignInPage({
                 </Button>
               </form>
               <Link
-                href={`/${locale}/sign-in?method=email` as Route}
+                href={`/${locale}/sign-in` as Route}
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md text-body font-semibold text-c-link hover:bg-c-raised"
               >
                 <Icon name="key" size={18} />

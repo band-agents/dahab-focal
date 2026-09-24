@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Confirm } from '@/components/ui/Confirm';
 import { Field } from '@/components/ui/Field';
+import { PasswordField } from '@/components/ui/PasswordField';
 import { Icon } from '@/components/ui/Icon';
 import { api, load } from '@/lib/api';
 import { getMe } from '@/lib/data';
 import { translator } from '@/lib/i18n';
+import { MIN_PASSWORD_LENGTH } from '@/lib/password';
 import { Heading, Outcome, resolveLocale } from '@/lib/page';
 
 import { addTeamMember, removeTeamMember } from '../actions';
@@ -16,14 +18,19 @@ import { addTeamMember, removeTeamMember } from '../actions';
 /**
  * My team: everybody who can open this account.
  *
- * A person is added by name and mobile number and nothing else — no email, no
- * password to invent and pass on by WhatsApp. They sign in with a code sent
- * to that number. Under every name it says, in a sentence, what they can do,
- * so the owner is never guessing what "staff" means.
+ * A person is added by name, an email and a first password the owner tells
+ * them — the way signing in works until text messages are wired up — and,
+ * optionally, a mobile number for when they are. Under every name it says,
+ * in a sentence, what they can do, so the owner is never guessing what
+ * "staff" means.
  */
 
 const MESSAGES = {
   added: 'partner.team.added',
+  addedExisting: 'partner.team.addedExisting',
+  needContact: 'partner.team.needContact',
+  badEmail: 'partner.account.badEmail',
+  shortPassword: 'partner.account.shortPassword',
   removed: 'partner.team.removed',
   already: 'partner.team.already',
   badPhone: 'partner.team.badPhone',
@@ -85,6 +92,12 @@ export default async function TeamPage({
                     {person.role === 'vendorOwner' ? t('partner.team.canOwner') : t('partner.team.canStaff')}
                   </p>
                   <p className="mt-1 flex flex-wrap items-center gap-x-3 text-small text-c-muted">
+                    {person.email === null || person.displayName === null ? null : (
+                      <span className="inline-flex min-w-0 items-center gap-1" dir="ltr">
+                        <Icon name="chat" size={14} />
+                        <span className="truncate">{person.email}</span>
+                      </span>
+                    )}
                     {person.phone === null ? null : (
                       <span className="inline-flex items-center gap-1" dir="ltr">
                         <Icon name="phone" size={14} />
@@ -118,24 +131,43 @@ export default async function TeamPage({
       </Card>
 
       {owner ? (
-        <div id="add" className="scroll-mt-20">
+        <div id="new-member" className="scroll-mt-20">
           <Card title={t('partner.team.add')} icon="plus">
             <form action={addTeamMember} className="flex flex-col gap-5">
               <input type="hidden" name="locale" value={locale} />
+              <Field name="displayName" label={t('partner.team.addName')} maxLength={80} autoComplete="off" required />
               <div className="grid gap-5 sm:grid-cols-2">
-                <Field name="displayName" label={t('partner.team.addName')} maxLength={80} autoComplete="off" required />
                 <Field
-                  name="phone"
-                  type="tel"
-                  label={t('partner.team.addPhone')}
-                  hint={t('partner.team.addPhoneHint')}
-                  inputMode="tel"
-                  placeholder="010 1234 5678"
+                  name="email"
+                  type="email"
+                  label={t('partner.team.addEmail')}
+                  hint={t('partner.team.addEmailHint')}
+                  inputMode="email"
                   autoComplete="off"
                   ltr
                   required
                 />
+                <PasswordField
+                  name="password"
+                  label={t('partner.team.addPassword')}
+                  hint={t('partner.team.addPasswordHint')}
+                  autoComplete="new-password"
+                  minLength={MIN_PASSWORD_LENGTH}
+                  showLabel={t('partner.signIn.show')}
+                  hideLabel={t('partner.signIn.hide')}
+                  required
+                />
               </div>
+              <Field
+                name="phone"
+                type="tel"
+                label={t('partner.team.addPhoneOptional')}
+                hint={t('partner.team.addPhoneHint')}
+                inputMode="tel"
+                placeholder="010 1234 5678"
+                autoComplete="off"
+                ltr
+              />
               <Notice tone="info" title={t('partner.team.addExplain')} />
               <Button type="submit" intent="primary" icon="plus" block>
                 {t('partner.team.addButton')}

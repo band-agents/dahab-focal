@@ -11,7 +11,8 @@ import { normalisePhone } from '@/lib/phone';
 import { accessToken, clearCredentials, storeCredentials } from '@/lib/session';
 
 /**
- * Signing in by phone: a number, then a code.
+ * Signing in: an email and a password (the default while text messages are
+ * not wired up), or by phone — a number, then a code.
  *
  * The number an operator types is the one they know — `010 0123 4567`, the
  * Egyptian way — so it is turned into the international form here rather than
@@ -62,11 +63,12 @@ async function call<T>(path: string, input: unknown): Promise<{ ok: true; data: 
 export async function sendCode(formData: FormData): Promise<void> {
   const locale = localeOf(formData);
   const phone = normalisePhone(String(formData.get('phone') ?? ''));
-  if (phone === null) to(locale, { error: 'badPhone' });
+  if (phone === null) to(locale, { method: 'phone', error: 'badPhone' });
 
   const result = await call('auth.phoneStart', { phone, locale });
   if (!result.ok) {
     to(locale, {
+      method: 'phone',
       error:
         result.code === 'TOO_MANY_REQUESTS' ? 'wait' : result.code === 'UNREACHABLE' ? 'unreachable' : 'failed',
     });
@@ -81,7 +83,7 @@ export async function sendCode(formData: FormData): Promise<void> {
     // The code itself lasts five minutes; ten gives room to fetch the phone.
     maxAge: 10 * 60,
   });
-  to(locale, { step: 'code' });
+  to(locale, { method: 'phone', step: 'code' });
 }
 
 /** Step two: the code that arrived. */
@@ -89,17 +91,18 @@ export async function verifyCode(formData: FormData): Promise<void> {
   const locale = localeOf(formData);
   const jar = await cookies();
   const phone = jar.get(PENDING_COOKIE)?.value;
-  if (phone === undefined) to(locale, { error: 'expired' });
+  if (phone === undefined) to(locale, { method: 'phone', error: 'expired' });
 
   // Accept the code with spaces or Arabic-Indic digits, as a phone may type it.
   const code = String(formData.get('code') ?? '')
     .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
     .replace(/\D/g, '');
-  if (code.length !== 6) to(locale, { step: 'code', error: 'badCode' });
+  if (code.length !== 6) to(locale, { method: 'phone', step: 'code', error: 'badCode' });
 
   const result = await call<Credentials>('auth.phoneVerify', { phone, code });
   if (!result.ok) {
     to(locale, {
+      method: 'phone',
       step: 'code',
       error: result.code === 'UNREACHABLE' ? 'unreachable' : result.code === 'FORBIDDEN' ? 'suspended' : 'badCode',
     });
@@ -114,7 +117,7 @@ export async function verifyCode(formData: FormData): Promise<void> {
 export async function changeNumber(formData: FormData): Promise<void> {
   const jar = await cookies();
   jar.delete(PENDING_COOKIE);
-  to(localeOf(formData), {});
+  to(localeOf(formData), { method: 'phone' });
 }
 
 /** The other door: an owner who was given an email and a password. */
@@ -122,7 +125,7 @@ export async function passwordSignIn(formData: FormData): Promise<void> {
   const locale = localeOf(formData);
   const email = String(formData.get('email') ?? '').trim();
   const password = String(formData.get('password') ?? '');
-  if (email === '' || password === '') to(locale, { method: 'email', error: 'badPassword' });
+  if (email === '' || password === '') to(locale, { error: 'badPassword' });
 
   const result = await call<Credentials>('auth.passwordSignIn', { email, password });
   if (!result.ok) {
@@ -130,7 +133,6 @@ export async function passwordSignIn(formData: FormData): Promise<void> {
     // means the question was never asked — the lesson the admin console
     // learned when a paused database told people their password was wrong.
     to(locale, {
-      method: 'email',
       error: result.code === 'UNAUTHORIZED' || result.code === 'BAD_REQUEST' ? 'badPassword' : 'unreachable',
     });
   }

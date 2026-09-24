@@ -1,10 +1,12 @@
 import { TRPCError } from '@trpc/server';
-import { and, count, desc, eq, gt, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gt, inArray, isNotNull, isNull, ne, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
+import { MIN_PASSWORD_LENGTH } from '@dahab/api-contract';
 import { schema } from '@dahab/db';
 import type { Database } from '@dahab/db';
 
+import { hashPassword, verifyPassword } from '../auth/password.ts';
 import { requireDatabase } from '../database.ts';
 import { requireVendorPermission } from '../trpc.ts';
 import type { Context } from '../context.ts';
@@ -329,6 +331,8 @@ export const vendorSelfRouter = {
         email: z.string().nullable(),
         phone: z.string().nullable(),
         isOwner: z.boolean(),
+        /** Whether email-and-password sign-in is set up for this person. */
+        hasPassword: z.boolean(),
       }),
     )
     .query(async ({ ctx }) => {
@@ -344,15 +348,18 @@ export const vendorSelfRouter = {
           phone: schema.users.phone,
           displayName: schema.userProfiles.displayName,
           avatarUrl: schema.userProfiles.avatarUrl,
+          passwordHash: schema.users.passwordHash,
         })
         .from(schema.users)
         .leftJoin(schema.userProfiles, eq(schema.userProfiles.userId, schema.users.id))
         .where(eq(schema.users.id, userId))
         .limit(1);
       if (row === undefined) throw new TRPCError({ code: 'NOT_FOUND', message: 'No such account.' });
+      const { passwordHash, ...rest } = row;
       return {
-        ...row,
+        ...rest,
         isOwner: ctx.session?.roles.includes('vendorOwner') === true,
+        hasPassword: passwordHash !== null,
       };
     }),
 
@@ -404,6 +411,98 @@ export const vendorSelfRouter = {
           .set({ ...values, updatedAt: ctx.now })
           .where(eq(schema.userProfiles.userId, userId));
       }
+      return { ok: true as const };
+    }),
+
+  /**
+   * Set up, or change, signing in with an email and a password.
+   *
+   * Anybody on the team, for themselves only. Changing an existing password
+   * asks for the current one: a phone left unlocked on the dive-shop counter
+   * is a signed-in session, and that must not be enough to take the account
+   * over. Setting the first password does not — the person already proved
+   * who they are to get this session.
+   *
+   * Every other session of theirs is ended, so a password changed because
+   * somebody else knew it actually locks that somebody out.
+   */
+  setSignIn: requireVendorPermission('vendor.readOwn')
+    .input(
+      z.object({
+        email: z.string().trim().toLowerCase().email().max(320),
+        newPassword: z.string().min(MIN_PASSWORD_LENGTH).max(512),
+        currentPassword: z.string().max(512).optional(),
+      }),
+    )
+    .output(okSchema)
+    .mutation(async ({ ctx, input }) => {
+      const db = requireDatabase(ctx.db);
+      const userId = ctx.session?.userId;
+      if (userId === null || userId === undefined) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Sign in again.' });
+      }
+
+      const [user] = await db
+        .select({ email: schema.users.email, passwordHash: schema.users.passwordHash })
+        .from(schema.users)
+        .where(eq(schema.users.id, userId))
+        .limit(1);
+      if (user === undefined) throw new TRPCError({ code: 'NOT_FOUND', message: 'No such account.' });
+
+      if (user.passwordHash !== null) {
+        const matched = await verifyPassword(input.currentPassword ?? '', user.passwordHash);
+        if (!matched) {
+          // Not UNAUTHORIZED: the session is fine, the answer was wrong.
+          throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'The current password is not right.' });
+        }
+      }
+
+      if (input.email !== user.email) {
+        const [taken] = await db
+          .select({ id: schema.users.id })
+          .from(schema.users)
+          .where(and(eq(schema.users.email, input.email), ne(schema.users.id, userId)))
+          .limit(1);
+        if (taken !== undefined) {
+          throw new TRPCError({ code: 'CONFLICT', message: 'That email is already used by another account.' });
+        }
+      }
+
+      const passwordHash = await hashPassword(input.newPassword);
+      await db.transaction(async (tx) => {
+        await tx
+          .update(schema.users)
+          .set({
+            email: input.email,
+            passwordHash,
+            passwordUpdatedAt: ctx.now,
+            failedSignInCount: 0,
+            lockedUntil: null,
+            updatedAt: ctx.now,
+          })
+          .where(eq(schema.users.id, userId));
+
+        const current = ctx.session?.id;
+        await tx
+          .update(schema.sessions)
+          .set({ revokedAt: ctx.now })
+          .where(
+            and(
+              eq(schema.sessions.userId, userId),
+              isNull(schema.sessions.revokedAt),
+              ...(current === undefined ? [] : [ne(schema.sessions.id, current)]),
+            ),
+          );
+
+        // What changed — never the password or its hash.
+        await audit(tx, ctx, {
+          entityTable: 'users',
+          entityId: userId,
+          action: user.passwordHash === null ? 'signIn.passwordSet' : 'signIn.passwordChanged',
+          before: { email: user.email },
+          after: { email: input.email },
+        });
+      });
       return { ok: true as const };
     }),
 
@@ -650,30 +749,69 @@ export const vendorSelfRouter = {
    */
   addTeamMember: requireVendorPermission('staff.manage')
     .input(
-      z.object({
-        phone: z
-          .string()
-          .trim()
-          .regex(/^\+[1-9]\d{6,18}$/, 'A phone number must start with + and the country code.'),
-        displayName: z.string().trim().min(1).max(80),
-      }),
+      z
+        .object({
+          displayName: z.string().trim().min(1).max(80),
+          phone: z
+            .string()
+            .trim()
+            .regex(/^\+[1-9]\d{6,18}$/, 'A phone number must start with + and the country code.')
+            .optional(),
+          email: z.string().trim().toLowerCase().email().max(320).optional(),
+          /**
+           * The first password, chosen by the owner and passed on in person.
+           * Used only when the account is new: an existing account keeps its
+           * own password, or adding somebody to a team would be a way to
+           * take their account over.
+           */
+          password: z.string().min(MIN_PASSWORD_LENGTH).max(512).optional(),
+        })
+        .refine((value) => value.phone !== undefined || value.email !== undefined, {
+          message: 'A phone number or an email is needed to sign in with.',
+        })
+        .refine((value) => value.email === undefined || value.password !== undefined, {
+          message: 'Someone added by email needs a first password.',
+          path: ['password'],
+        }),
     )
     .output(z.object({ userId: z.string().uuid(), created: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
       const db = requireDatabase(ctx.db);
+      // Hashed before the transaction: scrypt is slow on purpose, and a row
+      // lock should not wait on it.
+      const passwordHash = input.password === undefined ? null : await hashPassword(input.password);
 
       return db.transaction(async (tx) => {
-        let [account] = await tx
-          .select({ id: schema.users.id })
-          .from(schema.users)
-          .where(eq(schema.users.phone, input.phone))
-          .limit(1);
+        // The same person may already exist under either detail.
+        let account: { id: string } | undefined;
+        if (input.email !== undefined) {
+          [account] = await tx
+            .select({ id: schema.users.id })
+            .from(schema.users)
+            .where(eq(schema.users.email, input.email))
+            .limit(1);
+        }
+        if (account === undefined && input.phone !== undefined) {
+          [account] = await tx
+            .select({ id: schema.users.id })
+            .from(schema.users)
+            .where(eq(schema.users.phone, input.phone))
+            .limit(1);
+        }
         const created = account === undefined;
 
         if (account === undefined) {
           [account] = await tx
             .insert(schema.users)
-            .values({ phone: input.phone, isGuest: false, createdAt: ctx.now, updatedAt: ctx.now })
+            .values({
+              phone: input.phone ?? null,
+              email: input.email ?? null,
+              passwordHash,
+              passwordUpdatedAt: passwordHash === null ? null : ctx.now,
+              isGuest: false,
+              createdAt: ctx.now,
+              updatedAt: ctx.now,
+            })
             .returning({ id: schema.users.id });
           if (account === undefined) {
             throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'The account was not made.' });

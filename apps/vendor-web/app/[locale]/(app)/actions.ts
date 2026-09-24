@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation';
 import { isLocale } from '@dahab/i18n/server';
 
 import { api } from '@/lib/api';
+import { MIN_PASSWORD_LENGTH } from '@/lib/password';
 import { normalisePhone } from '@/lib/phone';
 
 /**
@@ -31,8 +32,15 @@ function text(form: FormData, key: string): string {
   return String(form.get(key) ?? '').trim();
 }
 
+/** A password exactly as typed — a space at either end is part of it. */
+function secret(form: FormData, key: string): string {
+  return String(form.get(key) ?? '');
+}
+
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 /** What went wrong, as a key the screen knows how to say. */
-type Failure = 'notAllowed' | 'unreachable' | 'failed' | 'conflict' | 'badInput' | 'signedOut';
+type Failure = 'notAllowed' | 'unreachable' | 'failed' | 'conflict' | 'badInput' | 'signedOut' | 'precondition';
 
 async function attempt(work: () => Promise<unknown>): Promise<Failure | null> {
   try {
@@ -45,7 +53,8 @@ async function attempt(work: () => Promise<unknown>): Promise<Failure | null> {
       if (code === 'UNAUTHORIZED') return 'signedOut';
       if (code === 'CONFLICT') return 'conflict';
       if (code === 'BAD_REQUEST') return 'badInput';
-      if (code === 'NOT_FOUND' || code === 'PRECONDITION_FAILED') return 'failed';
+      if (code === 'PRECONDITION_FAILED') return 'precondition';
+      if (code === 'NOT_FOUND') return 'failed';
       if (code === undefined) return 'unreachable';
       return 'failed';
     }
@@ -123,6 +132,46 @@ export async function saveMe(form: FormData): Promise<void> {
   back(locale, 'account', failure === null ? { done: 'saved' } : { error: failure });
 }
 
+/**
+ * Email and password for signing in. The current password is asked for only
+ * when one exists; the API checks it, never this file.
+ */
+export async function setSignIn(form: FormData): Promise<void> {
+  const locale = localeOf(form);
+  const email = text(form, 'email').toLowerCase();
+  const newPassword = secret(form, 'newPassword');
+  const repeat = secret(form, 'repeatPassword');
+  const current = secret(form, 'currentPassword');
+
+  if (!EMAIL.test(email)) back(locale, 'account', { error: 'badEmail' }, '#sign-in');
+  if (newPassword.length < MIN_PASSWORD_LENGTH) back(locale, 'account', { error: 'shortPassword' }, '#sign-in');
+  if (newPassword !== repeat) back(locale, 'account', { error: 'notSame' }, '#sign-in');
+
+  const failure = await attempt(() =>
+    api.vendor.setSignIn.mutate({
+      email,
+      newPassword,
+      ...(current === '' ? {} : { currentPassword: current }),
+    }),
+  );
+  if (failure === null) back(locale, 'account', { done: 'passwordSaved' }, '#sign-in');
+  back(
+    locale,
+    'account',
+    {
+      error:
+        failure === 'precondition'
+          ? 'wrongCurrent'
+          : failure === 'conflict'
+            ? 'emailTaken'
+            : failure === 'badInput'
+              ? 'badEmail'
+              : failure,
+    },
+    '#sign-in',
+  );
+}
+
 // ——— Stories ———————————————————————————————————————————————————————————
 
 export async function postStory(form: FormData): Promise<void> {
@@ -156,18 +205,37 @@ export async function deleteStory(form: FormData): Promise<void> {
 
 // ——— Team ——————————————————————————————————————————————————————————————
 
+/**
+ * Add a person by email and a first password (the way that works today), and
+ * optionally a mobile number for when sign-in by text message is switched on.
+ * Somebody who already has an account keeps their own password; the screen
+ * says so rather than pretending the one typed here will work.
+ */
 export async function addTeamMember(form: FormData): Promise<void> {
   const locale = localeOf(form);
   const displayName = text(form, 'displayName');
-  const phone = normalisePhone(text(form, 'phone'));
-  if (displayName === '') back(locale, 'team', { error: 'emptyName' });
-  if (phone === null) back(locale, 'team', { error: 'badPhone' });
+  const email = text(form, 'email').toLowerCase();
+  const password = secret(form, 'password');
+  const typedPhone = text(form, 'phone');
+  const phone = typedPhone === '' ? undefined : normalisePhone(typedPhone);
 
-  const failure = await attempt(() => api.vendor.addTeamMember.mutate({ phone, displayName }));
-  if (failure === null) back(locale, 'team', { done: 'added' });
-  back(locale, 'team', {
-    error: failure === 'conflict' ? 'already' : failure === 'badInput' ? 'badPhone' : failure,
+  if (displayName === '') back(locale, 'team', { error: 'emptyName' }, '#new-member');
+  if (email === '' && phone === undefined) back(locale, 'team', { error: 'needContact' }, '#new-member');
+  if (email !== '' && !EMAIL.test(email)) back(locale, 'team', { error: 'badEmail' }, '#new-member');
+  if (email !== '' && password.length < MIN_PASSWORD_LENGTH) back(locale, 'team', { error: 'shortPassword' }, '#new-member');
+  if (phone === null) back(locale, 'team', { error: 'badPhone' }, '#new-member');
+
+  let created = false;
+  const failure = await attempt(async () => {
+    const result = await api.vendor.addTeamMember.mutate({
+      displayName,
+      ...(email === '' ? {} : { email, password }),
+      ...(phone === undefined ? {} : { phone }),
+    });
+    created = result.created;
   });
+  if (failure === null) back(locale, 'team', { done: created ? 'added' : 'addedExisting' });
+  back(locale, 'team', { error: failure === 'conflict' ? 'already' : failure === 'badInput' ? 'badEmail' : failure }, '#new-member');
 }
 
 export async function removeTeamMember(form: FormData): Promise<void> {
