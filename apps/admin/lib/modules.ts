@@ -82,7 +82,9 @@ export const MODULES: readonly ConsoleModule[] = [
     state: 'live',
     path: 'bookings',
     evidence: ['bookings', 'booking_participants', 'booking_addons', 'waivers', 'booking_status_history'],
-    signal: 'needsAction',
+    // Not `needsAction`: that counts documents, listings and disputes waiting
+    // on the platform, and it rode on this tile as if seven bookings did.
+    signal: 'departuresToday',
   },
   {
     key: 'availability',

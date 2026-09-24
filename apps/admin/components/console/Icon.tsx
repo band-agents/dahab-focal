@@ -29,9 +29,15 @@ export interface IconProps {
    */
   readonly label?: string;
   readonly className?: string;
+  /**
+   * `bold` for the one icon that says "you are here" — the active tab. The
+   * shape is the same drawing; only the line is heavier, so the active state
+   * reads at a glance without a second icon set to keep in step.
+   */
+  readonly weight?: 'regular' | 'bold';
 }
 
-export function Icon({ name, size = 20, label, className }: IconProps) {
+export function Icon({ name, size = 20, label, className, weight = 'regular' }: IconProps) {
   const shape: IconShape = ICONS[name];
   const labelled = label !== undefined;
 
@@ -51,7 +57,7 @@ export function Icon({ name, size = 20, label, className }: IconProps) {
         d={shape.d}
         fill="none"
         stroke="currentColor"
-        strokeWidth={1.75}
+        strokeWidth={weight === 'bold' ? 2.25 : 1.75}
         strokeLinecap="round"
         strokeLinejoin="round"
       />

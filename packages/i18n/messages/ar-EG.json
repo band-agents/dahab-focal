@@ -166,7 +166,8 @@
       "platform": "المنصة",
       "people": "الناس",
       "more": "المزيد",
-      "home": "الرئيسية"
+      "home": "الرئيسية",
+      "trail": "انت هنا"
     },
     "today": {
       "title": "اليوم",
@@ -744,7 +745,34 @@
         "ok": "تمام",
         "degraded": "ناقص"
       },
-      "healthDown": "مفيش رد"
+      "healthDown": "مفيش رد",
+      "greeting": {
+        "morning": "صباح الخير",
+        "afternoon": "مساء الخير",
+        "evening": "مساء الخير"
+      },
+      "needsYou": "محتاجك دلوقتي",
+      "allClear": "كله تمام",
+      "allClearDetail": "مفيش حاجة مستنية قرار.",
+      "need": {
+        "blocking": "{count, plural, zero {مراكز} one {مركز مش قادر ينشر} two {مركزين مش قادرين ينشروا} few {مراكز مش قادرين ينشروا} many {مركز مش قادرين ينشروا} other {مركز مش قادرين ينشروا}}",
+        "incidents": "{count, plural, zero {حوادث} one {حادثة مفتوحة} two {حادثتين مفتوحين} few {حوادث مفتوحة} many {حادثة مفتوحة} other {حادثة مفتوحة}}",
+        "action": "{count, plural, zero {مستنيين قرار} one {مستني قرار} two {مستنيين قرار} few {مستنيين قرار} many {مستنيين قرار} other {مستنيين قرار}}",
+        "departures": "{count, plural, zero {رحلات النهارده} one {رحلة النهارده} two {رحلتين النهارده} few {رحلات النهارده} many {رحلة النهارده} other {رحلة النهارده}}",
+        "payouts": "{count, plural, zero {مستحقات} one {مستحق واجب} two {مستحقين واجبين} few {مستحقات واجبة} many {مستحق واجب} other {مستحق واجب}}"
+      },
+      "quick": "إجراءات سريعة",
+      "quickAction": {
+        "addAccount": "إضافة حساب",
+        "review": "مراجعة الأوراق",
+        "cancel": "إلغاء بسبب الجو"
+      },
+      "modules": "كل الوحدات",
+      "searchLabel": "دوّر على وحدة",
+      "searchPlaceholder": "روح لـ… المراكز، الفلوس، الناس",
+      "noMatch": "مفيش حاجة بالاسم ده.",
+      "comingNext": "{count, plural, zero {كل الوحدات اتبنت} one {وحدة لسه ما اتبنتش} two {وحدتين لسه ما اتبنوش} few {# وحدات لسه ما اتبنتش} many {# وحدة لسه ما اتبنتش} other {# وحدة لسه ما اتبنتش}}",
+      "account": "الحساب"
     },
     "module": {
       "today": {

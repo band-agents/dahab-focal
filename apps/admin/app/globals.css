@@ -60,3 +60,61 @@ body {
 [dir='rtl'] {
   --mark-flip: -1;
 }
+
+/*
+ * A screen arriving. It rises the last few pixels into place so the change
+ * of screen reads as a movement rather than a cut — and it animates position
+ * only, never opacity. A browser pauses animations in a background tab, and
+ * an entrance that starts at opacity 0 and is paused at its first frame is a
+ * blank screen. Content is always visible; only its last 6px move.
+ *
+ * Durations and curves are the token ones. Under reduced motion there is no
+ * movement at all: the screen is simply there.
+ */
+@keyframes console-rise {
+  from {
+    transform: translateY(6px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .console-enter {
+    animation: console-rise var(--duration-standard) var(--ease-silk);
+  }
+}
+
+/*
+ * The placeholder shimmer while a screen loads. Same rule: the grey blocks are
+ * always visible and only a highlight sweeps across them, so a paused
+ * animation still shows the shape of the screen that is coming.
+ */
+@keyframes console-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.console-skeleton {
+  background-color: var(--color-c-raised);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-c-surface) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .console-skeleton {
+    /* Three hero beats: slow enough to read as "waiting", not as a flicker. */
+    animation: console-shimmer calc(var(--duration-hero) * 3) var(--ease-tide) infinite;
+  }
+}

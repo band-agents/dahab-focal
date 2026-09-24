@@ -44,7 +44,10 @@ function localeOf(formData: FormData): string {
  * reasonably concludes nothing happened.
  */
 function back(locale: string, section: string, outcome: Outcome): never {
-  revalidatePath(`/${locale}/${section}`);
+  // The whole locale, layout included: the navigation lives in the layout
+  // now and carries counts (documents waiting, papers expiring) that a write
+  // on any one screen can change.
+  revalidatePath(`/${locale}`, 'layout');
   redirect(`/${locale}/${section}?outcome=${outcome}` as Route);
 }
 
@@ -110,7 +113,7 @@ export async function cancelDeparture(formData: FormData): Promise<void> {
  * locale, so a detail page names its own way home.
  */
 function backTo(locale: string, to: string, outcome: Outcome): never {
-  revalidatePath(`/${locale}/${to}`);
+  revalidatePath(`/${locale}`, 'layout');
   redirect(`/${locale}/${to}?outcome=${outcome}` as Route);
 }
 

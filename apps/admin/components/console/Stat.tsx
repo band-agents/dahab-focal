@@ -9,7 +9,7 @@
  */
 import Link from 'next/link';
 import type { Route } from 'next';
-import type { ReactNode } from 'react';
+import { Children, cloneElement, isValidElement, type ReactNode } from 'react';
 
 import { Icon } from './Icon';
 import type { Tone } from './Pill';
@@ -100,5 +100,20 @@ export function Stat({ label, value, note, href, tone, wide = false }: StatProps
  * the formatter can produce.
  */
 export function StatRow({ children }: { readonly children: ReactNode }) {
-  return <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">{children}</div>;
+  /*
+   * No orphans. On a two-column phone, an odd number of ordinary tiles leaves
+   * one alone on its row with an empty cell beside it — the operator page's
+   * rating sat by itself like that, and a gap in a grid reads as something
+   * missing. So when the count of ordinary tiles is odd, the last of them
+   * takes the full row, the same way money does.
+   */
+  const items = Children.toArray(children).filter(isValidElement<StatProps>);
+  const ordinary = items.filter((item) => item.props.wide !== true);
+  const last = ordinary.length % 2 === 1 ? ordinary.at(-1) : undefined;
+
+  return (
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+      {items.map((item) => (item === last ? cloneElement(item, { wide: true }) : item))}
+    </div>
+  );
 }

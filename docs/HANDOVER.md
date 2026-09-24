@@ -1,5 +1,12 @@
 # Handover — everything about Dahab Focal, in one file
 
+> **Read `docs/HANDOVER-SKYEYE.md` first.** This file stops on 15 Sep. The admin
+> console has been rebuilt since — its own visual system, phone-first navigation,
+> accounts and roles, and the speed work — and everything below about the
+> console, its screens, its components and its blockers is out of date. The
+> product, the design system, the schema and the i18n machinery are still
+> described correctly here.
+
 Written 2026-09-11, at the end of session 3, for a Claude session starting cold
 with no memory of any earlier conversation.
 

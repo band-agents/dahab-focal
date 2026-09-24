@@ -202,6 +202,14 @@ describe('required contrast — recomputed from the hexes, never annotated', () 
       'c-text on c-surface (dark)',
       'c-muted on c-surface (dark)',
       'c-on-accent on c-accent (dark)',
+      // The five area colours behind Home's module icons. Gated at text
+      // contrast rather than the 3:1 an icon strictly needs, so a tile can
+      // carry a word without somebody having to re-check the palette.
+      'c-area-run-ink on c-area-run (light)',
+      'c-area-supply-ink on c-area-supply (light)',
+      'c-area-demand-ink on c-area-demand (light)',
+      'c-area-money-ink on c-area-money (light)',
+      'c-area-platform-ink on c-area-platform (light)',
     ]);
   });
 

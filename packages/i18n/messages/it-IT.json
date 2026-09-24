@@ -48,7 +48,14 @@
       "admin.col.person",
       "admin.col.reference",
       "admin.col.staff",
+      "admin.home.account",
+      "admin.home.allClear",
+      "admin.home.allClearDetail",
+      "admin.home.comingNext",
       "admin.home.degradedTitle",
+      "admin.home.greeting.afternoon",
+      "admin.home.greeting.evening",
+      "admin.home.greeting.morning",
       "admin.home.group.demand",
       "admin.home.group.money",
       "admin.home.group.platform",
@@ -58,8 +65,22 @@
       "admin.home.health.ok",
       "admin.home.healthDown",
       "admin.home.live",
+      "admin.home.modules",
+      "admin.home.need.action",
+      "admin.home.need.blocking",
+      "admin.home.need.departures",
+      "admin.home.need.incidents",
+      "admin.home.need.payouts",
+      "admin.home.needsYou",
+      "admin.home.noMatch",
       "admin.home.partial",
       "admin.home.planned",
+      "admin.home.quick",
+      "admin.home.quickAction.addAccount",
+      "admin.home.quickAction.cancel",
+      "admin.home.quickAction.review",
+      "admin.home.searchLabel",
+      "admin.home.searchPlaceholder",
       "admin.home.state.partial",
       "admin.home.state.planned",
       "admin.home.subtitle",
@@ -131,6 +152,7 @@
       "admin.nav.home",
       "admin.nav.more",
       "admin.nav.people",
+      "admin.nav.trail",
       "admin.people.cardsPending",
       "admin.people.cardsShort",
       "admin.people.clear",
@@ -679,7 +701,8 @@
       "platform": "Piattaforma",
       "people": "People",
       "more": "More",
-      "home": "Home"
+      "home": "Home",
+      "trail": "You are here"
     },
     "today": {
       "title": "Oggi",
@@ -1257,7 +1280,34 @@
         "ok": "OK",
         "degraded": "Degraded"
       },
-      "healthDown": "No answer"
+      "healthDown": "No answer",
+      "greeting": {
+        "morning": "Good morning",
+        "afternoon": "Good afternoon",
+        "evening": "Good evening"
+      },
+      "needsYou": "Needs you now",
+      "allClear": "All clear",
+      "allClearDetail": "Nothing is waiting on a decision.",
+      "need": {
+        "blocking": "{count, plural, one {operator cannot publish} other {operators cannot publish}}",
+        "incidents": "{count, plural, one {open incident} other {open incidents}}",
+        "action": "{count, plural, one {waiting on a decision} other {waiting on a decision}}",
+        "departures": "{count, plural, one {departure today} other {departures today}}",
+        "payouts": "{count, plural, one {payout due} other {payouts due}}"
+      },
+      "quick": "Quick actions",
+      "quickAction": {
+        "addAccount": "Add an account",
+        "review": "Review documents",
+        "cancel": "Cancel for weather"
+      },
+      "modules": "Everything",
+      "searchLabel": "Find a module",
+      "searchPlaceholder": "Jump to… operators, money, people",
+      "noMatch": "Nothing by that name.",
+      "comingNext": "{count, plural, one {# module not built yet} other {# modules not built yet}}",
+      "account": "Account"
     },
     "module": {
       "today": {

@@ -1,18 +1,18 @@
-import { isLocale, isolate, type Locale } from '@dahab/i18n/server';
+import { isLocale, type Locale } from '@dahab/i18n/server';
 import { notFound } from 'next/navigation';
 import type { Route } from 'next';
 import type { ReactNode } from 'react';
 
-import { signOut } from '@/app/[locale]/sign-in/actions';
-import { Action, Frame, type NavItem } from '@/components/console';
-import { SECTIONS, TAB_KEYS, hrefFor } from '@/lib/nav';
-import { translator, type Translate } from '@/lib/i18n';
-import { viewer } from '@/lib/viewer';
+import { PageHeader, type Crumb } from '@/components/console/PageHeader';
+import { SECTIONS, hrefFor, sectionHref } from '@/lib/nav';
+import { translator } from '@/lib/i18n';
 
 /**
- * Every screen mounts the same frame, so the navigation is defined once and a
- * page passes in only what is its own: which section it belongs to, its title,
- * and — on a detail page — where "back" goes.
+ * One console screen: its header and its content.
+ *
+ * The navigation is not here any more — it lives in the (console) layout, so
+ * it is drawn once and survives every tap. What a page supplies is only what
+ * is its own: its title, and on a detail page, the list it belongs to.
  */
 export function resolveLocale(locale: string): Locale {
   if (!isLocale(locale)) notFound();
@@ -21,25 +21,21 @@ export function resolveLocale(locale: string): Locale {
 
 export interface ConsolePageProps {
   readonly locale: Locale;
+  /** Which section this screen belongs to — decides the breadcrumb. */
   readonly current: string;
   readonly title: string;
   readonly subtitle?: string;
   readonly children: ReactNode;
   readonly headerEnd?: ReactNode;
   /**
-   * Set on every detail page. A phone has no rail to orient from and the
-   * browser's own back button is not visible in a standalone web app, so a
-   * detail screen without this is a dead end.
+   * Set on a detail page: the list it was opened from. Only its `href` is
+   * read now — the trail names the section itself, which is more useful than
+   * the word "Back".
    */
   readonly back?: { readonly href: Route; readonly label: string };
-  /**
-   * Counts the tab bar and rail should interrupt for — documents waiting,
-   * papers expiring. Keyed by section.
-   */
-  readonly badges?: Readonly<Record<string, number>>;
 }
 
-export async function ConsolePage({
+export function ConsolePage({
   locale,
   current,
   title,
@@ -47,56 +43,45 @@ export async function ConsolePage({
   children,
   headerEnd,
   back,
-  badges,
 }: ConsolePageProps) {
-  const t: Translate = translator(locale);
-  const who = await viewer();
+  const t = translator(locale);
+  const home: Crumb = { label: t('admin.nav.home'), href: sectionHref(locale, 'home') };
+  const section = SECTIONS.find((candidate) => candidate.key === current);
 
-  const nav: readonly NavItem[] = SECTIONS.map((section) => {
-    const badge = badges?.[section.key];
-    return {
-      key: section.key,
-      label: t(section.labelKey),
-      icon: section.icon,
-      href: hrefFor(locale, section),
-      current: section.key === current,
-      ...(badge === undefined || badge === 0 ? {} : { badge }),
-    };
-  });
-
-  const email = who.ok ? who.viewer.email : null;
-
-  const railEnd = (
-    <div className="flex flex-col gap-2">
-      {email === null ? null : (
-        <p className="px-2 font-console text-cMeta text-c-muted">
-          {/* An address is Latin inside an Arabic sentence; without isolation
-              the bidi algorithm moves its parts to the wrong end of the line. */}
-          {t('admin.signedInAs', { email: isolate(email) })}
-        </p>
-      )}
-      <form action={signOut}>
-        <input type="hidden" name="locale" value={locale} />
-        <Action type="submit" intent="quiet" icon="ban" block>
-          {t('admin.signOut')}
-        </Action>
-      </form>
-    </div>
-  );
+  /*
+   * Home has nothing above it. A section screen sits under Home. A detail
+   * screen sits under its section, which sits under Home. That is the whole
+   * hierarchy, and the back button is always the last step of it.
+   */
+  const crumbs: readonly Crumb[] =
+    current === 'home'
+      ? []
+      : back === undefined || section === undefined
+        ? [home]
+        : [home, { label: t(section.labelKey), href: back.href ?? hrefFor(locale, section) }];
 
   return (
-    <Frame
-      nav={nav}
-      tabKeys={TAB_KEYS}
-      consoleName={t('admin.console')}
-      title={title}
-      {...(subtitle === undefined ? {} : { subtitle })}
-      {...(back === undefined ? {} : { back })}
-      {...(headerEnd === undefined ? {} : { headerEnd })}
-      railEnd={railEnd}
-    >
-      {children}
-    </Frame>
+    <>
+      <PageHeader
+        title={title}
+        {...(subtitle === undefined ? {} : { subtitle })}
+        crumbs={crumbs}
+        backLabel={t('admin.action.back')}
+        trailLabel={t('admin.nav.trail')}
+        {...(headerEnd === undefined ? {} : { end: headerEnd })}
+      />
+      {/*
+        The bottom padding clears the floating tab bar and the home indicator
+        beneath it. Without it the last row of every list sits under the bar —
+        which is exactly the row somebody scrolled down to reach.
+      */}
+      <main
+        id="main"
+        className="mx-auto w-full max-w-[var(--console-content-max)] px-3 py-4 pb-[calc(7rem+env(safe-area-inset-bottom))] console-enter lg:px-8 lg:py-6 lg:pb-10"
+      >
+        {children}
+      </main>
+    </>
   );
 }
 

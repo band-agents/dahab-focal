@@ -1355,8 +1355,13 @@ export const adminRouter = router({
    * comparison table until it has answered every comparable attribute its
    * category defines, and until then publishing it makes the comparison worse
    * rather than richer.
+   *
+   * Gated on `catalog.publishAny`, the same as the decision it feeds. It was
+   * `catalog.publish`, which every vendor owner holds over their own listings,
+   * and this query has no vendor filter — so any owner could read every other
+   * operator's drafts. `tests/admin-scope.test.ts` sweeps `admin.*` for this.
    */
-  serviceQueue: requirePermission('catalog.publish')
+  serviceQueue: requirePermission('catalog.publishAny')
     .input(z.object({ locale: z.enum(LOCALES).optional() }))
     .output(
       z.array(

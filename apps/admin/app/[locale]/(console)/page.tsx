@@ -199,9 +199,6 @@ export default async function TodayPage({ params }: { params: Promise<{ locale: 
       current="today"
       title={t('admin.today.title')}
       subtitle={t('admin.today.subtitle')}
-      {...(overview.ok
-        ? { badges: { vendors: overview.data.needsAction, expiry: overview.data.expiringSoon } }
-        : {})}
     >
       <Stack>
         {/*
