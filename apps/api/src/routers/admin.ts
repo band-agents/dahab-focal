@@ -425,88 +425,111 @@ export const adminRouter = router({
       const thirtyDaysAgo = new Date(ctx.now.getTime() - 30 * DAY_MS);
       const sevenDaysAgo = new Date(ctx.now.getTime() - 7 * DAY_MS);
 
-      const [departures] = await db
-        .select({
-          total: count(),
-          booked: sum(schema.availabilitySlots.bookedCount),
-          capacity: sum(schema.availabilitySlots.capacity),
-        })
-        .from(schema.availabilitySlots)
-        .where(
-          and(
-            eq(schema.availabilitySlots.localDate, today),
-            eq(schema.availabilitySlots.isCancelled, false),
+      /*
+       * Ten counts, fetched at once.
+       *
+       * They were awaited one after another, and every one is a round trip to
+       * a database in eu-west-1 — about 75 ms from Cairo before the query does
+       * any work. Ten in a row made this the slowest call in the console:
+       * 1.1 to 1.6 seconds, on the first screen anybody opens. None of them
+       * reads another's result, so there was never a reason to queue them.
+       * Ten fits the pool's ten connections exactly.
+       */
+      const [
+        [departures],
+        [queue],
+        [catalogue],
+        [openDisputes],
+        [recentIncidents],
+        [unresolvedIncidents],
+        [expiring],
+        [gross],
+        [commission],
+        [due],
+      ] = await Promise.all([
+        db
+          .select({
+            total: count(),
+            booked: sum(schema.availabilitySlots.bookedCount),
+            capacity: sum(schema.availabilitySlots.capacity),
+          })
+          .from(schema.availabilitySlots)
+          .where(
+            and(
+              eq(schema.availabilitySlots.localDate, today),
+              eq(schema.availabilitySlots.isCancelled, false),
+            ),
           ),
-        );
 
-      const [queue] = await db
-        .select({ total: count() })
-        .from(schema.vendorDocuments)
-        .where(
-          sql`${schema.vendorDocuments.verificationStatus} in ('pending', 'inReview', 'rejected')`,
-        );
-
-      const [catalogue] = await db
-        .select({ total: count() })
-        .from(schema.services)
-        .where(sql`${schema.services.status} in ('draft', 'underReview', 'rejected')`);
-
-      const [openDisputes] = await db
-        .select({ total: count() })
-        .from(schema.disputes)
-        .where(sql`${schema.disputes.status} not in ('resolved', 'closed')`);
-
-      const [recentIncidents] = await db
-        .select({ total: count() })
-        .from(schema.incidents)
-        .where(gte(schema.incidents.occurredAt, sevenDaysAgo));
-
-      const [unresolvedIncidents] = await db
-        .select({ total: count() })
-        .from(schema.incidents)
-        .where(sql`${schema.incidents.resolvedAt} is null`);
-
-      const [expiring] = await db
-        .select({
-          total: count(),
-          blocking: sql<number>`count(*) filter (where ${schema.vendorDocuments.blocksPublishing})::int`,
-        })
-        .from(schema.vendorDocuments)
-        .where(
-          and(
-            isNotNull(schema.vendorDocuments.expiresOn),
-            lte(schema.vendorDocuments.expiresOn, horizon),
+        db
+          .select({ total: count() })
+          .from(schema.vendorDocuments)
+          .where(
+            sql`${schema.vendorDocuments.verificationStatus} in ('pending', 'inReview', 'rejected')`,
           ),
-        );
 
-      // Gross and commission both come off the ledger rather than off the
-      // bookings table: the ledger is what reconciles, and a booking whose
-      // payment never captured has a total but has moved no money.
-      const [gross] = await db
-        .select({ total: sum(schema.ledgerEntries.amount) })
-        .from(schema.ledgerEntries)
-        .where(
-          and(
-            eq(schema.ledgerEntries.account, 'travelerReceivable'),
-            eq(schema.ledgerEntries.eventKind, 'bookingConfirmed'),
-            gte(schema.ledgerEntries.occurredAt, thirtyDaysAgo),
+        db
+          .select({ total: count() })
+          .from(schema.services)
+          .where(sql`${schema.services.status} in ('draft', 'underReview', 'rejected')`),
+
+        db
+          .select({ total: count() })
+          .from(schema.disputes)
+          .where(sql`${schema.disputes.status} not in ('resolved', 'closed')`),
+
+        db
+          .select({ total: count() })
+          .from(schema.incidents)
+          .where(gte(schema.incidents.occurredAt, sevenDaysAgo)),
+
+        db
+          .select({ total: count() })
+          .from(schema.incidents)
+          .where(sql`${schema.incidents.resolvedAt} is null`),
+
+        db
+          .select({
+            total: count(),
+            blocking: sql<number>`count(*) filter (where ${schema.vendorDocuments.blocksPublishing})::int`,
+          })
+          .from(schema.vendorDocuments)
+          .where(
+            and(
+              isNotNull(schema.vendorDocuments.expiresOn),
+              lte(schema.vendorDocuments.expiresOn, horizon),
+            ),
           ),
-        );
 
-      const [commission] = await db
-        .select({ total: sum(schema.ledgerEntries.amount) })
-        .from(schema.ledgerEntries)
-        .where(
-          and(
-            eq(schema.ledgerEntries.account, 'platformCommission'),
-            gte(schema.ledgerEntries.occurredAt, thirtyDaysAgo),
+        // Gross and commission both come off the ledger rather than off the
+        // bookings table: the ledger is what reconciles, and a booking whose
+        // payment never captured has a total but has moved no money.
+        db
+          .select({ total: sum(schema.ledgerEntries.amount) })
+          .from(schema.ledgerEntries)
+          .where(
+            and(
+              eq(schema.ledgerEntries.account, 'travelerReceivable'),
+              eq(schema.ledgerEntries.eventKind, 'bookingConfirmed'),
+              gte(schema.ledgerEntries.occurredAt, thirtyDaysAgo),
+            ),
           ),
-        );
 
-      const [due] = await db
-        .select({ total: count(), amount: sum(schema.payouts.amount) })
-        .from(schema.payouts)
-        .where(sql`${schema.payouts.status} in ('scheduled', 'processing')`);
+        db
+          .select({ total: sum(schema.ledgerEntries.amount) })
+          .from(schema.ledgerEntries)
+          .where(
+            and(
+              eq(schema.ledgerEntries.account, 'platformCommission'),
+              gte(schema.ledgerEntries.occurredAt, thirtyDaysAgo),
+            ),
+          ),
+
+        db
+          .select({ total: count(), amount: sum(schema.payouts.amount) })
+          .from(schema.payouts)
+          .where(sql`${schema.payouts.status} in ('scheduled', 'processing')`),
+      ]);
 
       const grossMinor = toInt(gross?.total);
       // Commission legs are credits, so the balance is negative; the platform
@@ -665,8 +688,12 @@ export const adminRouter = router({
         .limit(input.limit);
 
       const ids = rows.map((row) => row.id);
-      const parties = await partiesByBooking(db, ids);
-      const leads = await leadNamesByBooking(db, ids);
+      // Both read off the same ids and neither needs the other, so they share
+      // one round trip instead of queueing behind each other.
+      const [parties, leads] = await Promise.all([
+        partiesByBooking(db, ids),
+        leadNamesByBooking(db, ids),
+      ]);
 
       return rows.map((row) => ({
         id: row.id,
@@ -868,19 +895,16 @@ export const adminRouter = router({
     .query(async ({ ctx, input }) => {
       const db = requireDb(ctx);
 
-      // The groups first, then their legs: paging by leg would cut an event
-      // in half, and half an event never balances.
-      const groups = await db
-        .select({
-          entryGroupId: schema.ledgerEntries.entryGroupId,
-          occurredAt: sql<Date>`max(${schema.ledgerEntries.occurredAt})`,
-        })
+      // Paged by event, not by leg: paging by leg would cut an event in half,
+      // and half an event never balances. The latest events are chosen in a
+      // subquery rather than a first round trip — this used to be two trips
+      // to eu-west-1 in a row, and the money screen waited on both.
+      const latestEvents = db
+        .select({ entryGroupId: schema.ledgerEntries.entryGroupId })
         .from(schema.ledgerEntries)
         .groupBy(schema.ledgerEntries.entryGroupId)
         .orderBy(desc(sql`max(${schema.ledgerEntries.occurredAt})`))
         .limit(input.limit);
-
-      if (groups.length === 0) return [];
 
       const legs = await db
         .select({
@@ -895,13 +919,21 @@ export const adminRouter = router({
         })
         .from(schema.ledgerEntries)
         .leftJoin(schema.bookings, eq(schema.bookings.id, schema.ledgerEntries.bookingId))
-        .where(
-          inArray(
-            schema.ledgerEntries.entryGroupId,
-            groups.map((group) => group.entryGroupId),
-          ),
-        )
+        .where(inArray(schema.ledgerEntries.entryGroupId, latestEvents))
         .orderBy(desc(schema.ledgerEntries.occurredAt), asc(schema.ledgerEntries.account));
+
+      if (legs.length === 0) return [];
+
+      // The event order, rebuilt from the legs that came back: newest leg in
+      // each event decides where the event sits, as `max(occurred_at)` did.
+      const latest = new Map<string, Date>();
+      for (const leg of legs) {
+        const seen = latest.get(leg.entryGroupId);
+        if (seen === undefined || leg.occurredAt > seen) latest.set(leg.entryGroupId, leg.occurredAt);
+      }
+      const groups = [...latest]
+        .map(([entryGroupId, occurredAt]) => ({ entryGroupId, occurredAt }))
+        .sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime());
 
       return groups.map((group) => {
         const own = legs.filter((leg) => leg.entryGroupId === group.entryGroupId);

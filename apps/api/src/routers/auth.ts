@@ -337,42 +337,50 @@ export const authRouter = router({
       // fifteen minutes. This is the one call that pays for a round trip to
       // find out, and it is the call the console makes on every request, so
       // signing a device out takes effect there immediately.
-      if (!session.isGuest && ctx.db !== null) {
-        const live = await isSessionLive(ctx.db, session.id, ctx.now);
-        if (!live) {
-          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'That session has ended.' });
-        }
+      //
+      // The revocation check, the account row and the operator's name are
+      // three independent reads, and they were made one after another: about
+      // 300 ms on every single console page, because each is a round trip to
+      // eu-west-1. Fired together they cost one trip. The revocation check
+      // still decides the answer — a revoked session is refused even though
+      // the other two reads came back.
+      const db = ctx.db;
+      const [live, accountRows, vendorRows] = await Promise.all([
+        !session.isGuest && db !== null
+          ? isSessionLive(db, session.id, ctx.now)
+          : Promise.resolve(true),
+        session.userId !== null && db !== null
+          ? db
+              .select({
+                email: schema.users.email,
+                displayName: schema.userProfiles.displayName,
+              })
+              .from(schema.users)
+              .leftJoin(schema.userProfiles, eq(schema.userProfiles.userId, schema.users.id))
+              .where(eq(schema.users.id, session.userId))
+              .limit(1)
+          : Promise.resolve([]),
+        session.vendorId !== null && db !== null
+          ? db
+              .select({ displayName: schema.vendors.displayName })
+              .from(schema.vendors)
+              .where(eq(schema.vendors.id, session.vendorId))
+              .limit(1)
+          : Promise.resolve([]),
+      ]);
+
+      if (!live) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'That session has ended.' });
       }
+
       const permissions = new Set<string>();
       for (const role of session.roles) {
         for (const permission of PERMISSIONS_BY_ROLE[role]) permissions.add(permission);
       }
 
-      let email: string | null = null;
-      let displayName: string | null = null;
-      if (session.userId !== null && ctx.db !== null) {
-        const [row] = await ctx.db
-          .select({
-            email: schema.users.email,
-            displayName: schema.userProfiles.displayName,
-          })
-          .from(schema.users)
-          .leftJoin(schema.userProfiles, eq(schema.userProfiles.userId, schema.users.id))
-          .where(eq(schema.users.id, session.userId))
-          .limit(1);
-        email = row?.email ?? null;
-        displayName = row?.displayName ?? null;
-      }
-
-      let vendorName: string | null = null;
-      if (session.vendorId !== null && ctx.db !== null) {
-        const [row] = await ctx.db
-          .select({ displayName: schema.vendors.displayName })
-          .from(schema.vendors)
-          .where(eq(schema.vendors.id, session.vendorId))
-          .limit(1);
-        vendorName = row?.displayName ?? null;
-      }
+      const email = accountRows[0]?.email ?? null;
+      const displayName = accountRows[0]?.displayName ?? null;
+      const vendorName = vendorRows[0]?.displayName ?? null;
 
       return {
         session,

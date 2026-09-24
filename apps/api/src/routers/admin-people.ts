@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { and, count, desc, eq, gt, inArray, isNull, ne, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gt, inArray, isNotNull, isNull, ne, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 
@@ -252,7 +252,20 @@ export const adminPeopleRouter = {
     .query(async ({ ctx, input }) => {
       const db = requireDb(ctx);
 
-      const [account] = await db
+      /*
+       * One round trip, not four.
+       *
+       * This read the account, then its roles, then its team, then five more
+       * things — each waiting on the one before, at ~75 ms a trip to
+       * eu-west-1. Only the team ever depended on an earlier answer, and only
+       * because it needed this person's operators; that is a subquery inside
+       * the same statement now, so all eight reads leave together.
+       *
+       * A missing account is still a 404 — the check simply happens after the
+       * batch returns instead of before it is sent. Seven wasted reads on a
+       * bad id is a fair price for every good id arriving three trips sooner.
+       */
+      const accountQuery = db
         .select({
           id: schema.users.id,
           displayName: schema.userProfiles.displayName,
@@ -272,7 +285,7 @@ export const adminPeopleRouter = {
         .where(eq(schema.users.id, input.id))
         .limit(1);
 
-      const roleRows = await db
+      const roleQuery = db
         .select({
           role: schema.userRoles.role,
           vendorId: schema.userRoles.vendorId,
@@ -283,41 +296,37 @@ export const adminPeopleRouter = {
         .where(eq(schema.userRoles.userId, input.id));
 
       /*
-       * Everybody else scoped to an operator this account is scoped to. Only
-       * fetched when there is an operator to ask about — a traveller has no
-       * team, and a query with an empty IN list is a round trip for nothing.
+       * Everybody else scoped to an operator this account is scoped to. A
+       * traveller has no operator, so the subquery is empty and so is this —
+       * without a separate round trip to find that out first.
        */
-      const vendorIds = roleRows
-        .map((row) => row.vendorId)
-        .filter((id): id is string => id !== null);
+      const theirOperators = db
+        .select({ vendorId: schema.userRoles.vendorId })
+        .from(schema.userRoles)
+        .where(
+          and(eq(schema.userRoles.userId, input.id), isNotNull(schema.userRoles.vendorId)),
+        );
 
-      const teamRows =
-        vendorIds.length === 0
-          ? []
-          : await db
-              .select({
-                id: schema.users.id,
-                displayName: schema.userProfiles.displayName,
-                email: schema.users.email,
-                role: schema.userRoles.role,
-                vendorId: schema.userRoles.vendorId,
-                vendorName: schema.vendors.displayName,
-                deletedAt: schema.users.deletedAt,
-              })
-              .from(schema.userRoles)
-              .innerJoin(schema.users, eq(schema.users.id, schema.userRoles.userId))
-              .innerJoin(schema.vendors, eq(schema.vendors.id, schema.userRoles.vendorId))
-              .leftJoin(schema.userProfiles, eq(schema.userProfiles.userId, schema.users.id))
-              .where(
-                and(
-                  inArray(schema.userRoles.vendorId, vendorIds),
-                  ne(schema.userRoles.userId, input.id),
-                ),
-              );
-
-      if (account === undefined) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'No such person.' });
-      }
+      const teamQuery = db
+        .select({
+          id: schema.users.id,
+          displayName: schema.userProfiles.displayName,
+          email: schema.users.email,
+          role: schema.userRoles.role,
+          vendorId: schema.userRoles.vendorId,
+          vendorName: schema.vendors.displayName,
+          deletedAt: schema.users.deletedAt,
+        })
+        .from(schema.userRoles)
+        .innerJoin(schema.users, eq(schema.users.id, schema.userRoles.userId))
+        .innerJoin(schema.vendors, eq(schema.vendors.id, schema.userRoles.vendorId))
+        .leftJoin(schema.userProfiles, eq(schema.userProfiles.userId, schema.users.id))
+        .where(
+          and(
+            inArray(schema.userRoles.vendorId, theirOperators),
+            ne(schema.userRoles.userId, input.id),
+          ),
+        );
 
       // The traveller's own locale is not what the console reads in, so the
       // title is resolved for the admin's locale with the source as fallback
@@ -325,8 +334,20 @@ export const adminPeopleRouter = {
       const wanted = alias(schema.serviceTranslations, 'wanted_title');
       const fallback = alias(schema.serviceTranslations, 'fallback_title');
 
-      const [certifications, medicalRows, contactRows, bookingRows, sessionRows] =
-        await Promise.all([
+      const [
+        [account],
+        roleRows,
+        teamRows,
+        certifications,
+        medicalRows,
+        contactRows,
+        bookingRows,
+        sessionRows,
+      ] = await Promise.all([
+          accountQuery,
+          roleQuery,
+          teamQuery,
+
           db
             .select()
             .from(schema.certifications)
@@ -377,6 +398,11 @@ export const adminPeopleRouter = {
               ),
             ),
         ]);
+
+      if (account === undefined) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'No such person.' });
+      }
+
 
       const today = cairoDay(ctx.now);
       const medical = medicalRows[0];
