@@ -170,6 +170,7 @@ because the pooler closes idle ones and a dead socket failed the next request.
 | An entrance animation starting at opacity 0 | Animate position only — a paused animation in a background tab is a blank page |
 | `NOT_FOUND` from tRPC reported as "API unreachable" | `lib/api.ts` classifies it as `notFound`; detail pages turn it into a 404 |
 | A class assembled like `` `bg-c-area-${x}` `` never reaches the stylesheet | Write every class out in full |
+| `admin.serviceQueue` was gated on `catalog.publish`, which every vendor owner holds, and had no vendor filter — any owner could list every operator's drafts | An `admin.*` procedure never takes a vendor-scoped permission (`catalog.publish`, `pricing.manage`, `resource.manage`, `staff.manage`, …); it takes the `*Any` form. `apps/api/tests/admin-scope.test.ts` sweeps the whole router as every non-admin role |
 
 ---
 
