@@ -10,6 +10,7 @@ import { LOCALES, SOURCE_LOCALE } from '@dahab/i18n';
 import { commitCancellation, previewCancellation } from '../operations/cancel-departure.ts';
 import { requireDatabase } from '../database.ts';
 import { requireVendorPermission, router } from '../trpc.ts';
+import { vendorSelfRouter } from './vendor-self.ts';
 
 /**
  * The operator app's reads.
@@ -676,4 +677,8 @@ export const vendorRouter = router({
         blocked: row.dueOn !== null && row.dueOn < today,
       }));
     }),
+
+  // The shop window, the stories, the team and the reviews — the operator
+  // looking after itself. See ./vendor-self.ts.
+  ...vendorSelfRouter,
 });

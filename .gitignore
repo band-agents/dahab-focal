@@ -17,3 +17,7 @@ apps/vendor/public/fonts/
 # Copied from packages/tokens/fonts/native by copy-fonts.mjs; the source is
 # committed there and these are build output.
 apps/vendor/assets/fonts/
+
+# Uploaded files in development. The bytes are not source; the rows in
+# media_uploads are, and in production the files live in Supabase Storage.
+apps/api/.media/

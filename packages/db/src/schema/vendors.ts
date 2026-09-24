@@ -68,6 +68,21 @@ export const vendors = pgTable(
       .default('pending'),
     /** Ramadan and the Friday-Saturday weekend shift these. */
     operatingHours: jsonb('operating_hours').$type<Record<string, unknown>>(),
+    /*
+     * The operator's own face on the platform. Until these existed an operator
+     * was a name and a status: no logo, no picture of the boat, no sentence
+     * about who they are — which is the first thing a traveller choosing
+     * between three dive centres in Assalah actually looks at.
+     *
+     * URLs into media storage, never the bytes. Written by the operator from
+     * their dashboard; the platform never invents one.
+     */
+    logoUrl: text('logo_url'),
+    coverUrl: text('cover_url'),
+    /** One line under the name, in the operator's own words. */
+    tagline: varchar('tagline', { length: 140 }),
+    /** A few paragraphs: who runs it, since when, what they are known for. */
+    about: text('about'),
     ...timestamps,
     deletedAt: deletedAt(),
   },
@@ -75,6 +90,79 @@ export const vendors = pgTable(
     uniqueIndex('vendors_slug_key').on(table.slug),
     index('vendors_status_idx').on(table.status),
     index('vendors_location_gix').using('gist', table.location),
+  ],
+);
+
+export const mediaKindEnum = pgEnum('media_kind', ['image', 'video']);
+
+/**
+ * Every file an operator has uploaded.
+ *
+ * The storage holds the bytes; this row holds what the platform needs to know
+ * about them — who put it there, how big it is, what it is — so a quota can be
+ * enforced, an orphan can be found and cleaned, and a complaint about a
+ * picture can be traced to the account that posted it. `storageKey` is the
+ * path inside whichever store is configured (the local disk in development,
+ * Supabase Storage in production), and it is the only part that changes when
+ * the store does.
+ */
+export const mediaUploads = pgTable(
+  'media_uploads',
+  {
+    id: primaryId(),
+    vendorId: uuid('vendor_id')
+      .notNull()
+      .references(() => vendors.id),
+    uploaderUserId: uuid('uploader_user_id').references(() => users.id),
+    kind: mediaKindEnum('kind').notNull(),
+    mimeType: varchar('mime_type', { length: 80 }).notNull(),
+    bytes: integer('bytes').notNull(),
+    storageKey: text('storage_key').notNull(),
+    /** Where the file is served from. Derived from the key by the store. */
+    url: text('url').notNull(),
+    ...timestamps,
+    deletedAt: deletedAt(),
+  },
+  (table) => [index('media_uploads_vendor_idx').on(table.vendorId, table.createdAt)],
+);
+
+/**
+ * What an operator is doing right now.
+ *
+ * A photo or a short video — the sea at the Blue Hole this morning, the boat
+ * leaving Masbat — that disappears after 24 hours, because "right now" stops
+ * being true. `expiresAt` is set at posting and never extended.
+ *
+ * An operator can pin a good one: `pinnedAt` keeps it on their profile as a
+ * highlight after it would have expired. Pinning is the only way a story
+ * outlives its day, and unpinning a story that has already expired removes it
+ * from the profile, which is what an operator would expect.
+ */
+export const vendorStories = pgTable(
+  'vendor_stories',
+  {
+    id: primaryId(),
+    vendorId: uuid('vendor_id')
+      .notNull()
+      .references(() => vendors.id),
+    authorUserId: uuid('author_user_id').references(() => users.id),
+    mediaId: uuid('media_id')
+      .notNull()
+      .references(() => mediaUploads.id),
+    /** A line of text over the picture. Optional — the sea speaks for itself. */
+    caption: varchar('caption', { length: 200 }),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+    pinnedAt: timestamp('pinned_at', { withTimezone: true, mode: 'date' }),
+    /** Counted, never listed — who watched is the traveller's business. */
+    views: integer('views').notNull().default(0),
+    ...timestamps,
+    deletedAt: deletedAt(),
+  },
+  (table) => [
+    // The two questions asked of this table: what is live for this operator,
+    // and what have they pinned.
+    index('vendor_stories_live_idx').on(table.vendorId, table.expiresAt),
+    index('vendor_stories_pinned_idx').on(table.vendorId, table.pinnedAt),
   ],
 );
 

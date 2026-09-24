@@ -6,12 +6,14 @@ import { closeDatabase, probeDatabase } from './database.ts';
 import { isAllowedOrigin, parseOrigins } from './cors.ts';
 import { createContext } from './context.ts';
 import { logger } from './logger.ts';
+import { handleServe, handleUpload } from './media/routes.ts';
 import { appRouter } from './routers/index.ts';
 
 /**
- * The standalone adapter, on node:http. No web framework: tRPC is the only
+ * The standalone adapter, on node:http. No web framework: tRPC is the main
  * surface, and a framework would add routing we do not use and middleware we
- * would have to keep in step with the tRPC middleware we do use.
+ * would have to keep in step with the tRPC middleware we do use. The one
+ * exception is files — see the two `/media` routes below.
  */
 
 const port = Number(process.env['PORT'] ?? 4000);
@@ -108,6 +110,29 @@ const server = createServer((req, res) => {
     // Answered here and never passed on: tRPC has no route for it.
     res.writeHead(allowed ? 204 : 403, { vary: 'Origin' });
     res.end();
+    return;
+  }
+
+  /*
+   * Files. Two routes that are not tRPC because a video is not JSON: a raw
+   * upload, and reads from the local store. Both are answered here and never
+   * reach the tRPC handler. See ./media/routes.ts.
+   */
+  const path = (req.url ?? '').split('?')[0] ?? '';
+  if (req.method === 'POST' && path === '/media') {
+    handleUpload(req, res).catch((error: unknown) => {
+      logger.error('upload failed', { message: String(error) });
+      if (!res.headersSent) res.writeHead(500);
+      res.end();
+    });
+    return;
+  }
+  if ((req.method === 'GET' || req.method === 'HEAD') && path.startsWith('/media/')) {
+    handleServe(req, res).catch((error: unknown) => {
+      logger.error('media read failed', { message: String(error) });
+      if (!res.headersSent) res.writeHead(500);
+      res.end();
+    });
     return;
   }
 

@@ -89,6 +89,15 @@ export const permissionSchema = z.enum([
    */
   'role.grant',
   'user.impersonate',
+  /**
+   * Post a story: a photo or a short video of what the operator is doing right
+   * now. Held by staff as well as owners, on purpose — the guide on the boat at
+   * the Blue Hole is the one holding the phone when the sea looks like that.
+   * Pinning a story to the operator's profile is `vendor.writeOwn`, the
+   * owner's: anyone on the team can say "look at this", only the owner decides
+   * what stays on the shop window.
+   */
+  'story.post',
   'audit.read',
   'featureFlag.manage',
 ]);
@@ -116,6 +125,7 @@ const VENDOR_STAFF: readonly Permission[] = [
   'booking.manageVendor',
   'vendor.readOwn',
   'resource.manage',
+  'story.post',
 ];
 
 const VENDOR_OWNER: readonly Permission[] = [
