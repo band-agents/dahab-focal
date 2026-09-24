@@ -21,8 +21,8 @@ export type { IconProps } from './Icon';
 export { ICONS, ICON_NAMES } from './icons';
 export type { IconName, IconShape } from './icons';
 
-export { Frame } from './Frame';
-export type { FrameProps, NavItem } from './Frame';
+export { PageHeader } from './PageHeader';
+export type { PageHeaderProps, Crumb } from './PageHeader';
 
 export { Panel, Overline } from './Panel';
 export type { PanelProps } from './Panel';

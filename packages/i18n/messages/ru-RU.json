@@ -47,7 +47,13 @@
       "admin.col.person",
       "admin.col.reference",
       "admin.col.staff",
+      "admin.home.account",
+      "admin.home.allClear",
+      "admin.home.allClearDetail",
       "admin.home.degradedTitle",
+      "admin.home.greeting.afternoon",
+      "admin.home.greeting.evening",
+      "admin.home.greeting.morning",
       "admin.home.group.demand",
       "admin.home.group.money",
       "admin.home.group.platform",
@@ -57,8 +63,17 @@
       "admin.home.health.ok",
       "admin.home.healthDown",
       "admin.home.live",
+      "admin.home.modules",
+      "admin.home.needsYou",
+      "admin.home.noMatch",
       "admin.home.partial",
       "admin.home.planned",
+      "admin.home.quick",
+      "admin.home.quickAction.addAccount",
+      "admin.home.quickAction.cancel",
+      "admin.home.quickAction.review",
+      "admin.home.searchLabel",
+      "admin.home.searchPlaceholder",
       "admin.home.state.partial",
       "admin.home.state.planned",
       "admin.home.subtitle",
@@ -130,6 +145,7 @@
       "admin.nav.home",
       "admin.nav.more",
       "admin.nav.people",
+      "admin.nav.trail",
       "admin.people.cardsShort",
       "admin.people.clear",
       "admin.people.clearance",
@@ -366,7 +382,8 @@
       "platform": "Платформа",
       "people": "People",
       "more": "More",
-      "home": "Home"
+      "home": "Home",
+      "trail": "You are here"
     },
     "today": {
       "title": "Сегодня",
@@ -944,7 +961,34 @@
         "ok": "OK",
         "degraded": "Degraded"
       },
-      "healthDown": "No answer"
+      "healthDown": "No answer",
+      "greeting": {
+        "morning": "Good morning",
+        "afternoon": "Good afternoon",
+        "evening": "Good evening"
+      },
+      "needsYou": "Needs you now",
+      "allClear": "All clear",
+      "allClearDetail": "Nothing is waiting on a decision.",
+      "need": {
+        "blocking": "{count, plural, one {оператор не может публиковать} few {оператора не могут публиковать} many {операторов не могут публиковать} other {оператора не могут публиковать}}",
+        "incidents": "{count, plural, one {открытый инцидент} few {открытых инцидента} many {открытых инцидентов} other {открытого инцидента}}",
+        "action": "{count, plural, one {ждёт решения} few {ждут решения} many {ждут решения} other {ждут решения}}",
+        "departures": "{count, plural, one {отправление сегодня} few {отправления сегодня} many {отправлений сегодня} other {отправления сегодня}}",
+        "payouts": "{count, plural, one {выплата к оплате} few {выплаты к оплате} many {выплат к оплате} other {выплаты к оплате}}"
+      },
+      "quick": "Quick actions",
+      "quickAction": {
+        "addAccount": "Add an account",
+        "review": "Review documents",
+        "cancel": "Cancel for weather"
+      },
+      "modules": "Everything",
+      "searchLabel": "Find a module",
+      "searchPlaceholder": "Jump to… operators, money, people",
+      "noMatch": "Nothing by that name.",
+      "comingNext": "{count, plural, one {# модуль ещё не создан} few {# модуля ещё не созданы} many {# модулей ещё не создано} other {# модуля ещё не созданы}}",
+      "account": "Account"
     },
     "module": {
       "today": {

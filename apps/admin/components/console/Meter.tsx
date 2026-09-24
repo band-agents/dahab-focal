@@ -42,7 +42,9 @@ export function Meter({ label, value, fraction, tone, valueText }: MeterProps) {
         <span className="min-w-0 flex-1 truncate font-console text-cLabel text-c-text">
           {label}
         </span>
-        <span className="shrink-0 font-figure text-cFigureSm tabular-nums text-c-muted">
+        {/* A phrase — "expired 15 days ago" — not a figure, so the UI face with
+            aligned digits rather than the monospace one. */}
+        <span className="shrink-0 font-console text-cMeta tabular-nums text-c-muted">
           {value}
         </span>
       </div>
