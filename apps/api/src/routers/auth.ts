@@ -44,10 +44,10 @@ import {
   OTP_RESEND_COOLDOWN_SECONDS,
   OTP_TTL_SECONDS,
   generateOtp,
-  hashOtp,
   normalisePhone,
   resolveOtpTransport,
 } from '../auth/otp.ts';
+import { startChallenge, verifyChallenge } from '../auth/otp-challenges.ts';
 import { publicProcedure, router, sessionProcedure } from '../trpc.ts';
 
 /**
@@ -245,15 +245,23 @@ export const authRouter = router({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      const db = requireDatabase(ctx.db);
       const phone = normalisePhone(input.phone);
       const code = generateOtp();
       const locale = resolveLocale(input.locale ?? ctx.locale);
 
-      // TODO(persistence): insert into otp_challenges with hashOtp(code, phone),
-      // an expiry of OTP_TTL_SECONDS and an attempt counter starting at zero.
-      // Rate limiting keys on the destination, not on the IP: a hostel's
-      // shared connection is one IP and forty travelers.
-      void hashOtp(code, phone);
+      // Stored as a hash before it is sent, so a code that reaches a phone is
+      // always one the server can check. See ../auth/otp-challenges.ts.
+      const started = await startChallenge(db, phone, code, ctx.now);
+      if (!started.ok) {
+        throw new TRPCError({
+          code: 'TOO_MANY_REQUESTS',
+          message:
+            started.reason === 'cooldown'
+              ? `Wait ${started.retryAfterSeconds} seconds before asking for another code.`
+              : 'Too many codes for this number. Try again in an hour.',
+        });
+      }
 
       const transport = resolveOtpTransport();
       await transport.send({ to: phone, code, locale });
@@ -268,18 +276,80 @@ export const authRouter = router({
   phoneVerify: publicProcedure
     .input(phoneVerifySchema)
     .output(credentialsSchema)
-    .mutation(({ input }) => {
-      // TODO(persistence): look up the live challenge for this destination,
-      // increment attempts, compare in constant time with verifyOtp(), and
-      // reject after OTP_MAX_ATTEMPTS. Then upsert the user, and — when
-      // guestSessionId is present — reassign that guest's cart rather than
-      // creating a second identity.
-      void input;
-      throw new TRPCError({
-        code: 'NOT_IMPLEMENTED',
-        message:
-          'Phone verification needs the identity tables wired up. The flow, the contract and the transport are in place.',
-      });
+    .mutation(async ({ input, ctx }) => {
+      const db = requireDatabase(ctx.db);
+      const phone = normalisePhone(input.phone);
+
+      const outcome = await verifyChallenge(db, phone, input.code, ctx.now);
+      if (!outcome.ok) {
+        // One message for every failure. Saying "no code was sent to this
+        // number" versus "wrong code" tells a stranger which numbers have
+        // accounts; the attempt limit is what actually stops guessing.
+        ctx.logger.warn('phone code refused', { reason: outcome.reason });
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message:
+            outcome.reason === 'tooManyAttempts'
+              ? 'Too many wrong tries. Ask for a new code.'
+              : 'That code is not right, or it has expired.',
+        });
+      }
+
+      /*
+       * The number is proven, so the account is found or made. A phone that
+       * has never been seen becomes an account with no role — a traveller
+       * signing up, or somebody an operator has not added yet, who reaches
+       * nothing that needs a role until they are given one.
+       *
+       * TODO(guest claim): when `guestSessionId` is present, reassign that
+       * guest's cart to this account instead of leaving it behind. The
+       * traveller app is the only caller that will send it, and it does not
+       * exist yet.
+       */
+      let [user] = await db
+        .select({ id: schema.users.id, deletedAt: schema.users.deletedAt })
+        .from(schema.users)
+        .where(eq(schema.users.phone, phone))
+        .limit(1);
+
+      if (user?.deletedAt != null) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'This account is suspended.' });
+      }
+
+      if (user === undefined) {
+        [user] = await db
+          .insert(schema.users)
+          .values({
+            phone,
+            phoneVerifiedAt: ctx.now,
+            isGuest: false,
+            createdAt: ctx.now,
+            updatedAt: ctx.now,
+          })
+          .returning({ id: schema.users.id, deletedAt: schema.users.deletedAt });
+        if (user === undefined) {
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'The account was not made.' });
+        }
+      } else {
+        await db
+          .update(schema.users)
+          .set({ phoneVerifiedAt: ctx.now, updatedAt: ctx.now })
+          .where(eq(schema.users.id, user.id));
+      }
+
+      const { roles, vendorId } = await rolesFor(db, user.id);
+      const [preferences] = await db
+        .select({ locale: schema.userPreferences.locale })
+        .from(schema.userPreferences)
+        .where(eq(schema.userPreferences.userId, user.id))
+        .limit(1);
+
+      ctx.logger.info('signed in by phone', { userId: user.id, roles });
+      return createSession(
+        db,
+        { userId: user.id, roles, vendorId, locale: preferences?.locale ?? ctx.locale },
+        ctx.now,
+      );
     }),
 
   emailStart: publicProcedure
