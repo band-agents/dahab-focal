@@ -248,6 +248,9 @@
       "admin.money.commission",
       "admin.money.net",
       "admin.nav.catalog",
+      "admin.pricing.byline",
+      "admin.pricing.checkLine",
+      "admin.pricing.checkTotal",
       "admin.provider.fawry",
       "admin.provider.instapay",
       "admin.provider.kashier",
@@ -442,7 +445,8 @@
       "people": "People",
       "more": "More",
       "home": "Home",
-      "trail": "You are here"
+      "trail": "You are here",
+      "pricing": "Tarifs"
     },
     "today": {
       "title": "Aujourd'hui",
@@ -1201,6 +1205,115 @@
         "noOperator": "Not at an operator",
         "operatorHint": "Only for a guide or a centre owner. This is what puts them under that operator."
       }
+    },
+    "pricing": {
+      "title": "Tarifs",
+      "subtitle": "La grille tarifaire de chaque service, et ce qu'un voyageur paierait.",
+      "rateCards": "Grilles tarifaires",
+      "untitled": "Service sans titre",
+      "byline": "{vendor} · {model}",
+      "noModel": "Aucun modèle de prix",
+      "noPrice": "Sans prix",
+      "kind": {
+        "perPerson": "Par personne",
+        "perGroup": "Par groupe",
+        "perPersonTiered": "Par personne, selon la taille du groupe",
+        "perUnitPerDay": "Par unité et par jour",
+        "free": "Gratuit"
+      },
+      "kindHint": {
+        "perPerson": "Chaque personne payante paie le prix de base.",
+        "perGroup": "Un seul prix pour tout le groupe, quelle que soit sa taille.",
+        "perPersonTiered": "Un prix par personne qui baisse quand le groupe grandit.",
+        "perUnitPerDay": "Une location : le prix, fois les unités, fois les jours.",
+        "free": "Personne ne paie."
+      },
+      "colCategory": "Catégorie",
+      "colRules": "Règles",
+      "colListing": "Annonce",
+      "colBase": "Prix de base",
+      "colModel": "Modèle",
+      "rulesCount": "{active} actives sur {total}",
+      "unpricedBanner": "{count, plural, one {# service ne peut pas être chiffré} other {# services ne peuvent pas être chiffrés}}",
+      "unpricedDetail": "Un service sans modèle de prix n'a pas de prix : personne ne peut le réserver.",
+      "twoModels": "{count, plural, one {# service a plus d'un modèle de prix} other {# services ont plus d'un modèle de prix}}",
+      "twoModelsHere": "Ce service a plus d'un modèle de prix",
+      "twoModelsDetail": "Seul le plus récent est utilisé. Les anciens doivent être supprimés.",
+      "priced": "Avec prix",
+      "ofServices": "sur {total} services",
+      "unpriced": "Sans prix",
+      "activeRules": "Règles actives",
+      "noFx": "Aucune source de taux de change n'est connectée : les prix sont affichés en EGP seulement, sans équivalent en EUR.",
+      "readOnly": "Lecture seule : la modification des prix n'est pas encore disponible.",
+      "none": "Aucun service pour l'instant.",
+      "colRule": "Règle",
+      "colWhen": "S'applique quand",
+      "colChange": "Modification",
+      "colOrder": "Ordre",
+      "colStacks": "Cumulable",
+      "brokenCondition": "La condition ne correspond pas à son type",
+      "brokenAdjustment": "La modification ne correspond pas à son type",
+      "stacksYes": "Oui",
+      "stacksNo": "Non",
+      "stacksNoGroup": "Non, dans le groupe {group}",
+      "noModelTitle": "Ce service ne peut pas être chiffré",
+      "noModelDetail": "Il n'a pas de modèle de prix, donc pas de prix.",
+      "brokenBanner": "{count, plural, one {# règle ne respecte pas le contrat} other {# règles ne respectent pas le contrat}}",
+      "brokenDetail": "Le paiement refuserait un prix calculé ainsi : elle est exclue du calcul.",
+      "openOperator": "Opérateur",
+      "model": "Modèle",
+      "maxGroup": "Groupe maximal",
+      "partySize": "Taille du groupe",
+      "partyFrom": "{min} personnes ou plus",
+      "partyRange": "De {min} à {max} personnes",
+      "tiers": "Paliers selon la taille du groupe",
+      "noTiers": "Aucun palier. Le prix de base s'applique à toute taille de groupe.",
+      "tierFrom": "{count, plural, one {À partir de # personne} other {À partir de # personnes}}",
+      "rules": "Règles",
+      "rulesSub": "Appliquées dans cet ordre. Les pourcentages se cumulent dans le même ordre.",
+      "noRules": "Aucune règle. Chaque personne payante paie le prix de base.",
+      "check": "Calcul du prix",
+      "checkSub": "Calculé par la même fonction que le paiement : c'est ce qu'un voyageur paierait.",
+      "checkDate": "Date du voyage",
+      "checkRun": "Calculer le prix",
+      "checkRuleNote": "Règle",
+      "checkTotal": "Total",
+      "checkAssumption": "Pour un voyage le {date}, réservé maintenant",
+      "checkPaying": "Payants",
+      "checkSeats": "Places occupées",
+      "checkNotCharged": "Les bébés et les moniteurs accompagnateurs occupent une place mais ne paient pas.",
+      "checkOutside": "Ce groupe sort de la taille acceptée par le service",
+      "checkLine": "{kind} × {heads}",
+      "refusal": {
+        "noModel": "Il n'y a pas de modèle de prix pour calculer.",
+        "emptyParty": "Ajoutez au moins une personne.",
+        "needsUnitBasis": "C'est une location, et la base de données ne peut pas encore dire si elle se paie par personne, par article ou par groupe.",
+        "groupTooLarge": "Ce groupe dépasse le groupe maximal couvert par ce prix.",
+        "refused": "Cette grille ne peut pas être calculée en l'état."
+      },
+      "unlabelledRule": "Règle sans nom",
+      "cond": {
+        "always": "Toujours",
+        "seasonal": "Voyages du {start} au {end}",
+        "dayOfWeek": "Voyages le {days}",
+        "earlyBird": "{count, plural, one {Réservé au moins # jour avant} other {Réservé au moins # jours avant}}",
+        "lastMinute": "{count, plural, one {Réservé # heure ou moins avant le voyage} other {Réservé # heures ou moins avant le voyage}}",
+        "participantKind": "Pour : {kinds}",
+        "groupSize": "{count, plural, one {Groupes de # ou plus} other {Groupes de # ou plus}}",
+        "currency": "Prix en {currency}"
+      },
+      "adj": {
+        "percentOff": "{percent} de remise",
+        "percentExtra": "{percent} de supplément",
+        "amountOff": "{amount} de remise",
+        "amountExtra": "{amount} de supplément",
+        "override": "Prix fixé à {amount}"
+      },
+      "ruleOn": "Active",
+      "ruleOff": "Désactivée",
+      "ruleStarts": "Dès le {date}",
+      "ruleEnded": "Terminée le {date}",
+      "ruleBroken": "Invalide"
     }
   },
   "vendor": {
@@ -1368,7 +1481,9 @@
   "priceRule": {
     "earlyBird": "Réservation anticipée",
     "residentRate": "Tarif résident",
-    "groupOfFour": "Groupe de quatre ou plus"
+    "groupOfFour": "Groupe de quatre ou plus",
+    "childRate": "Tarif enfant",
+    "studentRate": "Tarif étudiant"
   },
   "category": {
     "diving": "Plongée",
@@ -1382,7 +1497,13 @@
     "desertSafari": "Désert et safari",
     "bedouinCulture": "Bédouins et culture",
     "wellnessYoga": "Bien-être et yoga",
-    "transfers": "Transferts"
+    "transfers": "Transferts",
+    "scubaDiving": "Plongée bouteille",
+    "kitesurfing": "Kitesurf",
+    "boatTrips": "Sorties en bateau",
+    "coursesCertifications": "Cours et certifications",
+    "gearRental": "Location de matériel",
+    "photography": "Photographie"
   },
   "traveler": {
     "tabs": {

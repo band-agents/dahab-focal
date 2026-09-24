@@ -110,8 +110,8 @@ actions, every working module as a phone-style launcher coloured by area with
 a search that opens the first match on Enter, and the unbuilt modules folded
 into one line.
 
-**The module map** — `apps/admin/lib/modules.ts`. 29 modules: **9 live, 6
-partial, 14 planned**, each naming the tables it owns. `tests/modules.test.ts`
+**The module map** — `apps/admin/lib/modules.ts`. 29 modules: **10 live, 6
+partial, 13 planned**, each naming the tables it owns. `tests/modules.test.ts`
 fails if a module claims a table no schema file declares, if a planned module
 carries a link, or if the tab bar ever has more than five slots.
 
@@ -129,6 +129,25 @@ now run in parallel (`Promise.all`) or as subqueries: the overview went from
 and person pages to a single round trip. Pool connections recycle
 (`idle_timeout: 20`, `max_lifetime: 30 min` in `packages/db/src/client.ts`)
 because the pooler closes idle ones and a dead socket failed the next request.
+
+**Pricing** (`/pricing`, `/pricing/[id]`, added 25 Sep, read-only): every
+service's model, base price and rule count; per service, the rules in words
+and a price check. The check is a plain GET form (`?adult=2&child=1&on=…`)
+and the figure is worked out by the API (`admin.servicePricing`) with
+`computePrice()` — not in the page, for two reasons: it is the path checkout
+will take, and `@dahab/api-contract` imports the `@dahab/i18n` barrel, which
+cannot load in a server component. Gated on the new `pricing.readAny`.
+Changing a price is not built.
+
+The three pricing tables were **empty** — the module map called them
+seeded. They are now written by the seed (`packages/db/src/seed/pricing.ts`)
+from the same per-head prices and child/resident/student rates the seeded
+bookings were charged with, and `packages/db/tests/seed-data.test.ts` runs all
+23 bookings back through `computePrice()` and requires the charged total to
+the piastre. On the live database only the pricing step was run (12 models,
+36 rules), not the whole seed, so the operating week's dates were not moved.
+A count on 25 Sep found nine more tables empty; the list is in the header of
+`modules.ts`.
 
 ---
 
@@ -170,6 +189,9 @@ because the pooler closes idle ones and a dead socket failed the next request.
 | An entrance animation starting at opacity 0 | Animate position only — a paused animation in a background tab is a blank page |
 | `NOT_FOUND` from tRPC reported as "API unreachable" | `lib/api.ts` classifies it as `notFound`; detail pages turn it into a 404 |
 | A class assembled like `` `bg-c-area-${x}` `` never reaches the stylesheet | Write every class out in full |
+| `modules.ts` called `pricing_*`, `availability_templates`, `exchange_rates` and others "seeded"; a row count found them empty | Count the table before building on it. A module over an empty table needs its seed as well as its screen |
+| `@dahab/api-contract` in a server component pulls in the `@dahab/i18n` barrel (react-i18next), which throws there | Compute in the API and return the result; the console renders it |
+| `categories.name_key` holds keys (`category.scubaDiving` …) the catalogue never had, so the catalogue screen still prints `row.categorySlug` | The six keys now exist in all seven locales; render `t(nameKey)`. The catalogue page itself is not fixed yet |
 | `admin.serviceQueue` was gated on `catalog.publish`, which every vendor owner holds, and had no vendor filter — any owner could list every operator's drafts | An `admin.*` procedure never takes a vendor-scoped permission (`catalog.publish`, `pricing.manage`, `resource.manage`, `staff.manage`, …); it takes the `*Any` form. `apps/api/tests/admin-scope.test.ts` sweeps the whole router as every non-admin role |
 
 ---
@@ -178,7 +200,7 @@ because the pooler closes idle ones and a dead socket failed the next request.
 
 In rough order of value:
 
-1. **The 14 planned modules.** Pricing first — `pricing_models`, `pricing_tiers`
+1. **The 13 planned modules**, and pricing writes. (Pricing reads are live.) Was: `pricing_models`, `pricing_tiers`
    and `pricing_rules` are seeded and nothing in the console can see them. Then
    exchange rates, the fleet (tanks' hydrostatic test dates), availability and
    blackout dates, the inbox, and the comparison engine — the product's reason
@@ -207,6 +229,10 @@ In rough order of value:
 (no hex, no raw font size, no raw shadow outside `tokens.json`), token contrast
 tests, `check-locales` (every key in all seven files, ICU valid, plural
 categories complete — Russian needs four, Arabic six), and the test suites.
-Last run: 12 tasks green, 939 keys × 7 locales.
+Last run (25 Sep, after Pricing): 12 tasks green, 1,045 keys × 7 locales.
+
+`pricing_models` has no `unit_basis` column, and the contract requires one for a
+`perUnitPerDay` (rental) model — so no rental can be quoted until the schema
+gains it. The price check says so rather than guessing.
 
 `pnpm shoot` is for the gallery and has not been part of console work.

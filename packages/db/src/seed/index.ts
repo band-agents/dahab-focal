@@ -278,6 +278,7 @@ async function main(): Promise<void> {
     console.log(`  ${operations.services} services`);
     console.log(`  ${operations.serviceTranslations} service translations`);
     console.log(`  ${operations.attributeValues} attribute values`);
+    console.log(`  ${operations.pricingModels} pricing models, ${operations.pricingRules} pricing rules`);
     console.log(`  ${operations.slots} departures`);
     console.log(`  ${operations.bookings} bookings`);
     console.log(`  ${operations.participants} participants`);

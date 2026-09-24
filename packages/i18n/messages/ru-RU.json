@@ -214,6 +214,8 @@
     ],
     "identicalToSource": [
       "admin.documentReview.of",
+      "admin.pricing.byline",
+      "admin.pricing.checkLine",
       "admin.provider.fawry",
       "admin.provider.instapay",
       "admin.provider.kashier",
@@ -383,7 +385,8 @@
       "people": "People",
       "more": "More",
       "home": "Home",
-      "trail": "You are here"
+      "trail": "You are here",
+      "pricing": "Цены"
     },
     "today": {
       "title": "Сегодня",
@@ -1142,6 +1145,115 @@
         "noOperator": "Not at an operator",
         "operatorHint": "Only for a guide or a centre owner. This is what puts them under that operator."
       }
+    },
+    "pricing": {
+      "title": "Цены",
+      "subtitle": "Прайс-лист каждой услуги и сколько заплатит путешественник.",
+      "rateCards": "Прайс-листы",
+      "untitled": "Услуга без названия",
+      "byline": "{vendor} · {model}",
+      "noModel": "Нет модели цены",
+      "noPrice": "Без цены",
+      "kind": {
+        "perPerson": "За человека",
+        "perGroup": "За группу",
+        "perPersonTiered": "За человека, по размеру группы",
+        "perUnitPerDay": "За единицу в день",
+        "free": "Бесплатно"
+      },
+      "kindHint": {
+        "perPerson": "Каждый платящий участник платит базовую цену.",
+        "perGroup": "Одна цена за всю группу, независимо от её размера.",
+        "perPersonTiered": "Цена за человека снижается, когда группа растёт.",
+        "perUnitPerDay": "Аренда: цена × количество единиц × число дней.",
+        "free": "Никто не платит."
+      },
+      "colCategory": "Категория",
+      "colRules": "Правила",
+      "colListing": "Объявление",
+      "colBase": "Базовая цена",
+      "colModel": "Модель",
+      "rulesCount": "{active} из {total} включены",
+      "unpricedBanner": "{count, plural, one {# услугу нельзя оценить} few {# услуги нельзя оценить} many {# услуг нельзя оценить} other {# услуги нельзя оценить}}",
+      "unpricedDetail": "У услуги без модели цены нет цены, поэтому её никто не может забронировать.",
+      "twoModels": "{count, plural, one {У # услуги больше одной модели цены} few {У # услуг больше одной модели цены} many {У # услуг больше одной модели цены} other {У # услуги больше одной модели цены}}",
+      "twoModelsHere": "У этой услуги больше одной модели цены",
+      "twoModelsDetail": "Используется только самая новая. Старые нужно удалить.",
+      "priced": "С ценой",
+      "ofServices": "из {total} услуг",
+      "unpriced": "Без цены",
+      "activeRules": "Включённые правила",
+      "noFx": "Источник курсов валют не подключён, поэтому цены показаны только в EGP, без эквивалента в EUR.",
+      "readOnly": "Только просмотр: изменение цен ещё не сделано.",
+      "none": "Услуг пока нет.",
+      "colRule": "Правило",
+      "colWhen": "Когда действует",
+      "colChange": "Изменение",
+      "colOrder": "Порядок",
+      "colStacks": "Суммируется",
+      "brokenCondition": "Условие не соответствует своему типу",
+      "brokenAdjustment": "Изменение не соответствует своему типу",
+      "stacksYes": "Да",
+      "stacksNo": "Нет",
+      "stacksNoGroup": "Нет, в группе {group}",
+      "noModelTitle": "Эту услугу нельзя оценить",
+      "noModelDetail": "У неё нет модели цены, а значит, нет и цены.",
+      "brokenBanner": "{count, plural, one {# правило не соответствует контракту} few {# правила не соответствуют контракту} many {# правил не соответствуют контракту} other {# правила не соответствуют контракту}}",
+      "brokenDetail": "Оформление заказа отклонит цену, построенную на нём, поэтому в расчёт оно не входит.",
+      "openOperator": "Оператор",
+      "model": "Модель",
+      "maxGroup": "Самая большая группа",
+      "partySize": "Размер группы",
+      "partyFrom": "От {min} человек",
+      "partyRange": "От {min} до {max} человек",
+      "tiers": "Ступени по размеру группы",
+      "noTiers": "Ступеней пока нет. Базовая цена действует для группы любого размера.",
+      "tierFrom": "{count, plural, one {От # человека} few {От # человек} many {От # человек} other {От # человека}}",
+      "rules": "Правила",
+      "rulesSub": "Применяются в этом порядке. Проценты накладываются в том же порядке.",
+      "noRules": "Правил нет. Каждый платящий участник платит базовую цену.",
+      "check": "Расчёт цены",
+      "checkSub": "Считается той же функцией, что и при оформлении заказа, — столько и заплатит путешественник.",
+      "checkDate": "Дата поездки",
+      "checkRun": "Рассчитать",
+      "checkRuleNote": "Правило",
+      "checkTotal": "Итого",
+      "checkAssumption": "Для поездки {date}, бронь сейчас",
+      "checkPaying": "Платят",
+      "checkSeats": "Занято мест",
+      "checkNotCharged": "Младенцы и сопровождающие инструкторы занимают место, но не платят.",
+      "checkOutside": "Эта группа не подходит услуге по размеру",
+      "checkLine": "{kind} × {heads}",
+      "refusal": {
+        "noModel": "Нет модели цены, по которой можно посчитать.",
+        "emptyParty": "Добавьте хотя бы одного человека.",
+        "needsUnitBasis": "Это аренда, а база данных пока не может указать, считается она за человека, за предмет или за группу.",
+        "groupTooLarge": "Эта группа больше самой большой группы, на которую рассчитана цена.",
+        "refused": "Этот прайс-лист в текущем виде нельзя рассчитать."
+      },
+      "unlabelledRule": "Правило без названия",
+      "cond": {
+        "always": "Всегда",
+        "seasonal": "Поездки с {start} по {end}",
+        "dayOfWeek": "Поездки: {days}",
+        "earlyBird": "{count, plural, one {Бронь минимум за # день} few {Бронь минимум за # дня} many {Бронь минимум за # дней} other {Бронь минимум за # дня}}",
+        "lastMinute": "{count, plural, one {Бронь за # час или меньше до поездки} few {Бронь за # часа или меньше до поездки} many {Бронь за # часов или меньше до поездки} other {Бронь за # часа или меньше до поездки}}",
+        "participantKind": "Для: {kinds}",
+        "groupSize": "{count, plural, one {Группы от # человека} few {Группы от # человек} many {Группы от # человек} other {Группы от # человека}}",
+        "currency": "Цена в {currency}"
+      },
+      "adj": {
+        "percentOff": "Скидка {percent}",
+        "percentExtra": "Надбавка {percent}",
+        "amountOff": "Скидка {amount}",
+        "amountExtra": "Надбавка {amount}",
+        "override": "Цена установлена: {amount}"
+      },
+      "ruleOn": "Включено",
+      "ruleOff": "Выключено",
+      "ruleStarts": "С {date}",
+      "ruleEnded": "Закончилось {date}",
+      "ruleBroken": "Ошибка"
     }
   },
   "vendor": {
@@ -1309,7 +1421,9 @@
   "priceRule": {
     "earlyBird": "Раннее бронирование",
     "residentRate": "Тариф для резидентов",
-    "groupOfFour": "Группа от четырёх"
+    "groupOfFour": "Группа от четырёх",
+    "childRate": "Детский тариф",
+    "studentRate": "Студенческий тариф"
   },
   "category": {
     "diving": "Дайвинг",
@@ -1323,7 +1437,13 @@
     "desertSafari": "Пустыня и сафари",
     "bedouinCulture": "Бедуины и культура",
     "wellnessYoga": "Велнес и йога",
-    "transfers": "Трансферы"
+    "transfers": "Трансферы",
+    "scubaDiving": "Дайвинг с аквалангом",
+    "kitesurfing": "Кайтсёрфинг",
+    "boatTrips": "Морские прогулки",
+    "coursesCertifications": "Курсы и сертификаты",
+    "gearRental": "Прокат снаряжения",
+    "photography": "Фотография"
   },
   "traveler": {
     "tabs": {

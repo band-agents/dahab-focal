@@ -5,6 +5,8 @@
     "needsTranslation": [],
     "identicalToSource": [
       "admin.documentReview.of",
+      "admin.pricing.byline",
+      "admin.pricing.checkLine",
       "admin.serviceReview.of",
       "app.name",
       "traveler.discover.compareCategoryCount"
@@ -167,7 +169,8 @@
       "people": "الناس",
       "more": "المزيد",
       "home": "الرئيسية",
-      "trail": "انت هنا"
+      "trail": "انت هنا",
+      "pricing": "الأسعار"
     },
     "today": {
       "title": "اليوم",
@@ -926,6 +929,115 @@
         "noOperator": "مش في مركز",
         "operatorHint": "للمرشد وصاحب المركز بس. ده اللي بيحطه تحت المركز ده."
       }
+    },
+    "pricing": {
+      "title": "الأسعار",
+      "subtitle": "كارت أسعار كل خدمة، والمسافر هيدفع كام.",
+      "rateCards": "كروت الأسعار",
+      "untitled": "خدمة من غير اسم",
+      "byline": "{vendor} · {model}",
+      "noModel": "مفيش نموذج تسعير",
+      "noPrice": "من غير سعر",
+      "kind": {
+        "perPerson": "للفرد",
+        "perGroup": "للمجموعة",
+        "perPersonTiered": "للفرد، حسب حجم المجموعة",
+        "perUnitPerDay": "للوحدة، في اليوم",
+        "free": "مجانًا"
+      },
+      "kindHint": {
+        "perPerson": "كل فرد بيدفع السعر الأساسي.",
+        "perGroup": "سعر واحد للمجموعة كلها مهما كان عددها.",
+        "perPersonTiered": "سعر للفرد بيقل كل ما المجموعة تكبر.",
+        "perUnitPerDay": "إيجار: السعر في عدد الوحدات في عدد الأيام.",
+        "free": "محدش بيدفع."
+      },
+      "colCategory": "الفئة",
+      "colRules": "القواعد",
+      "colListing": "الإعلان",
+      "colBase": "السعر الأساسي",
+      "colModel": "النموذج",
+      "rulesCount": "{active} شغالة من {total}",
+      "unpricedBanner": "{count, plural, zero {كل الخدمات ليها سعر} one {خدمة واحدة مينفعش تتسعّر} two {خدمتين مينفعش يتسعّروا} few {# خدمات مينفعش تتسعّر} many {# خدمة مينفعش تتسعّر} other {# خدمة مينفعش تتسعّر}}",
+      "unpricedDetail": "الخدمة اللي مالهاش نموذج تسعير مالهاش سعر، فمحدش يقدر يحجزها.",
+      "twoModels": "{count, plural, zero {مفيش خدمة ليها أكتر من نموذج تسعير} one {خدمة واحدة ليها أكتر من نموذج تسعير} two {خدمتين ليهم أكتر من نموذج تسعير} few {# خدمات ليها أكتر من نموذج تسعير} many {# خدمة ليها أكتر من نموذج تسعير} other {# خدمة ليها أكتر من نموذج تسعير}}",
+      "twoModelsHere": "الخدمة دي ليها أكتر من نموذج تسعير",
+      "twoModelsDetail": "الأحدث بس هو اللي بيتحسب بيه. القديم لازم يتشال.",
+      "priced": "ليها سعر",
+      "ofServices": "من {total} خدمة",
+      "unpriced": "من غير سعر",
+      "activeRules": "قواعد شغالة",
+      "noFx": "مفيش مصدر لأسعار الصرف متوصّل، فالأسعار بالجنيه بس ومن غير ما يقابلها باليورو.",
+      "readOnly": "للقراية بس: تغيير السعر لسه متعملش.",
+      "none": "مفيش خدمات لسه.",
+      "colRule": "القاعدة",
+      "colWhen": "بتتطبق إمتى",
+      "colChange": "التغيير",
+      "colOrder": "الترتيب",
+      "colStacks": "بتتجمع؟",
+      "brokenCondition": "الشرط مش مطابق لنوعه",
+      "brokenAdjustment": "التغيير مش مطابق لنوعه",
+      "stacksYes": "أيوه",
+      "stacksNo": "لأ",
+      "stacksNoGroup": "لأ، جوه {group}",
+      "noModelTitle": "الخدمة دي مينفعش تتسعّر",
+      "noModelDetail": "مالهاش نموذج تسعير، فمالهاش سعر.",
+      "brokenBanner": "{count, plural, zero {كل القواعد سليمة} one {قاعدة واحدة مش مطابقة للعقد} two {قاعدتين مش مطابقين للعقد} few {# قواعد مش مطابقة للعقد} many {# قاعدة مش مطابقة للعقد} other {# قاعدة مش مطابقة للعقد}}",
+      "brokenDetail": "الدفع هيرفض أي سعر معمول بيها، فهي مش داخلة في حساب السعر.",
+      "openOperator": "المركز",
+      "model": "النموذج",
+      "maxGroup": "أكبر مجموعة",
+      "partySize": "حجم المجموعة",
+      "partyFrom": "{min} أفراد أو أكتر",
+      "partyRange": "من {min} لـ {max} أفراد",
+      "tiers": "شرايح حجم المجموعة",
+      "noTiers": "مفيش شرايح لسه. السعر الأساسي على أي حجم مجموعة.",
+      "tierFrom": "{count, plural, zero {من غير أفراد} one {من فرد واحد} two {من فردين} few {من # أفراد} many {من # فرد} other {من # فرد}}",
+      "rules": "القواعد",
+      "rulesSub": "بتتطبق بالترتيب ده. النسب المئوية بتتراكم بنفس الترتيب.",
+      "noRules": "مفيش قواعد. كل فرد بيدفع السعر الأساسي.",
+      "check": "احسب السعر",
+      "checkSub": "بيتحسب بنفس الدالة اللي بيستخدمها الدفع، فده اللي المسافر هيدفعه فعلًا.",
+      "checkDate": "تاريخ الرحلة",
+      "checkRun": "احسب السعر",
+      "checkRuleNote": "قاعدة",
+      "checkTotal": "الإجمالي",
+      "checkAssumption": "لرحلة يوم {date}، محجوزة دلوقتي",
+      "checkPaying": "اللي بيدفعوا",
+      "checkSeats": "الأماكن",
+      "checkNotCharged": "الرُّضَّع والمدربين المرافقين بياخدوا مكان بس مش بيدفعوا.",
+      "checkOutside": "المجموعة دي برّه الحجم اللي الخدمة بتاخده",
+      "checkLine": "{kind} × {heads}",
+      "refusal": {
+        "noModel": "مفيش نموذج تسعير نحسب بيه.",
+        "emptyParty": "زوّد فرد واحد على الأقل.",
+        "needsUnitBasis": "دي خدمة إيجار، وقاعدة البيانات لسه مش بتقول هي بالفرد ولا بالقطعة ولا بالمجموعة.",
+        "groupTooLarge": "المجموعة دي أكبر من أكبر مجموعة السعر ده بيغطيها.",
+        "refused": "كارت الأسعار ده مينفعش يتحسب بالشكل ده."
+      },
+      "unlabelledRule": "قاعدة من غير اسم",
+      "cond": {
+        "always": "دايمًا",
+        "seasonal": "الرحلات من {start} لـ {end}",
+        "dayOfWeek": "الرحلات يوم {days}",
+        "earlyBird": "{count, plural, zero {محجوزة في نفس اليوم} one {محجوزة قبلها بيوم أو أكتر} two {محجوزة قبلها بيومين أو أكتر} few {محجوزة قبلها بـ # أيام أو أكتر} many {محجوزة قبلها بـ # يوم أو أكتر} other {محجوزة قبلها بـ # يوم أو أكتر}}",
+        "lastMinute": "{count, plural, zero {محجوزة وقت الرحلة} one {محجوزة قبل الرحلة بساعة أو أقل} two {محجوزة قبل الرحلة بساعتين أو أقل} few {محجوزة قبل الرحلة بـ # ساعات أو أقل} many {محجوزة قبل الرحلة بـ # ساعة أو أقل} other {محجوزة قبل الرحلة بـ # ساعة أو أقل}}",
+        "participantKind": "الفئة: {kinds}",
+        "groupSize": "{count, plural, zero {أي مجموعة} one {مجموعات من فرد أو أكتر} two {مجموعات من فردين أو أكتر} few {مجموعات من # أفراد أو أكتر} many {مجموعات من # فرد أو أكتر} other {مجموعات من # فرد أو أكتر}}",
+        "currency": "بعملة {currency}"
+      },
+      "adj": {
+        "percentOff": "خصم {percent}",
+        "percentExtra": "زيادة {percent}",
+        "amountOff": "خصم {amount}",
+        "amountExtra": "زيادة {amount}",
+        "override": "السعر بقى {amount}"
+      },
+      "ruleOn": "شغالة",
+      "ruleOff": "مقفولة",
+      "ruleStarts": "تبدأ {date}",
+      "ruleEnded": "خلصت {date}",
+      "ruleBroken": "بايظة"
     }
   },
   "vendor": {
@@ -1093,7 +1205,9 @@
   "priceRule": {
     "earlyBird": "حجز مبكر",
     "residentRate": "سعر المقيمين",
-    "groupOfFour": "مجموعة من أربعة أو أكتر"
+    "groupOfFour": "مجموعة من أربعة أو أكتر",
+    "childRate": "سعر الأطفال",
+    "studentRate": "سعر الطلبة"
   },
   "category": {
     "diving": "غوص",
@@ -1107,7 +1221,13 @@
     "desertSafari": "صحراء وسفاري",
     "bedouinCulture": "بدو وثقافة",
     "wellnessYoga": "صحة ويوجا",
-    "transfers": "مواصلات"
+    "transfers": "مواصلات",
+    "scubaDiving": "الغطس بالأنابيب",
+    "kitesurfing": "الكايت سيرف",
+    "boatTrips": "رحلات المراكب",
+    "coursesCertifications": "الكورسات والشهادات",
+    "gearRental": "إيجار المعدات",
+    "photography": "التصوير"
   },
   "traveler": {
     "tabs": {

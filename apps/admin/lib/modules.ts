@@ -10,12 +10,16 @@ import { path } from './nav';
  *
  * This list is the console's map of the business, and it is deliberately
  * longer than the list of screens that exist. The platform has 59 tables and
- * the console reads about half of them; `pricingRules`, `exchangeRates`,
- * `resources`, `maintenanceLog`, `messageThreads`, `availabilityTemplates`
- * and `meetingPoints` all carry seeded rows that nothing can currently open.
- * Leaving those off the map would make the console look finished when it is
- * not, and the gap would be rediscovered the first time somebody needed to
- * change a price.
+ * the console reads about half of them. Leaving the rest off the map would
+ * make the console look finished when it is not.
+ *
+ * Several of the unread tables are also EMPTY, and an earlier version of this
+ * comment said otherwise: a count of the live database on 25 Sep 2026 found
+ * `availability_templates`, `blackout_dates`, `exchange_rates`,
+ * `maintenance_log`, `meeting_points`, `message_threads`, `options`,
+ * `service_variants` and `payment_methods` all at zero rows. A module built on
+ * one of those needs its seed written as well as its screen — which is what
+ * pricing needed.
  *
  * So `state` is part of the data:
  *
@@ -90,8 +94,9 @@ export const MODULES: readonly ConsoleModule[] = [
     key: 'availability',
     group: 'run',
     icon: 'calendar',
-    // `availability_templates` and `blackout_dates` are seeded and unread. A
-    // boat that does not sail in Ramadan is a blackout row nobody can set.
+    // `availability_templates` and `blackout_dates` are unread, and empty —
+    // the seed writes slots directly. A boat that does not sail in Ramadan is
+    // a blackout row nobody can set.
     state: 'planned',
     evidence: ['availability_templates', 'availability_slots', 'blackout_dates'],
   },
@@ -135,8 +140,9 @@ export const MODULES: readonly ConsoleModule[] = [
     key: 'fleet',
     group: 'supply',
     icon: 'wrench',
-    // Tanks carry hydrostatic test dates and boats carry licences. Both are
-    // seeded, neither is readable, and the expiry board cannot see them.
+    // Tanks carry hydrostatic test dates and boats carry licences. Five
+    // resources and four certifications are seeded (the maintenance log is
+    // empty), none is readable here, and the expiry board cannot see them.
     state: 'planned',
     evidence: ['resources', 'resource_certifications', 'maintenance_log'],
   },
@@ -224,9 +230,10 @@ export const MODULES: readonly ConsoleModule[] = [
     key: 'pricing',
     group: 'money',
     icon: 'tag',
-    // Four seeded tables, no screen. Every price on the platform is decided
-    // by rows nobody in the console can see, let alone change.
-    state: 'planned',
+    // Read-only for now: every rate card, and a price check through
+    // computePrice(). Changing a price is not built yet.
+    state: 'live',
+    path: 'pricing',
     evidence: ['pricing_models', 'pricing_tiers', 'pricing_rules'],
   },
   {
@@ -276,9 +283,9 @@ export const MODULES: readonly ConsoleModule[] = [
     key: 'access',
     group: 'platform',
     icon: 'key',
-    // Roles are visible on the roster now; granting one, revoking one and
-    // starting an impersonation are not. Impersonation was designed with a
-    // 30-minute cap and a mandatory reason, and none of it is reachable.
+    // Granting and revoking a role, and ending sessions, are built on the
+    // person page. Impersonation is not: it was designed with a 30-minute cap
+    // and a mandatory reason, and none of it is reachable.
     state: 'partial',
     path: 'people',
     evidence: ['user_roles', 'sessions', 'audit_log'],

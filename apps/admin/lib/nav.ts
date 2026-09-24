@@ -40,6 +40,7 @@ export const SECTIONS: readonly Section[] = [
   { key: 'money', path: 'money', icon: 'money', labelKey: 'admin.nav.money', tab: true },
   { key: 'expiry', path: 'expiry', icon: 'clock', labelKey: 'admin.nav.expiry' },
   { key: 'catalog', path: 'catalog', icon: 'tank', labelKey: 'admin.nav.catalog' },
+  { key: 'pricing', path: 'pricing', icon: 'tag', labelKey: 'admin.nav.pricing' },
   { key: 'bookings', path: 'bookings', icon: 'boat', labelKey: 'admin.nav.bookings' },
   { key: 'trust', path: 'trust', icon: 'shield', labelKey: 'admin.nav.trust' },
   { key: 'platform', path: 'platform', icon: 'filter', labelKey: 'admin.nav.platform' },

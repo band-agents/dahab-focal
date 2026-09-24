@@ -15,6 +15,8 @@ import {
   ledgerEntries,
   payments,
   payouts,
+  pricingModels,
+  pricingRules,
   refunds,
   resourceCertifications,
   resources,
@@ -53,6 +55,7 @@ import {
   paymentFeeMinor,
 } from './operations.ts';
 import type { SeedBooking, SeedParticipantKind } from './operations.ts';
+import { SEED_PRICING } from './pricing.ts';
 
 /**
  * Writing the operating week.
@@ -439,6 +442,53 @@ async function seedServices(
 
   await linkDiveSites(db, byKey);
   return { ids: byKey, translations: translationCount, attributeValues: valueCount };
+}
+
+/**
+ * One pricing model and its rules per seeded service.
+ *
+ * Replaced rather than upserted: `pricing_models` has no natural key beyond
+ * the service, and a rule's identity is its position in the rate card. Only
+ * the seeded services are touched, so a price somebody sets through a later
+ * screen on another service survives a re-seed.
+ */
+export async function seedPricing(db: Database, serviceId: Ids): Promise<{ models: number; rules: number }> {
+  const ids = [...serviceId.values()];
+  if (ids.length > 0) {
+    await db.delete(pricingRules).where(inArray(pricingRules.serviceId, ids));
+    await db.delete(pricingModels).where(inArray(pricingModels.serviceId, ids));
+  }
+
+  let models = 0;
+  let rules = 0;
+  for (const pricing of SEED_PRICING) {
+    const service = serviceId.get(pricing.serviceSlug);
+    if (service === undefined) continue;
+
+    await db.insert(pricingModels).values({
+      serviceId: service,
+      kind: pricing.kind,
+      currency: pricing.currency,
+      basePriceAmount: pricing.basePriceMinor,
+      basePriceCurrency: pricing.currency,
+    });
+    models += 1;
+
+    for (const rule of pricing.rules) {
+      await db.insert(pricingRules).values({
+        serviceId: service,
+        labelKey: rule.labelKey,
+        conditionKind: rule.condition.kind,
+        condition: rule.condition,
+        adjustmentKind: rule.adjustment.kind,
+        adjustment: rule.adjustment,
+        priority: rule.priority,
+        stackable: rule.stackable,
+      });
+      rules += 1;
+    }
+  }
+  return { models, rules };
 }
 
 async function linkDiveSites(db: Database, serviceId: Ids): Promise<void> {
@@ -1019,6 +1069,8 @@ export interface OperationsCounts {
   readonly services: number;
   readonly serviceTranslations: number;
   readonly attributeValues: number;
+  readonly pricingModels: number;
+  readonly pricingRules: number;
   readonly slots: number;
   readonly bookings: number;
   readonly participants: number;
@@ -1040,6 +1092,7 @@ export async function seedOperations(db: Database): Promise<OperationsCounts> {
   const staffCount = await seedStaff(db, vendorId);
   const resourceId = await seedResources(db, vendorId);
   const service = await seedServices(db, vendorId, categoryId);
+  const pricing = await seedPricing(db, service.ids);
   const slotId = await seedSlots(db, service.ids, resourceId);
   const booking = await seedBookings(db, vendorId, service.ids, travelerId, slotId);
   const payoutCount = await seedPayouts(db, vendorId);
@@ -1064,6 +1117,8 @@ export async function seedOperations(db: Database): Promise<OperationsCounts> {
     services: service.ids.size,
     serviceTranslations: service.translations,
     attributeValues: service.attributeValues,
+    pricingModels: pricing.models,
+    pricingRules: pricing.rules,
     slots: slotId.size,
     bookings: booking.bookings,
     participants: booking.participants,

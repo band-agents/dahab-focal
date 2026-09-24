@@ -48,5 +48,5 @@ export type { KeyValueProps } from './KeyValue';
 export { Banner } from './Banner';
 export type { BannerProps } from './Banner';
 
-export { ActionPanel } from './ActionPanel';
+export { ActionPanel, FIELD } from './ActionPanel';
 export type { ActionPanelProps, ActionField, ActionChoice } from './ActionPanel';

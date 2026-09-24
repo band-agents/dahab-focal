@@ -161,7 +161,8 @@
       "people": "People",
       "more": "More",
       "home": "Home",
-      "trail": "You are here"
+      "trail": "You are here",
+      "pricing": "Pricing"
     },
     "today": {
       "title": "Today",
@@ -920,6 +921,115 @@
         "noOperator": "Not at an operator",
         "operatorHint": "Only for a guide or a centre owner. This is what puts them under that operator."
       }
+    },
+    "pricing": {
+      "title": "Pricing",
+      "subtitle": "Every service's rate card, and what a traveller would pay.",
+      "rateCards": "Rate cards",
+      "untitled": "Untitled service",
+      "byline": "{vendor} · {model}",
+      "noModel": "No pricing model",
+      "noPrice": "No price",
+      "kind": {
+        "perPerson": "Per person",
+        "perGroup": "Per group",
+        "perPersonTiered": "Per person, by group size",
+        "perUnitPerDay": "Per unit, per day",
+        "free": "Free"
+      },
+      "kindHint": {
+        "perPerson": "Every paying person pays the base price.",
+        "perGroup": "One price for the whole group, whatever its size.",
+        "perPersonTiered": "A price per person that drops as the group grows.",
+        "perUnitPerDay": "A rental: the price, times the units, times the days.",
+        "free": "Nobody pays."
+      },
+      "colCategory": "Category",
+      "colRules": "Rules",
+      "colListing": "Listing",
+      "colBase": "Base price",
+      "colModel": "Model",
+      "rulesCount": "{active} of {total} on",
+      "unpricedBanner": "{count, plural, one {# service cannot be quoted} other {# services cannot be quoted}}",
+      "unpricedDetail": "A service with no pricing model has no price, so nobody can book it.",
+      "twoModels": "{count, plural, one {# service has more than one pricing model} other {# services have more than one pricing model}}",
+      "twoModelsHere": "This service has more than one pricing model",
+      "twoModelsDetail": "Only the newest one is used. The older ones should be removed.",
+      "priced": "Priced",
+      "ofServices": "of {total} services",
+      "unpriced": "Without a price",
+      "activeRules": "Rules on",
+      "noFx": "No exchange-rate source is connected, so prices are shown in EGP only, with no EUR equivalent.",
+      "readOnly": "Read-only: changing a price is not built yet.",
+      "none": "No services yet.",
+      "colRule": "Rule",
+      "colWhen": "Applies when",
+      "colChange": "Change",
+      "colOrder": "Order",
+      "colStacks": "Stacks",
+      "brokenCondition": "Condition does not match its kind",
+      "brokenAdjustment": "Change does not match its kind",
+      "stacksYes": "Yes",
+      "stacksNo": "No",
+      "stacksNoGroup": "No, within {group}",
+      "noModelTitle": "This service cannot be quoted",
+      "noModelDetail": "It has no pricing model, so it has no price.",
+      "brokenBanner": "{count, plural, one {# rule does not match the contract} other {# rules do not match the contract}}",
+      "brokenDetail": "Checkout would refuse a price built from it, so it is left out of the price check.",
+      "openOperator": "Operator",
+      "model": "Model",
+      "maxGroup": "Largest group",
+      "partySize": "Group size",
+      "partyFrom": "{min} or more people",
+      "partyRange": "{min} to {max} people",
+      "tiers": "Group-size tiers",
+      "noTiers": "No tiers yet. The base price applies to every group size.",
+      "tierFrom": "{count, plural, one {From # person} other {From # people}}",
+      "rules": "Rules",
+      "rulesSub": "Applied in this order. Percentages compound in the same order.",
+      "noRules": "No rules. Every paying person pays the base price.",
+      "check": "Price check",
+      "checkSub": "Worked out with the same function checkout uses, so this is what a traveller would be charged.",
+      "checkDate": "Trip date",
+      "checkRun": "Work out the price",
+      "checkRuleNote": "Rule",
+      "checkTotal": "Total",
+      "checkAssumption": "For a trip on {date}, booked now",
+      "checkPaying": "Paying",
+      "checkSeats": "Seats taken",
+      "checkNotCharged": "Infants and accompanying instructors take a seat but are not charged.",
+      "checkOutside": "This party is outside the group size the service takes",
+      "checkLine": "{kind} × {heads}",
+      "refusal": {
+        "noModel": "There is no pricing model to work out a price with.",
+        "emptyParty": "Add at least one person.",
+        "needsUnitBasis": "This is a rental, and the database cannot yet say whether it is priced per person, per item or per group.",
+        "groupTooLarge": "This party is larger than the largest group this price covers.",
+        "refused": "This rate card cannot be priced as it stands."
+      },
+      "unlabelledRule": "Unnamed rule",
+      "cond": {
+        "always": "Always",
+        "seasonal": "Trips from {start} to {end}",
+        "dayOfWeek": "Trips on {days}",
+        "earlyBird": "{count, plural, one {Booked # day or more ahead} other {Booked # days or more ahead}}",
+        "lastMinute": "{count, plural, one {Booked # hour or less before the trip} other {Booked # hours or less before the trip}}",
+        "participantKind": "For {kinds}",
+        "groupSize": "{count, plural, one {Groups of # or more} other {Groups of # or more}}",
+        "currency": "Quoted in {currency}"
+      },
+      "adj": {
+        "percentOff": "{percent} off",
+        "percentExtra": "{percent} extra",
+        "amountOff": "{amount} off",
+        "amountExtra": "{amount} extra",
+        "override": "Price set to {amount}"
+      },
+      "ruleOn": "On",
+      "ruleOff": "Off",
+      "ruleStarts": "Starts {date}",
+      "ruleEnded": "Ended {date}",
+      "ruleBroken": "Broken"
     }
   },
   "vendor": {
@@ -1087,7 +1197,9 @@
   "priceRule": {
     "earlyBird": "Early bird",
     "residentRate": "Resident rate",
-    "groupOfFour": "Group of four or more"
+    "groupOfFour": "Group of four or more",
+    "childRate": "Child rate",
+    "studentRate": "Student rate"
   },
   "category": {
     "diving": "Diving",
@@ -1101,7 +1213,13 @@
     "desertSafari": "Desert & safari",
     "bedouinCulture": "Bedouin & culture",
     "wellnessYoga": "Wellness & yoga",
-    "transfers": "Transfers"
+    "transfers": "Transfers",
+    "scubaDiving": "Scuba diving",
+    "kitesurfing": "Kitesurfing",
+    "boatTrips": "Boat trips",
+    "coursesCertifications": "Courses & certifications",
+    "gearRental": "Gear rental",
+    "photography": "Photography"
   },
   "traveler": {
     "tabs": {

@@ -62,6 +62,15 @@ export const permissionSchema = z.enum([
   'staff.manage',
   'resource.manage',
   'pricing.manage',
+  /**
+   * Every operator's pricing models, tiers and rules, from the console.
+   *
+   * `pricing.manage` is what a vendor owner holds over their own prices, so
+   * gating the console's pricing screen on it would have handed every owner
+   * every competitor's rate card — the read-side version of the bug that made
+   * `catalog.publishAny`.
+   */
+  'pricing.readAny',
   'payout.readOwn',
   'payout.manage',
   'review.write',

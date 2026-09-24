@@ -105,9 +105,9 @@ describe('the module map is grounded in the schema', () => {
   it('reports the coverage it actually has', () => {
     const tally = moduleTally();
     expect(tally.live + tally.partial + tally.planned).toBe(MODULES.length);
-    expect(tally.live).toBe(9);
+    expect(tally.live).toBe(10);
     expect(tally.partial).toBe(6);
-    expect(tally.planned).toBe(14);
+    expect(tally.planned).toBe(13);
   });
 
   it('covers a real share of the tables the platform has', () => {

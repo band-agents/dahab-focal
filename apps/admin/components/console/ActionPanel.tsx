@@ -71,7 +71,7 @@ export interface ActionPanelProps {
   readonly closeLabel: string;
 }
 
-const FIELD =
+export const FIELD =
   'min-h-11 w-full rounded-c-sm border border-c-edge-strong bg-c-surface px-3 font-console text-cBody text-c-text placeholder:text-c-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-c-focus';
 
 export function ActionPanel({
