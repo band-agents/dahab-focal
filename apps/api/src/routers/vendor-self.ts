@@ -1,11 +1,12 @@
 import { TRPCError } from '@trpc/server';
-import { and, count, desc, eq, gt, inArray, isNotNull, isNull, ne, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gt, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { MIN_PASSWORD_LENGTH } from '@dahab/api-contract';
+import { MIN_OPERATOR_PASSWORD_LENGTH, operatorPasswordSchema, usernameSchema } from '@dahab/api-contract';
 import { schema } from '@dahab/db';
 import type { Database } from '@dahab/db';
 
+import { endSessions, takenLoginField } from '../auth/logins.ts';
 import { hashPassword, verifyPassword } from '../auth/password.ts';
 import { requireDatabase } from '../database.ts';
 import { requireVendorPermission } from '../trpc.ts';
@@ -328,6 +329,7 @@ export const vendorSelfRouter = {
         id: z.string().uuid(),
         displayName: z.string().nullable(),
         avatarUrl: z.string().nullable(),
+        username: z.string().nullable(),
         email: z.string().nullable(),
         phone: z.string().nullable(),
         isOwner: z.boolean(),
@@ -344,6 +346,7 @@ export const vendorSelfRouter = {
       const [row] = await db
         .select({
           id: schema.users.id,
+          username: schema.users.username,
           email: schema.users.email,
           phone: schema.users.phone,
           displayName: schema.userProfiles.displayName,
@@ -415,22 +418,66 @@ export const vendorSelfRouter = {
     }),
 
   /**
-   * Set up, or change, signing in with an email and a password.
+   * Change the names you sign in with: a username, an email, or both.
    *
-   * Anybody on the team, for themselves only. Changing an existing password
-   * asks for the current one: a phone left unlocked on the dive-shop counter
-   * is a signed-in session, and that must not be enough to take the account
-   * over. Setting the first password does not — the person already proved
-   * who they are to get this session.
-   *
-   * Every other session of theirs is ended, so a password changed because
-   * somebody else knew it actually locks that somebody out.
+   * Anybody on the team, for themselves. No password is asked for: a new
+   * name opens nothing without the password that goes with it. A name that
+   * belongs to somebody else is refused by saying which one, so the screen
+   * can point at the right box.
    */
-  setSignIn: requireVendorPermission('vendor.readOwn')
+  setLoginNames: requireVendorPermission('vendor.readOwn')
     .input(
       z.object({
-        email: z.string().trim().toLowerCase().email().max(320),
-        newPassword: z.string().min(MIN_PASSWORD_LENGTH).max(512),
+        username: usernameSchema.nullable(),
+        email: z.string().trim().toLowerCase().email().max(320).nullable(),
+      }),
+    )
+    .output(z.union([okSchema, z.object({ ok: z.literal(false), taken: z.enum(['username', 'email']) })]))
+    .mutation(async ({ ctx, input }) => {
+      const db = requireDatabase(ctx.db);
+      const userId = ctx.session?.userId;
+      if (userId === null || userId === undefined) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Sign in again.' });
+      }
+      const taken = await takenLoginField(db, { username: input.username, email: input.email }, userId);
+      if (taken === 'username' || taken === 'email') return { ok: false as const, taken };
+
+      const [before] = await db
+        .select({ username: schema.users.username, email: schema.users.email })
+        .from(schema.users)
+        .where(eq(schema.users.id, userId))
+        .limit(1);
+
+      await db.transaction(async (tx) => {
+        await tx
+          .update(schema.users)
+          .set({ username: input.username, email: input.email, updatedAt: ctx.now })
+          .where(eq(schema.users.id, userId));
+        await audit(tx, ctx, {
+          entityTable: 'users',
+          entityId: userId,
+          action: 'login.names',
+          before: { username: before?.username ?? null, email: before?.email ?? null },
+          after: { username: input.username, email: input.email },
+        });
+      });
+      return { ok: true as const };
+    }),
+
+  /**
+   * Set or change your own password.
+   *
+   * Changing an existing one asks for it first: a phone left unlocked on the
+   * dive-shop counter is a signed-in session, and that must not be enough to
+   * take the account over. Setting the first one does not — the person
+   * already proved who they are to get this session. Every other session of
+   * theirs ends, so a password changed because somebody else knew it actually
+   * locks that somebody out.
+   */
+  changePassword: requireVendorPermission('vendor.readOwn')
+    .input(
+      z.object({
+        newPassword: operatorPasswordSchema,
         currentPassword: z.string().max(512).optional(),
       }),
     )
@@ -441,9 +488,8 @@ export const vendorSelfRouter = {
       if (userId === null || userId === undefined) {
         throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Sign in again.' });
       }
-
       const [user] = await db
-        .select({ email: schema.users.email, passwordHash: schema.users.passwordHash })
+        .select({ passwordHash: schema.users.passwordHash })
         .from(schema.users)
         .where(eq(schema.users.id, userId))
         .limit(1);
@@ -457,50 +503,20 @@ export const vendorSelfRouter = {
         }
       }
 
-      if (input.email !== user.email) {
-        const [taken] = await db
-          .select({ id: schema.users.id })
-          .from(schema.users)
-          .where(and(eq(schema.users.email, input.email), ne(schema.users.id, userId)))
-          .limit(1);
-        if (taken !== undefined) {
-          throw new TRPCError({ code: 'CONFLICT', message: 'That email is already used by another account.' });
-        }
-      }
-
-      const passwordHash = await hashPassword(input.newPassword);
+      const passwordHash = await hashPassword(input.newPassword, MIN_OPERATOR_PASSWORD_LENGTH);
       await db.transaction(async (tx) => {
         await tx
           .update(schema.users)
-          .set({
-            email: input.email,
-            passwordHash,
-            passwordUpdatedAt: ctx.now,
-            failedSignInCount: 0,
-            lockedUntil: null,
-            updatedAt: ctx.now,
-          })
+          .set({ passwordHash, passwordUpdatedAt: ctx.now, failedSignInCount: 0, lockedUntil: null, updatedAt: ctx.now })
           .where(eq(schema.users.id, userId));
-
-        const current = ctx.session?.id;
-        await tx
-          .update(schema.sessions)
-          .set({ revokedAt: ctx.now })
-          .where(
-            and(
-              eq(schema.sessions.userId, userId),
-              isNull(schema.sessions.revokedAt),
-              ...(current === undefined ? [] : [ne(schema.sessions.id, current)]),
-            ),
-          );
-
-        // What changed — never the password or its hash.
+        await endSessions(tx, userId, ctx.now, ctx.session?.id);
+        // That it changed — never the password or its hash.
         await audit(tx, ctx, {
           entityTable: 'users',
           entityId: userId,
-          action: user.passwordHash === null ? 'signIn.passwordSet' : 'signIn.passwordChanged',
-          before: { email: user.email },
-          after: { email: input.email },
+          action: user.passwordHash === null ? 'login.passwordSet' : 'login.passwordChanged',
+          before: {},
+          after: {},
         });
       });
       return { ok: true as const };
@@ -689,6 +705,7 @@ export const vendorSelfRouter = {
           userId: z.string().uuid(),
           displayName: z.string().nullable(),
           avatarUrl: z.string().nullable(),
+          username: z.string().nullable(),
           email: z.string().nullable(),
           phone: z.string().nullable(),
           role: z.enum(['vendorOwner', 'vendorStaff']),
@@ -703,6 +720,7 @@ export const vendorSelfRouter = {
       const rows = await db
         .select({
           userId: schema.users.id,
+          username: schema.users.username,
           email: schema.users.email,
           phone: schema.users.phone,
           deletedAt: schema.users.deletedAt,
@@ -726,6 +744,7 @@ export const vendorSelfRouter = {
         userId: row.userId,
         displayName: row.displayName,
         avatarUrl: row.avatarUrl,
+        username: row.username,
         email: row.email,
         phone: row.phone,
         role: row.role as 'vendorOwner' | 'vendorStaff',
@@ -736,108 +755,71 @@ export const vendorSelfRouter = {
     }),
 
   /**
-   * Add somebody to the team.
+   * Add somebody to the team, with a login of their own.
    *
-   * By phone number, because that is what a dive centre has for its guides —
-   * and a phone is also how they sign in, with a one-time code and no password
-   * to forget. If the number already belongs to an account, that account joins;
-   * otherwise one is made.
+   * Always a new account, with a username and a first password the owner
+   * chooses and tells them in person. An email or a mobile number can be
+   * added too, so they can also sign in those ways — but if either already
+   * belongs to an account, the answer is which one, not a quiet merge: joining
+   * an existing account to a team, and giving it a password somebody else
+   * chose, would be a way to take that account over.
    *
    * An owner can add staff and nothing else. Making a second owner, or
-   * anybody an admin, is the platform team's act and is not reachable from
-   * here — that is what `role.grant` exists to keep narrow.
+   * anybody an admin, is Sky Eye's act and is not reachable from here — that
+   * is what `role.grant` exists to keep narrow.
    */
   addTeamMember: requireVendorPermission('staff.manage')
     .input(
-      z
-        .object({
-          displayName: z.string().trim().min(1).max(80),
-          phone: z
-            .string()
-            .trim()
-            .regex(/^\+[1-9]\d{6,18}$/, 'A phone number must start with + and the country code.')
-            .optional(),
-          email: z.string().trim().toLowerCase().email().max(320).optional(),
-          /**
-           * The first password, chosen by the owner and passed on in person.
-           * Used only when the account is new: an existing account keeps its
-           * own password, or adding somebody to a team would be a way to
-           * take their account over.
-           */
-          password: z.string().min(MIN_PASSWORD_LENGTH).max(512).optional(),
-        })
-        .refine((value) => value.phone !== undefined || value.email !== undefined, {
-          message: 'A phone number or an email is needed to sign in with.',
-        })
-        .refine((value) => value.email === undefined || value.password !== undefined, {
-          message: 'Someone added by email needs a first password.',
-          path: ['password'],
-        }),
+      z.object({
+        displayName: z.string().trim().min(1).max(80),
+        username: usernameSchema,
+        password: operatorPasswordSchema,
+        email: z.string().trim().toLowerCase().email().max(320).optional(),
+        phone: z
+          .string()
+          .trim()
+          .regex(/^\+[1-9]\d{6,18}$/, 'A phone number must start with + and the country code.')
+          .optional(),
+      }),
     )
-    .output(z.object({ userId: z.string().uuid(), created: z.boolean() }))
+    .output(
+      z.union([
+        z.object({ ok: z.literal(true), userId: z.string().uuid() }),
+        z.object({ ok: z.literal(false), taken: z.enum(['username', 'email', 'phone']) }),
+      ]),
+    )
     .mutation(async ({ ctx, input }) => {
       const db = requireDatabase(ctx.db);
+      const taken = await takenLoginField(db, input);
+      if (taken !== null) return { ok: false as const, taken };
+
       // Hashed before the transaction: scrypt is slow on purpose, and a row
       // lock should not wait on it.
-      const passwordHash = input.password === undefined ? null : await hashPassword(input.password);
+      const passwordHash = await hashPassword(input.password, MIN_OPERATOR_PASSWORD_LENGTH);
 
       return db.transaction(async (tx) => {
-        // The same person may already exist under either detail.
-        let account: { id: string } | undefined;
-        if (input.email !== undefined) {
-          [account] = await tx
-            .select({ id: schema.users.id })
-            .from(schema.users)
-            .where(eq(schema.users.email, input.email))
-            .limit(1);
-        }
-        if (account === undefined && input.phone !== undefined) {
-          [account] = await tx
-            .select({ id: schema.users.id })
-            .from(schema.users)
-            .where(eq(schema.users.phone, input.phone))
-            .limit(1);
-        }
-        const created = account === undefined;
-
-        if (account === undefined) {
-          [account] = await tx
-            .insert(schema.users)
-            .values({
-              phone: input.phone ?? null,
-              email: input.email ?? null,
-              passwordHash,
-              passwordUpdatedAt: passwordHash === null ? null : ctx.now,
-              isGuest: false,
-              createdAt: ctx.now,
-              updatedAt: ctx.now,
-            })
-            .returning({ id: schema.users.id });
-          if (account === undefined) {
-            throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'The account was not made.' });
-          }
-          await tx.insert(schema.userProfiles).values({
-            userId: account.id,
-            displayName: input.displayName,
+        const [account] = await tx
+          .insert(schema.users)
+          .values({
+            username: input.username,
+            email: input.email ?? null,
+            phone: input.phone ?? null,
+            passwordHash,
+            passwordUpdatedAt: ctx.now,
+            isGuest: false,
             createdAt: ctx.now,
             updatedAt: ctx.now,
-          });
+          })
+          .returning({ id: schema.users.id });
+        if (account === undefined) {
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'The account was not made.' });
         }
-
-        const [already] = await tx
-          .select({ id: schema.userRoles.id })
-          .from(schema.userRoles)
-          .where(
-            and(
-              eq(schema.userRoles.userId, account.id),
-              eq(schema.userRoles.vendorId, ctx.vendorId),
-            ),
-          )
-          .limit(1);
-        if (already !== undefined) {
-          throw new TRPCError({ code: 'CONFLICT', message: 'This person is already on the team.' });
-        }
-
+        await tx.insert(schema.userProfiles).values({
+          userId: account.id,
+          displayName: input.displayName,
+          createdAt: ctx.now,
+          updatedAt: ctx.now,
+        });
         await tx.insert(schema.userRoles).values({
           userId: account.id,
           role: 'vendorStaff',
@@ -845,17 +827,62 @@ export const vendorSelfRouter = {
           createdAt: ctx.now,
           updatedAt: ctx.now,
         });
-
         await audit(tx, ctx, {
           entityTable: 'user_roles',
           entityId: account.id,
           action: 'team.add',
           before: {},
-          after: { role: 'vendorStaff', vendorId: ctx.vendorId, created },
+          after: { role: 'vendorStaff', vendorId: ctx.vendorId, username: input.username },
         });
-
-        return { userId: account.id, created };
+        return { ok: true as const, userId: account.id };
       });
+    }),
+
+  /**
+   * Give a team member a new password — the answer to "I forgot it" that does
+   * not need Sky Eye. Staff only, never the owner or yourself (you change
+   * your own with the current one). Their sessions end, so the old password
+   * stops working everywhere at once.
+   */
+  resetTeamPassword: requireVendorPermission('staff.manage')
+    .input(z.object({ userId: z.string().uuid(), newPassword: operatorPasswordSchema }))
+    .output(okSchema)
+    .mutation(async ({ ctx, input }) => {
+      const db = requireDatabase(ctx.db);
+      if (input.userId === ctx.session?.userId) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Change your own password from My account.' });
+      }
+      const [member] = await db
+        .select({ id: schema.userRoles.id })
+        .from(schema.userRoles)
+        .where(
+          and(
+            eq(schema.userRoles.userId, input.userId),
+            eq(schema.userRoles.vendorId, ctx.vendorId),
+            eq(schema.userRoles.role, 'vendorStaff'),
+          ),
+        )
+        .limit(1);
+      if (member === undefined) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'That person is not on the team.' });
+      }
+
+      const passwordHash = await hashPassword(input.newPassword, MIN_OPERATOR_PASSWORD_LENGTH);
+      await db.transaction(async (tx) => {
+        await tx
+          .update(schema.users)
+          .set({ passwordHash, passwordUpdatedAt: ctx.now, failedSignInCount: 0, lockedUntil: null, updatedAt: ctx.now })
+          .where(eq(schema.users.id, input.userId));
+        await endSessions(tx, input.userId, ctx.now);
+        await audit(tx, ctx, {
+          entityTable: 'users',
+          entityId: input.userId,
+          action: 'team.passwordReset',
+          before: {},
+          after: {},
+        });
+      });
+      return { ok: true as const };
     }),
 
   /**

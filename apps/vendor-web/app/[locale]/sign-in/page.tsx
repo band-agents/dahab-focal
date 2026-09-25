@@ -13,9 +13,9 @@ import { resolveLocale } from '@/lib/page';
 import { changeNumber, passwordSignIn, sendCode, verifyCode } from './actions';
 
 /**
- * The door. An email and a password first: text messages are not wired up
- * yet, so a code sent to a phone would never arrive. Signing in by phone is
- * one tap away and becomes the easy door once they are.
+ * The door. A username or an email, and a password — the login Sky Eye or
+ * the centre's owner made. Signing in by phone is one tap away and becomes
+ * the easy door once text messages are wired up.
  *
  * One question per screen. The code step does not show the number box again,
  * and the email form does not sit beside the phone one: two forms at once is
@@ -94,7 +94,14 @@ export default async function SignInPage({
             <>
               <form action={passwordSignIn} className="flex flex-col gap-4">
                 <input type="hidden" name="locale" value={locale} />
-                <Field name="email" type="email" label={t('partner.signIn.email')} autoComplete="email" inputMode="email" ltr required />
+                <Field
+                  name="identifier"
+                  label={t('partner.signIn.identifier')}
+                  hint={t('partner.signIn.identifierHint')}
+                  autoComplete="username"
+                  ltr
+                  required
+                />
                 <PasswordField
                   name="password"
                   label={t('partner.signIn.password')}

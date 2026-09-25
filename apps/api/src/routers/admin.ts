@@ -10,6 +10,7 @@ import { LOCALES, SOURCE_LOCALE } from '@dahab/i18n';
 
 import { requirePermission, router } from '../trpc.ts';
 import { asCurrency, cairoDay, requireDb } from './_shared.ts';
+import { adminLoginsRouter } from './admin-logins.ts';
 import { adminPeopleRouter } from './admin-people.ts';
 import { adminUserWritesRouter } from './admin-user-writes.ts';
 import { adminWritesRouter } from './admin-writes.ts';
@@ -1575,6 +1576,7 @@ export const adminRouter = router({
 
   // Accounts, roles and operator status — the console's writes on people.
   ...adminUserWritesRouter,
+  ...adminLoginsRouter,
 });
 
 // --- Shared shapes and small helpers -------------------------------------

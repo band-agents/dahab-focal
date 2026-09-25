@@ -36,6 +36,13 @@ export const users = pgTable(
     phoneVerifiedAt: timestamp('phone_verified_at', { withTimezone: true, mode: 'date' }),
     email: varchar('email', { length: 320 }),
     emailVerifiedAt: timestamp('email_verified_at', { withTimezone: true, mode: 'date' }),
+    /**
+     * A sign-in name for operators, made in Sky Eye or by a centre's owner.
+     * Stored lowercase; letters, digits, dots, dashes and underscores. It is
+     * not a contact detail — nothing is ever sent to it — only the half of a
+     * login that is not the password.
+     */
+    username: varchar('username', { length: 40 }),
     appleSubject: varchar('apple_subject', { length: 255 }),
     googleSubject: varchar('google_subject', { length: 255 }),
     /**
@@ -49,8 +56,8 @@ export const users = pgTable(
      *
      * Null for every traveller, which is nearly every row: the apps sign in
      * by one-time code and no traveller ever has a password to lose. It is
-     * set only for console staff, because the console is the one surface
-     * with no phone in the loop and it faces the open internet.
+     * set for console staff, and for operators who sign in with a username or
+     * an email instead of a code sent to their phone.
      */
     passwordHash: varchar('password_hash', { length: 255 }),
     passwordUpdatedAt: timestamp('password_updated_at', {
@@ -71,6 +78,7 @@ export const users = pgTable(
   (table) => [
     uniqueIndex('users_phone_key').on(table.phone),
     uniqueIndex('users_email_key').on(table.email),
+    uniqueIndex('users_username_key').on(table.username),
     uniqueIndex('users_apple_subject_key').on(table.appleSubject),
     uniqueIndex('users_google_subject_key').on(table.googleSubject),
   ],

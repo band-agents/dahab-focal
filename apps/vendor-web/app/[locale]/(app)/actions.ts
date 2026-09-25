@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation';
 import { isLocale } from '@dahab/i18n/server';
 
 import { api } from '@/lib/api';
-import { MIN_PASSWORD_LENGTH } from '@/lib/password';
+import { MIN_PASSWORD_LENGTH, USERNAME } from '@/lib/password';
 import { normalisePhone } from '@/lib/phone';
 
 /**
@@ -41,6 +41,9 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** What went wrong, as a key the screen knows how to say. */
 type Failure = 'notAllowed' | 'unreachable' | 'failed' | 'conflict' | 'badInput' | 'signedOut' | 'precondition';
+
+/** A name that is already somebody else's, as the error key the screen shows. */
+const TAKEN = { username: 'usernameTaken', email: 'emailTaken', phone: 'phoneTaken' } as const;
 
 async function attempt(work: () => Promise<unknown>): Promise<Failure | null> {
   try {
@@ -133,43 +136,44 @@ export async function saveMe(form: FormData): Promise<void> {
 }
 
 /**
- * Email and password for signing in. The current password is asked for only
- * when one exists; the API checks it, never this file.
+ * The names you sign in with: a username, an email, or both. Clearing one is
+ * allowed as long as there is still some way in (the API checks nothing about
+ * that — a person with a phone can sign in by code).
  */
-export async function setSignIn(form: FormData): Promise<void> {
+export async function setLoginNames(form: FormData): Promise<void> {
   const locale = localeOf(form);
+  const username = text(form, 'username').toLowerCase();
   const email = text(form, 'email').toLowerCase();
+  if (username !== '' && !USERNAME.test(username)) back(locale, 'account', { error: 'badUsername' }, '#login');
+  if (email !== '' && !EMAIL.test(email)) back(locale, 'account', { error: 'badEmail' }, '#login');
+
+  let taken: keyof typeof TAKEN | null = null;
+  const failure = await attempt(async () => {
+    const result = await api.vendor.setLoginNames.mutate({
+      username: username === '' ? null : username,
+      email: email === '' ? null : email,
+    });
+    if (!result.ok) taken = result.taken;
+  });
+  if (failure !== null) back(locale, 'account', { error: failure === 'badInput' ? 'badUsername' : failure }, '#login');
+  if (taken !== null) back(locale, 'account', { error: TAKEN[taken] }, '#login');
+  back(locale, 'account', { done: 'loginSaved' }, '#login');
+}
+
+/** Your own password. The current one is asked for only when one exists. */
+export async function changePassword(form: FormData): Promise<void> {
+  const locale = localeOf(form);
   const newPassword = secret(form, 'newPassword');
   const repeat = secret(form, 'repeatPassword');
   const current = secret(form, 'currentPassword');
-
-  if (!EMAIL.test(email)) back(locale, 'account', { error: 'badEmail' }, '#sign-in');
-  if (newPassword.length < MIN_PASSWORD_LENGTH) back(locale, 'account', { error: 'shortPassword' }, '#sign-in');
-  if (newPassword !== repeat) back(locale, 'account', { error: 'notSame' }, '#sign-in');
+  if (newPassword.length < MIN_PASSWORD_LENGTH) back(locale, 'account', { error: 'shortPassword' }, '#password');
+  if (newPassword !== repeat) back(locale, 'account', { error: 'notSame' }, '#password');
 
   const failure = await attempt(() =>
-    api.vendor.setSignIn.mutate({
-      email,
-      newPassword,
-      ...(current === '' ? {} : { currentPassword: current }),
-    }),
+    api.vendor.changePassword.mutate({ newPassword, ...(current === '' ? {} : { currentPassword: current }) }),
   );
-  if (failure === null) back(locale, 'account', { done: 'passwordSaved' }, '#sign-in');
-  back(
-    locale,
-    'account',
-    {
-      error:
-        failure === 'precondition'
-          ? 'wrongCurrent'
-          : failure === 'conflict'
-            ? 'emailTaken'
-            : failure === 'badInput'
-              ? 'badEmail'
-              : failure,
-    },
-    '#sign-in',
-  );
+  if (failure === null) back(locale, 'account', { done: 'passwordSaved' }, '#password');
+  back(locale, 'account', { error: failure === 'precondition' ? 'wrongCurrent' : failure }, '#password');
 }
 
 // ——— Stories ———————————————————————————————————————————————————————————
@@ -206,36 +210,50 @@ export async function deleteStory(form: FormData): Promise<void> {
 // ——— Team ——————————————————————————————————————————————————————————————
 
 /**
- * Add a person by email and a first password (the way that works today), and
- * optionally a mobile number for when sign-in by text message is switched on.
- * Somebody who already has an account keeps their own password; the screen
- * says so rather than pretending the one typed here will work.
+ * Add a person with a login of their own: a username and a first password the
+ * owner tells them, and — if wanted — an email or a mobile number to sign in
+ * with as well.
  */
 export async function addTeamMember(form: FormData): Promise<void> {
   const locale = localeOf(form);
   const displayName = text(form, 'displayName');
-  const email = text(form, 'email').toLowerCase();
+  const username = text(form, 'username').toLowerCase();
   const password = secret(form, 'password');
+  const email = text(form, 'email').toLowerCase();
   const typedPhone = text(form, 'phone');
   const phone = typedPhone === '' ? undefined : normalisePhone(typedPhone);
 
   if (displayName === '') back(locale, 'team', { error: 'emptyName' }, '#new-member');
-  if (email === '' && phone === undefined) back(locale, 'team', { error: 'needContact' }, '#new-member');
+  if (!USERNAME.test(username)) back(locale, 'team', { error: 'badUsername' }, '#new-member');
+  if (password.length < MIN_PASSWORD_LENGTH) back(locale, 'team', { error: 'shortPassword' }, '#new-member');
   if (email !== '' && !EMAIL.test(email)) back(locale, 'team', { error: 'badEmail' }, '#new-member');
-  if (email !== '' && password.length < MIN_PASSWORD_LENGTH) back(locale, 'team', { error: 'shortPassword' }, '#new-member');
   if (phone === null) back(locale, 'team', { error: 'badPhone' }, '#new-member');
 
-  let created = false;
+  let taken: keyof typeof TAKEN | null = null;
   const failure = await attempt(async () => {
     const result = await api.vendor.addTeamMember.mutate({
       displayName,
-      ...(email === '' ? {} : { email, password }),
+      username,
+      password,
+      ...(email === '' ? {} : { email }),
       ...(phone === undefined ? {} : { phone }),
     });
-    created = result.created;
+    if (!result.ok) taken = result.taken;
   });
-  if (failure === null) back(locale, 'team', { done: created ? 'added' : 'addedExisting' });
-  back(locale, 'team', { error: failure === 'conflict' ? 'already' : failure === 'badInput' ? 'badEmail' : failure }, '#new-member');
+  if (failure !== null) back(locale, 'team', { error: failure }, '#new-member');
+  if (taken !== null) back(locale, 'team', { error: TAKEN[taken] }, '#new-member');
+  back(locale, 'team', { done: 'added' });
+}
+
+/** The owner gives a team member a new password — "I forgot it", handled in the centre. */
+export async function resetTeamPassword(form: FormData): Promise<void> {
+  const locale = localeOf(form);
+  const userId = text(form, 'userId');
+  const newPassword = secret(form, 'newPassword');
+  if (newPassword.length < MIN_PASSWORD_LENGTH) back(locale, 'team', { error: 'shortPassword' }, `#member-${userId}`);
+
+  const failure = await attempt(() => api.vendor.resetTeamPassword.mutate({ userId, newPassword }));
+  back(locale, 'team', failure === null ? { done: 'passwordReset' } : { error: failure }, `#member-${userId}`);
 }
 
 export async function removeTeamMember(form: FormData): Promise<void> {

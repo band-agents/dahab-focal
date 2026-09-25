@@ -51,9 +51,17 @@ function maxmemFor(N: number, r: number): number {
  */
 export const MIN_PASSWORD_LENGTH = 12;
 
-export async function hashPassword(password: string): Promise<string> {
-  if (password.length < MIN_PASSWORD_LENGTH) {
-    throw new Error(`A password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+/**
+ * `minLength` defaults to the console's rule. Operator logins pass
+ * MIN_OPERATOR_PASSWORD_LENGTH instead; the floor is still enforced here, so
+ * no caller can store a shorter password than the rule it names.
+ */
+export async function hashPassword(
+  password: string,
+  minLength: number = MIN_PASSWORD_LENGTH,
+): Promise<string> {
+  if (password.length < minLength) {
+    throw new Error(`A password must be at least ${minLength} characters.`);
   }
   const salt = randomBytes(SALT_LENGTH);
   const derived = await scryptAsync(password.normalize('NFKC'), salt, KEY_LENGTH, {

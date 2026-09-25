@@ -13,22 +13,26 @@ import { translator } from '@/lib/i18n';
 import { MIN_PASSWORD_LENGTH } from '@/lib/password';
 import { Heading, Outcome, resolveLocale } from '@/lib/page';
 
-import { addTeamMember, removeTeamMember } from '../actions';
+import { addTeamMember, removeTeamMember, resetTeamPassword } from '../actions';
 
 /**
  * My team: everybody who can open this account.
  *
- * A person is added by name, an email and a first password the owner tells
- * them — the way signing in works until text messages are wired up — and,
- * optionally, a mobile number for when they are. Under every name it says,
- * in a sentence, what they can do, so the owner is never guessing what
- * "staff" means.
+ * A person is added by name, a username and a first password the owner tells
+ * them in person — the same kind of login Sky Eye makes — and, if wanted, an
+ * email or a mobile number to sign in with too. The owner can give anyone on
+ * the team a new password when they forget it. Under every name it says, in a
+ * sentence, what they can do, so the owner is never guessing what "staff"
+ * means.
  */
 
 const MESSAGES = {
   added: 'partner.team.added',
-  addedExisting: 'partner.team.addedExisting',
-  needContact: 'partner.team.needContact',
+  passwordReset: 'partner.team.passwordReset',
+  badUsername: 'partner.account.badUsername',
+  usernameTaken: 'partner.account.usernameTaken',
+  emailTaken: 'partner.account.emailTaken',
+  phoneTaken: 'partner.team.phoneTaken',
   badEmail: 'partner.account.badEmail',
   shortPassword: 'partner.account.shortPassword',
   removed: 'partner.team.removed',
@@ -66,7 +70,7 @@ export default async function TeamPage({
       <Card title={t('partner.team.count', { count: people.length })} icon="people" flush>
         <ul className="divide-y divide-c-edge">
           {people.map((person) => (
-            <li key={person.userId} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center">
+            <li key={person.userId} id={`member-${person.userId}`} className="flex scroll-mt-20 flex-col gap-3 px-5 py-4 sm:flex-row sm:items-start">
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 <Avatar name={person.displayName ?? person.email ?? person.phone} url={person.avatarUrl} size={52} />
                 <div className="min-w-0">
@@ -92,6 +96,12 @@ export default async function TeamPage({
                     {person.role === 'vendorOwner' ? t('partner.team.canOwner') : t('partner.team.canStaff')}
                   </p>
                   <p className="mt-1 flex flex-wrap items-center gap-x-3 text-small text-c-muted">
+                    {person.username === null ? null : (
+                      <span className="inline-flex items-center gap-1 font-semibold text-c-text" dir="ltr">
+                        <Icon name="key" size={14} />
+                        {person.username}
+                      </span>
+                    )}
                     {person.email === null || person.displayName === null ? null : (
                       <span className="inline-flex min-w-0 items-center gap-1" dir="ltr">
                         <Icon name="chat" size={14} />
@@ -109,11 +119,34 @@ export default async function TeamPage({
                 </div>
               </div>
               {owner && !person.isMe && person.role === 'vendorStaff' ? (
-                <div className="sm:w-56">
+                <div className="flex flex-col gap-1 sm:w-64">
+                  <details>
+                    <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-md px-3 text-body font-semibold text-c-link hover:bg-c-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-c-focus [&::-webkit-details-marker]:hidden">
+                      <Icon name="key" size={18} />
+                      {t('partner.team.newPassword')}
+                    </summary>
+                    <form action={resetTeamPassword} className="mt-2 flex flex-col gap-3 rounded-md border border-c-edge bg-c-raised p-4">
+                      <input type="hidden" name="locale" value={locale} />
+                      <input type="hidden" name="userId" value={person.userId} />
+                      <PasswordField
+                        name="newPassword"
+                        label={t('partner.team.newPasswordLabel')}
+                        hint={t('partner.team.newPasswordHint')}
+                        autoComplete="new-password"
+                        minLength={MIN_PASSWORD_LENGTH}
+                        showLabel={t('partner.signIn.show')}
+                        hideLabel={t('partner.signIn.hide')}
+                        required
+                      />
+                      <Button type="submit" intent="primary" icon="key" block>
+                        {t('partner.team.newPasswordSave')}
+                      </Button>
+                    </form>
+                  </details>
                   <Confirm
                     label={t('partner.team.remove')}
                     icon="ban"
-                    question={t('partner.team.removeQuestion', { name: person.displayName ?? person.phone ?? '' })}
+                    question={t('partner.team.removeQuestion', { name: person.displayName ?? person.username ?? person.phone ?? '' })}
                   >
                     <form action={removeTeamMember}>
                       <input type="hidden" name="locale" value={locale} />
@@ -138,11 +171,10 @@ export default async function TeamPage({
               <Field name="displayName" label={t('partner.team.addName')} maxLength={80} autoComplete="off" required />
               <div className="grid gap-5 sm:grid-cols-2">
                 <Field
-                  name="email"
-                  type="email"
-                  label={t('partner.team.addEmail')}
-                  hint={t('partner.team.addEmailHint')}
-                  inputMode="email"
+                  name="username"
+                  label={t('partner.team.addUsername')}
+                  hint={t('partner.account.usernameHint')}
+                  maxLength={40}
                   autoComplete="off"
                   ltr
                   required
@@ -158,16 +190,25 @@ export default async function TeamPage({
                   required
                 />
               </div>
-              <Field
-                name="phone"
-                type="tel"
-                label={t('partner.team.addPhoneOptional')}
-                hint={t('partner.team.addPhoneHint')}
-                inputMode="tel"
-                placeholder="010 1234 5678"
-                autoComplete="off"
-                ltr
-              />
+              <details className="rounded-md border border-c-edge">
+                <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 px-4 text-body font-semibold text-c-link [&::-webkit-details-marker]:hidden">
+                  <Icon name="plus" size={18} />
+                  {t('partner.team.addMore')}
+                </summary>
+                <div className="flex flex-col gap-5 border-t border-c-edge p-4">
+                  <Field name="email" type="email" label={t('partner.account.emailOptional')} inputMode="email" autoComplete="off" ltr />
+                  <Field
+                    name="phone"
+                    type="tel"
+                    label={t('partner.team.addPhoneOptional')}
+                    hint={t('partner.team.addPhoneHint')}
+                    inputMode="tel"
+                    placeholder="010 1234 5678"
+                    autoComplete="off"
+                    ltr
+                  />
+                </div>
+              </details>
               <Notice tone="info" title={t('partner.team.addExplain')} />
               <Button type="submit" intent="primary" icon="plus" block>
                 {t('partner.team.addButton')}

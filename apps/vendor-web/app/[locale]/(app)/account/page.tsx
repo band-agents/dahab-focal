@@ -13,16 +13,17 @@ import { Heading, Outcome, resolveLocale } from '@/lib/page';
 import { uploaderLabels } from '@/lib/uploader';
 
 import { signOut } from '../../sign-in/actions';
-import { saveMe, setSignIn } from '../actions';
+import { changePassword, saveMe, setLoginNames } from '../actions';
 
 /**
  * My account: the person, not the centre. Their own photo and name — what the
  * team sees beside a story they posted — how they sign in, the language, and
  * the way out.
  *
- * The sign-in card sets up an email and a password, or changes them. It asks
- * for the current password only when there is one, and for the new one twice,
- * because a typo in a password nobody can see is a locked-out owner.
+ * Two cards for signing in: the names (a username, an email) and the
+ * password. The password card asks for the current one only when there is
+ * one, and for the new one twice, because a typo in a password nobody can see
+ * is a locked-out owner.
  */
 
 const MESSAGES = {
@@ -34,6 +35,9 @@ const MESSAGES = {
   notSame: 'partner.account.notSame',
   wrongCurrent: 'partner.account.wrongCurrent',
   emailTaken: 'partner.account.emailTaken',
+  loginSaved: 'partner.account.loginSaved',
+  badUsername: 'partner.account.badUsername',
+  usernameTaken: 'partner.account.usernameTaken',
   notAllowed: 'partner.common.notAllowed',
   unreachable: 'partner.common.unreachable',
   failed: 'partner.common.failed',
@@ -91,23 +95,50 @@ export default async function AccountPage({
         </form>
       </Card>
 
-      <div id="sign-in" className="scroll-mt-20">
-        <Card title={t('partner.account.signInTitle')} icon="key">
-          <p className="mb-4 text-body text-c-muted">
-            {m.hasPassword ? t('partner.account.signInHas') : t('partner.account.signInNone')}
-          </p>
-          <form action={setSignIn} className="flex flex-col gap-5">
+      <div id="login" className="scroll-mt-20">
+        <Card title={t('partner.account.loginTitle')} icon="key">
+          <p className="mb-4 text-body text-c-muted">{t('partner.account.loginText')}</p>
+          <form action={setLoginNames} className="flex flex-col gap-5">
             <input type="hidden" name="locale" value={locale} />
+            <Field
+              name="username"
+              label={t('partner.account.username')}
+              hint={t('partner.account.usernameHint')}
+              value={m.username}
+              autoComplete="username"
+              maxLength={40}
+              ltr
+            />
             <Field
               name="email"
               type="email"
-              label={t('partner.account.email')}
+              label={t('partner.account.emailOptional')}
               value={m.email}
               inputMode="email"
-              autoComplete="username"
+              autoComplete="email"
               ltr
-              required
             />
+            <Button type="submit" intent="primary" icon="check" block>
+              {t('partner.common.save')}
+            </Button>
+          </form>
+          {m.phone === null ? null : (
+            <p className="mt-4 flex flex-wrap items-center gap-2 border-t border-c-edge pt-4 text-body text-c-muted">
+              <Icon name="phone" size={18} />
+              {t('partner.account.phoneToo')}
+              <span dir="ltr" className="font-semibold text-c-text">{m.phone}</span>
+            </p>
+          )}
+        </Card>
+      </div>
+
+      <div id="password" className="scroll-mt-20">
+        <Card title={t('partner.account.passwordTitle')} icon="shield">
+          <p className="mb-4 text-body text-c-muted">
+            {m.hasPassword ? t('partner.account.passwordHas') : t('partner.account.passwordNone')}
+          </p>
+          <form action={changePassword} className="flex flex-col gap-5">
+            <input type="hidden" name="locale" value={locale} />
             {m.hasPassword ? (
               <PasswordField
                 name="currentPassword"
@@ -141,13 +172,6 @@ export default async function AccountPage({
               {m.hasPassword ? t('partner.account.changePassword') : t('partner.account.setPassword')}
             </Button>
           </form>
-          {m.phone === null ? null : (
-            <p className="mt-4 flex items-center gap-2 border-t border-c-edge pt-4 text-body text-c-muted">
-              <Icon name="phone" size={18} />
-              {t('partner.account.phoneToo')}
-              <span dir="ltr" className="font-semibold text-c-text">{m.phone}</span>
-            </p>
-          )}
         </Card>
       </div>
 

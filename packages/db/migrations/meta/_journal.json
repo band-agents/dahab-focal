@@ -36,6 +36,13 @@
       "when": 1790289725230,
       "tag": "0004_overrated_namor",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790293975332,
+      "tag": "0005_fat_firelord",
+      "breakpoints": true
     }
   ]
 }

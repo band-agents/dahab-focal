@@ -17,7 +17,8 @@ import type { Context } from '../context.ts';
  * transaction, an audit row carrying both sides — plus two that only apply
  * here, because this file is the privilege-escalation surface.
  *
- * **No password ever crosses this boundary.** `createUser` makes the row and
+ * **No password ever crosses this boundary** — with one fenced exception for
+ * operator logins, in `admin-logins.ts`. `createUser` makes the row and
  * the roles and stops. A traveller and a centre's staff sign in by one-time
  * code, so for them that is the whole story; console staff need a password,
  * and that is still set by `pnpm staff:create`, which prompts for it in a

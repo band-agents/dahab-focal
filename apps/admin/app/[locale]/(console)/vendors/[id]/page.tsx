@@ -20,6 +20,7 @@ import {
   type RecordColumn,
 } from '@/components/console';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
+import { VendorLogins } from '@/components/VendorLogins';
 import { api, load } from '@/lib/api';
 import { bandFor } from '@/lib/expiry';
 import { translator } from '@/lib/i18n';
@@ -59,10 +60,10 @@ export default async function VendorPage({
   searchParams,
 }: {
   params: Promise<{ locale: string; id: string }>;
-  searchParams: Promise<{ act?: string; outcome?: string }>;
+  searchParams: Promise<{ act?: string; outcome?: string; user?: string; logins?: string }>;
 }) {
   const { locale: raw, id } = await params;
-  const { act, outcome } = await searchParams;
+  const { act, outcome, user, logins } = await searchParams;
   const locale = resolveLocale(raw);
   const t = translator(locale);
   const context = { locale } as const;
@@ -346,6 +347,16 @@ export default async function VendorPage({
             }
           />
         </Panel>
+
+        <VendorLogins
+          locale={locale}
+          vendorId={id}
+          vendorName={v.displayName}
+          act={act}
+          userId={user}
+          notice={logins}
+          t={t}
+        />
 
         <Panel title={t('admin.vendor.record')} flush>
           <KeyValueList>

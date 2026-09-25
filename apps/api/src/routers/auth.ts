@@ -7,6 +7,7 @@ import {
   PERMISSIONS_BY_ROLE,
   emailStartSchema,
   guestSessionSchema,
+  identifierSignInSchema,
   oauthCallbackSchema,
   passwordSignInSchema,
   phoneStartSchema,
@@ -15,6 +16,7 @@ import {
   sessionSchema,
 } from '@dahab/api-contract';
 import { schema } from '@dahab/db';
+import type { Database } from '@dahab/db';
 import { LOCALE_DESCRIPTORS, resolveLocale } from '@dahab/i18n';
 
 import { requireDatabase } from '../database.ts';
@@ -49,6 +51,7 @@ import {
 } from '../auth/otp.ts';
 import { startChallenge, verifyChallenge } from '../auth/otp-challenges.ts';
 import { publicProcedure, router, sessionProcedure } from '../trpc.ts';
+import type { Context } from '../context.ts';
 
 /**
  * Authentication.
@@ -103,6 +106,106 @@ function issueGuestCredentials(locale: string) {
   };
 }
 
+/**
+ * Checks a password for the account `where` picks out, and opens a session.
+ *
+ * Every failure — unknown name, wrong password, locked account — returns the
+ * same message and takes the same time. Distinguishing them turns the form
+ * into an oracle for which accounts exist, and the first thing anyone does
+ * with that is spray passwords at the ones that do. Shared by the console's
+ * email sign-in and the operators' username-or-email sign-in, so both get the
+ * same lockout and the same timing.
+ */
+async function signInWithPassword(
+  db: Database,
+  ctx: Context,
+  where: ReturnType<typeof eq>,
+  password: string,
+  identifier: string,
+) {
+  const [user] = await db
+    .select({
+      id: schema.users.id,
+      passwordHash: schema.users.passwordHash,
+      failedSignInCount: schema.users.failedSignInCount,
+      lockedUntil: schema.users.lockedUntil,
+    })
+    .from(schema.users)
+    .where(and(where, isNull(schema.users.deletedAt)))
+    .limit(1);
+
+  const locked =
+    user?.lockedUntil !== null &&
+    user?.lockedUntil !== undefined &&
+    user.lockedUntil.getTime() > ctx.now.getTime();
+
+  // Verified even when there is no user and even when the account is
+  // locked, so all three paths cost the same scrypt work. Returning early
+  // here is the timing leak this whole function is shaped around.
+  const matched = await verifyPassword(password, user?.passwordHash ?? DUMMY_HASH);
+
+  if (user === undefined || user.passwordHash === null || locked || !matched) {
+    if (user !== undefined && !locked && !matched) {
+      const failures = user.failedSignInCount + 1;
+      await db
+        .update(schema.users)
+        .set({
+          failedSignInCount: failures,
+          lockedUntil:
+            failures >= MAX_FAILED_SIGN_INS
+              ? new Date(ctx.now.getTime() + LOCKOUT_MINUTES * 60_000)
+              : null,
+          updatedAt: ctx.now,
+        })
+        .where(eq(schema.users.id, user.id));
+    }
+    // Logged with the name so a real lockout can be investigated, at warn
+    // rather than info because a run of these is the signal.
+    ctx.logger.warn('sign-in refused', { identifier, locked, known: user !== undefined });
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'That name and password do not match an account.',
+    });
+  }
+
+  const { roles, vendorId } = await rolesFor(db, user.id);
+
+  const [preferences] = await db
+    .select({ locale: schema.userPreferences.locale })
+    .from(schema.userPreferences)
+    .where(eq(schema.userPreferences.userId, user.id))
+    .limit(1);
+
+  await db
+    .update(schema.users)
+    .set({
+      failedSignInCount: 0,
+      lockedUntil: null,
+      // Raising the scrypt cost later must not lock anyone out, so a correct
+      // password is re-hashed at the current parameters on the way through
+      // rather than at some migration nobody runs. The length floor is not
+      // re-checked: the password was accepted when it was set.
+      ...(needsRehash(user.passwordHash)
+        ? { passwordHash: await hashPassword(password, 1), passwordUpdatedAt: ctx.now }
+        : {}),
+      updatedAt: ctx.now,
+    })
+    .where(eq(schema.users.id, user.id));
+
+  ctx.logger.info('signed in', { userId: user.id, roles });
+
+  return createSession(
+    db,
+    {
+      userId: user.id,
+      roles,
+      vendorId,
+      locale: preferences?.locale ?? ctx.locale,
+    },
+    ctx.now,
+  );
+}
+
 export const authRouter = router({
   /**
    * A guest session is a real session with a real id, so a cart survives an
@@ -131,87 +234,24 @@ export const authRouter = router({
     .mutation(async ({ input, ctx }) => {
       const db = requireDatabase(ctx.db);
       const email = input.email.trim().toLowerCase();
+      return signInWithPassword(db, ctx, eq(schema.users.email, email), input.password, email);
+    }),
 
-      const [user] = await db
-        .select({
-          id: schema.users.id,
-          passwordHash: schema.users.passwordHash,
-          failedSignInCount: schema.users.failedSignInCount,
-          lockedUntil: schema.users.lockedUntil,
-        })
-        .from(schema.users)
-        .where(and(eq(schema.users.email, email), isNull(schema.users.deletedAt)))
-        .limit(1);
-
-      const locked =
-        user?.lockedUntil !== null &&
-        user?.lockedUntil !== undefined &&
-        user.lockedUntil.getTime() > ctx.now.getTime();
-
-      // Verified even when there is no user and even when the account is
-      // locked, so all three paths cost the same scrypt work. Returning early
-      // here is the timing leak this whole procedure is shaped around.
-      const matched = await verifyPassword(input.password, user?.passwordHash ?? DUMMY_HASH);
-
-      if (user === undefined || user.passwordHash === null || locked || !matched) {
-        if (user !== undefined && !locked && !matched) {
-          const failures = user.failedSignInCount + 1;
-          await db
-            .update(schema.users)
-            .set({
-              failedSignInCount: failures,
-              lockedUntil:
-                failures >= MAX_FAILED_SIGN_INS
-                  ? new Date(ctx.now.getTime() + LOCKOUT_MINUTES * 60_000)
-                  : null,
-              updatedAt: ctx.now,
-            })
-            .where(eq(schema.users.id, user.id));
-        }
-        // Logged with the address so a real lockout can be investigated, at
-        // warn rather than info because a run of these is the signal.
-        ctx.logger.warn('sign-in refused', { email, locked, known: user !== undefined });
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'That email and password do not match an account.',
-        });
-      }
-
-      const { roles, vendorId } = await rolesFor(db, user.id);
-
-      const [preferences] = await db
-        .select({ locale: schema.userPreferences.locale })
-        .from(schema.userPreferences)
-        .where(eq(schema.userPreferences.userId, user.id))
-        .limit(1);
-
-      await db
-        .update(schema.users)
-        .set({
-          failedSignInCount: 0,
-          lockedUntil: null,
-          // Raising the scrypt cost later must not lock anyone out, so a
-          // correct password is re-hashed at the current parameters on the
-          // way through rather than at some migration nobody runs.
-          ...(needsRehash(user.passwordHash)
-            ? { passwordHash: await hashPassword(input.password), passwordUpdatedAt: ctx.now }
-            : {}),
-          updatedAt: ctx.now,
-        })
-        .where(eq(schema.users.id, user.id));
-
-      ctx.logger.info('signed in', { userId: user.id, roles });
-
-      return createSession(
-        db,
-        {
-          userId: user.id,
-          roles,
-          vendorId,
-          locale: preferences?.locale ?? ctx.locale,
-        },
-        ctx.now,
-      );
+  /**
+   * The operators' sign-in: one box that takes a username or an email, and a
+   * password. A username can never contain an `@`, so the box is never
+   * ambiguous about which it was given.
+   */
+  identifierSignIn: publicProcedure
+    .input(identifierSignInSchema)
+    .output(credentialsSchema)
+    .mutation(async ({ input, ctx }) => {
+      const db = requireDatabase(ctx.db);
+      const identifier = input.identifier.trim().toLowerCase();
+      const where = identifier.includes('@')
+        ? eq(schema.users.email, identifier)
+        : eq(schema.users.username, identifier);
+      return signInWithPassword(db, ctx, where, input.password, identifier);
     }),
 
   /**

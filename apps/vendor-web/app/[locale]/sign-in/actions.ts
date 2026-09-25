@@ -11,8 +11,8 @@ import { normalisePhone } from '@/lib/phone';
 import { accessToken, clearCredentials, storeCredentials } from '@/lib/session';
 
 /**
- * Signing in: an email and a password (the default while text messages are
- * not wired up), or by phone — a number, then a code.
+ * Signing in: a username or an email with a password (the default while text
+ * messages are not wired up), or by phone — a number, then a code.
  *
  * The number an operator types is the one they know — `010 0123 4567`, the
  * Egyptian way — so it is turned into the international form here rather than
@@ -120,14 +120,17 @@ export async function changeNumber(formData: FormData): Promise<void> {
   to(localeOf(formData), { method: 'phone' });
 }
 
-/** The other door: an owner who was given an email and a password. */
+/**
+ * The main door: a username (made in Sky Eye or by the owner) or an email,
+ * and a password. One box for both — a username can never contain an `@`.
+ */
 export async function passwordSignIn(formData: FormData): Promise<void> {
   const locale = localeOf(formData);
-  const email = String(formData.get('email') ?? '').trim();
+  const identifier = String(formData.get('identifier') ?? '').trim();
   const password = String(formData.get('password') ?? '');
-  if (email === '' || password === '') to(locale, { error: 'badPassword' });
+  if (identifier === '' || password === '') to(locale, { error: 'badPassword' });
 
-  const result = await call<Credentials>('auth.passwordSignIn', { email, password });
+  const result = await call<Credentials>('auth.identifierSignIn', { identifier, password });
   if (!result.ok) {
     // Only a refusal of the credentials is "wrong password". Anything else
     // means the question was never asked — the lesson the admin console
