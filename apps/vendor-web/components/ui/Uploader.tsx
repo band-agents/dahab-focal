@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState } from 'react';
 
-import { uploadTarget } from '@/app/[locale]/(app)/actions';
+import { finishUpload, startUpload } from '@/app/[locale]/(app)/actions';
 
 import { Icon } from './Icon';
 
@@ -71,46 +71,75 @@ async function shrink(file: File, purpose: Purpose): Promise<Blob> {
   });
 }
 
+/** Some phones leave a video's type blank; the extension still says what it is. */
+function typeOf(body: Blob): string {
+  if (body.type !== '') return body.type;
+  const name = body instanceof File ? body.name.toLowerCase() : '';
+  if (name.endsWith('.mp4') || name.endsWith('.m4v')) return 'video/mp4';
+  if (name.endsWith('.mov')) return 'video/quicktime';
+  if (name.endsWith('.webm')) return 'video/webm';
+  return 'application/octet-stream';
+}
+
 /**
- * Sends the file straight to the API, with a short-lived ticket this app
- * fetches for it on the server. Not through this app: its host caps a
- * request at 4.5 MB, and a story video is far larger.
+ * One request with upload progress. XHR rather than fetch: fetch still
+ * cannot report upload progress, and progress is the whole point on a slow
+ * connection.
+ */
+function transfer(
+  method: 'POST' | 'PUT',
+  url: string,
+  body: Blob,
+  headers: Record<string, string>,
+  onProgress: (fraction: number) => void,
+): Promise<{ status: number; text: string }> {
+  return new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest();
+    request.open(method, url);
+    for (const [name, value] of Object.entries(headers)) request.setRequestHeader(name, value);
+    request.upload.onprogress = (event) => {
+      if (event.lengthComputable) onProgress(event.loaded / event.total);
+    };
+    request.onload = () => resolve({ status: request.status, text: request.responseText });
+    request.onerror = () => reject(new Error('network'));
+    request.send(body);
+  });
+}
+
+/**
+ * Sends the file without it ever passing through this app, whose host caps a
+ * request at 4.5 MB. The server says where: online, a signed Supabase Storage
+ * link, after which the API checks the bytes and records the file; on this
+ * machine, the standalone API's `/media` with a short ticket.
  */
 async function send(
   body: Blob,
   purpose: Purpose,
   onProgress: (fraction: number) => void,
 ): Promise<{ id: string; url: string; kind: 'image' | 'video' }> {
-  const target = await uploadTarget(purpose);
-  if (target === null) throw new Error('signedOut');
-  return new Promise((resolve, reject) => {
-    // XHR rather than fetch: fetch still cannot report upload progress, and
-    // progress is the whole point on a slow connection.
-    const request = new XMLHttpRequest();
-    request.open('POST', target);
-    request.upload.onprogress = (event) => {
-      if (event.lengthComputable) onProgress(event.loaded / event.total);
-    };
-    request.onload = () => {
-      try {
-        const payload = JSON.parse(request.responseText) as {
-          id?: string;
-          url?: string;
-          kind?: 'image' | 'video';
-          error?: { code?: string };
-        };
-        if (request.status >= 200 && request.status < 300 && payload.id !== undefined && payload.url !== undefined) {
-          resolve({ id: payload.id, url: payload.url, kind: payload.kind ?? 'image' });
-        } else {
-          reject(new Error(payload.error?.code ?? `http ${request.status}`));
-        }
-      } catch {
-        reject(new Error(`http ${request.status}`));
-      }
-    };
-    request.onerror = () => reject(new Error('network'));
-    request.send(body);
-  });
+  const mimeType = typeOf(body);
+  const target = await startUpload(purpose, mimeType, body.size);
+  if (target.mode === 'refused') throw new Error(target.reason);
+
+  if (target.mode === 'signed') {
+    const sent = await transfer('PUT', target.url, body, { 'content-type': mimeType, 'x-upsert': 'false' }, onProgress);
+    if (sent.status < 200 || sent.status >= 300) throw new Error(sent.status === 413 ? 'tooBig' : `http ${sent.status}`);
+    const done = await finishUpload(target.finishToken);
+    if (!done.ok) throw new Error(done.reason);
+    return { id: done.id, url: done.url, kind: done.kind };
+  }
+
+  const sent = await transfer('POST', target.url, body, {}, onProgress);
+  let payload: { id?: string; url?: string; kind?: 'image' | 'video'; error?: { code?: string } } = {};
+  try {
+    payload = JSON.parse(sent.text) as typeof payload;
+  } catch {
+    throw new Error(`http ${sent.status}`);
+  }
+  if (sent.status >= 200 && sent.status < 300 && payload.id !== undefined && payload.url !== undefined) {
+    return { id: payload.id, url: payload.url, kind: payload.kind ?? 'image' };
+  }
+  throw new Error(payload.error?.code ?? `http ${sent.status}`);
 }
 
 export function Uploader({
@@ -179,7 +208,13 @@ export function Uploader({
     } catch (error) {
       setState('error');
       const code = error instanceof Error ? error.message : '';
-      setMessage(code === 'wrongKind' || code === 'unknownType' ? labels.wrongType : labels.failed);
+      setMessage(
+        code === 'wrongKind' || code === 'unknownType' || code === 'wrongType'
+          ? labels.wrongType
+          : code === 'tooBig'
+            ? labels.tooLongVideo
+            : labels.failed,
+      );
     }
   }
 

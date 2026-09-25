@@ -31,10 +31,53 @@ export interface UploadTicket {
   readonly exp: number;
 }
 
-function sign(body: string): string {
+function sign(body: string, label = 'upload-ticket.v1'): string {
   const secret = process.env['AUTH_SECRET'];
   if (secret === undefined || secret.length < 32) throw new Error('AUTH_SECRET must be set.');
-  return createHmac('sha256', secret).update(`upload-ticket.v1.${body}`).digest('base64url');
+  return createHmac('sha256', secret).update(`${label}.${body}`).digest('base64url');
+}
+
+/**
+ * The receipt for a signed upload straight to Storage: which file, for whom,
+ * of which declared type. `vendor.finishUpload` takes it back, checks the
+ * bytes that arrived, and only then records the file. Labelled apart from
+ * the upload ticket, so neither can stand in for the other.
+ */
+export interface FinishToken {
+  readonly userId: string;
+  readonly vendorId: string;
+  readonly purpose: string;
+  readonly key: string;
+  readonly mimeType: string;
+  readonly exp: number;
+}
+
+const FINISH_LABEL = 'upload-finish.v1';
+/** Long enough for a one-minute video on a slow boat connection. */
+export const FINISH_TTL_SECONDS = 60 * 60;
+
+export function issueFinishToken(token: Omit<FinishToken, 'exp'>, now = new Date()): string {
+  const full: FinishToken = { ...token, exp: Math.floor(now.getTime() / 1000) + FINISH_TTL_SECONDS };
+  const body = Buffer.from(JSON.stringify(full), 'utf8').toString('base64url');
+  return `${body}.${sign(body, FINISH_LABEL)}`;
+}
+
+export function verifyFinishToken(token: string, now = new Date()): FinishToken | null {
+  const [body, signature, extra] = token.split('.');
+  if (body === undefined || signature === undefined || extra !== undefined) return null;
+  const expected = Buffer.from(sign(body, FINISH_LABEL), 'utf8');
+  const provided = Buffer.from(signature, 'utf8');
+  if (expected.length !== provided.length || !timingSafeEqual(expected, provided)) return null;
+  try {
+    const value = JSON.parse(Buffer.from(body, 'base64url').toString('utf8')) as Record<string, unknown>;
+    for (const field of ['userId', 'vendorId', 'purpose', 'key', 'mimeType'] as const) {
+      if (typeof value[field] !== 'string') return null;
+    }
+    if (typeof value['exp'] !== 'number' || value['exp'] * 1000 <= now.getTime()) return null;
+    return value as unknown as FinishToken;
+  } catch {
+    return null;
+  }
 }
 
 export function issueUploadTicket(ticket: Omit<UploadTicket, 'exp'>, now = new Date()): string {

@@ -99,3 +99,25 @@ describe('mediaStoreProblem', () => {
     expect(mediaStoreProblem({ MEDIA_STORE: 's3' })).toMatch(/not a store/);
   });
 });
+
+describe('SupabaseStore signed uploads', () => {
+  it('signs an upload and returns an absolute link under /storage/v1', async () => {
+    const { http, calls } = fakeFetch((call) =>
+      call.url.includes('/upload/sign/')
+        ? Response.json({ url: `/object/upload/sign/operator-media/${KEY}?token=abc` })
+        : new Response('{}', { status: 200 }),
+    );
+    const store = new SupabaseStore(BASE, 'k', 'operator-media', http);
+    const link = await store.signUpload(KEY);
+    expect(link).toBe(`${BASE}/storage/v1/object/upload/sign/operator-media/${KEY}?token=abc`);
+    expect(calls.at(-1)?.method).toBe('POST');
+  });
+
+  it('reads only the first bytes of a stored file', async () => {
+    const { http, calls } = fakeFetch(() => new Response(new Uint8Array([0x89, 0x50, 0x4e, 0x47, 1, 2, 3])));
+    const store = new SupabaseStore(BASE, 'k', 'operator-media', http);
+    const head = await store.readStart(KEY, 4);
+    expect([...(head ?? [])]).toEqual([0x89, 0x50, 0x4e, 0x47]);
+    expect(calls[0]?.headers['range']).toBe('bytes=0-3');
+  });
+});

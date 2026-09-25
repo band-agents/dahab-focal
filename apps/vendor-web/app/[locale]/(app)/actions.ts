@@ -278,18 +278,54 @@ export async function replyToReview(form: FormData): Promise<void> {
 
 // ——— Uploads ———————————————————————————————————————————————————————————
 
+type Purpose = 'logo' | 'cover' | 'avatar' | 'story';
+
 /**
- * Where the browser should send a file: the API's `/media` with a ten-minute
- * ticket for this one purpose. Straight to the API, not through this app,
- * because the host this app runs on caps a request at 4.5 MB and a story
- * video is ten times that. Null when there is no session or no API.
+ * Where the browser should send a file, and how.
+ *
+ *   signed  a Supabase Storage link to PUT the file to, straight from the
+ *           phone, and a token to hand to `finishUpload` afterwards
+ *   direct  the standalone API's `POST /media`, with a ten-minute ticket
+ *           (on this machine, where files stay on the local disk)
+ *
+ * Never through this app: its host caps a request at 4.5 MB, and a story
+ * video is ten times that. Null, with a reason, when the API says no.
  */
-export async function uploadTarget(purpose: 'logo' | 'cover' | 'avatar' | 'story'): Promise<string | null> {
+export async function startUpload(
+  purpose: Purpose,
+  mimeType: string,
+  bytes: number,
+): Promise<
+  | { mode: 'signed'; url: string; finishToken: string }
+  | { mode: 'direct'; url: string }
+  | { mode: 'refused'; reason: 'tooBig' | 'wrongType' | 'failed' }
+> {
   try {
-    const { ticket } = await api.vendor.uploadTicket.mutate({ purpose });
-    const query = new URLSearchParams({ purpose, ticket });
-    return `${API_URL}/media?${query.toString()}`;
-  } catch {
-    return null;
+    const answer = await api.vendor.startUpload.mutate({ purpose, mimeType, bytes });
+    if (answer.mode === 'signed') return { mode: 'signed', url: answer.uploadUrl, finishToken: answer.finishToken };
+    const query = new URLSearchParams({ purpose, ticket: answer.ticket });
+    return { mode: 'direct', url: `${API_URL}/media?${query.toString()}` };
+  } catch (error) {
+    const code = error instanceof TRPCClientError ? (error.data as { code?: string } | null)?.code : undefined;
+    return {
+      mode: 'refused',
+      reason: code === 'PAYLOAD_TOO_LARGE' ? 'tooBig' : code === 'UNSUPPORTED_MEDIA_TYPE' ? 'wrongType' : 'failed',
+    };
+  }
+}
+
+/** After a signed upload: the API checks what arrived and records it. */
+export async function finishUpload(
+  finishToken: string,
+): Promise<{ ok: true; id: string; url: string; kind: 'image' | 'video' } | { ok: false; reason: 'tooBig' | 'wrongType' | 'failed' }> {
+  try {
+    const done = await api.vendor.finishUpload.mutate({ finishToken });
+    return { ok: true, id: done.id, url: done.url, kind: done.kind };
+  } catch (error) {
+    const code = error instanceof TRPCClientError ? (error.data as { code?: string } | null)?.code : undefined;
+    return {
+      ok: false,
+      reason: code === 'PAYLOAD_TOO_LARGE' ? 'tooBig' : code === 'UNSUPPORTED_MEDIA_TYPE' ? 'wrongType' : 'failed',
+    };
   }
 }

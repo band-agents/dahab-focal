@@ -3,6 +3,7 @@ import type { TRPCClient } from '@trpc/client';
 
 import type { AppRouter } from '@dahab/api/router';
 
+import { API_URL } from './api-url';
 import { accessToken } from './session';
 
 /**
@@ -21,7 +22,7 @@ import { accessToken } from './session';
  * A call with no session is a 401, which is the truthful answer.
  */
 
-export const API_URL = process.env['DAHAB_API_URL'] ?? 'http://127.0.0.1:4000';
+export { API_URL } from './api-url';
 
 export const api: TRPCClient<AppRouter> = createTRPCClient<AppRouter>({
   links: [

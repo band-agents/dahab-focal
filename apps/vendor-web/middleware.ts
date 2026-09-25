@@ -8,6 +8,7 @@ import {
   accessCookieOptions,
   refreshCookieOptions,
 } from './lib/session';
+import { API_URL } from './lib/api-url';
 
 /**
  * The dashboard's front door. (Adapted from the admin console's, which
@@ -28,7 +29,7 @@ import {
  * throw it away, and that one is what makes revocation take effect at once.
  */
 
-const API_URL = process.env['DAHAB_API_URL'] ?? 'http://127.0.0.1:4000';
+
 
 const LOCALE_SET: ReadonlySet<string> = new Set(LOCALES);
 
@@ -128,5 +129,5 @@ export const config = {
   // `media` too: uploaded photos and videos are the operator's public face,
   // served through a rewrite to the API, and sending each thumbnail through a
   // token refresh would be a round trip per picture for nothing.
-  matcher: ['/((?!_next/static|_next/image|fonts|media|favicon.ico).*)'],
+  matcher: ['/((?!api/|_next/static|_next/image|fonts|media|favicon.ico).*)'],
 };

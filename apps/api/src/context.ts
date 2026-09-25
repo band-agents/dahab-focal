@@ -62,6 +62,32 @@ export function createContext(options: {
   };
 }
 
+/**
+ * The same context, for a request that arrives as a web `Request` — the
+ * API running as a serverless function (see ./http/fetch-handler.ts) rather
+ * than on node:http. Everything a procedure sees is identical.
+ */
+export function createFetchContext(options: { req: Request; resHeaders: Headers; now?: Date }): Context {
+  const { req, resHeaders } = options;
+  const requestId = req.headers.get('x-request-id') ?? randomUUID();
+  resHeaders.set('x-request-id', requestId);
+
+  const locale = localeFrom(req.headers.get('accept-language') ?? undefined);
+  const logger = rootLogger.child({ requestId });
+
+  const authorization = req.headers.get('authorization') ?? undefined;
+  const session = authorization === undefined ? null : sessionFrom(authorization, logger);
+
+  return {
+    requestId,
+    logger,
+    session,
+    locale: session === null ? locale : (session as { locale?: Locale }).locale ?? locale,
+    now: options.now ?? new Date(),
+    db: getDatabase(),
+  };
+}
+
 function sessionFrom(authorization: string, logger: Logger): Session | null {
   const [scheme, token] = authorization.split(' ');
   if (scheme?.toLowerCase() !== 'bearer' || token === undefined) return null;

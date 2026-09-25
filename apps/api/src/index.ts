@@ -2,12 +2,12 @@ import { createServer } from 'node:http';
 
 import { createHTTPHandler } from '@trpc/server/adapters/standalone';
 
+import { configProblems } from './config.ts';
 import { closeDatabase, probeDatabase } from './database.ts';
 import { isAllowedOrigin, parseOrigins } from './cors.ts';
 import { createContext } from './context.ts';
 import { logger } from './logger.ts';
 import { handleServe, handleUpload } from './media/routes.ts';
-import { mediaStoreProblem } from './media/store.ts';
 import { appRouter } from './routers/index.ts';
 
 /**
@@ -22,42 +22,11 @@ const environment = process.env['NODE_ENV'] ?? 'development';
 const isProduction = environment === 'production';
 
 /**
- * Refuse to boot rather than fail every sign-in.
- *
- * `AUTH_SECRET` is read lazily, when a token is signed or verified — so
- * without this check a server with no secret starts happily, answers its
- * health check, and then 500s on every authenticated request. A process that
- * will not come up is a deploy that fails loudly; a process that comes up
- * broken is an outage nobody is paged for.
+ * Refuse to boot rather than fail every sign-in. The rules are in
+ * ./config.ts, shared with the serverless handler.
  */
 function requireEnvironment(): void {
-  const problems: string[] = [];
-
-  const secret = process.env['AUTH_SECRET'];
-  if (secret === undefined || secret.length < 32) {
-    problems.push('AUTH_SECRET must be set and at least 32 characters (openssl rand -base64 48)');
-  }
-  if (isProduction && secret === 'replace-me-before-running-anywhere-real') {
-    problems.push('AUTH_SECRET is still the placeholder from .env.example');
-  }
-  if (isProduction && process.env['DATABASE_URL'] === undefined) {
-    problems.push('DATABASE_URL must be set in production');
-  }
-  // The console transport prints one-time codes into the log. It refuses to
-  // construct in production on its own; this says so at boot instead of at
-  // the first sign-in attempt. `disabled` is allowed: it sends nothing.
-  if (isProduction && (process.env['OTP_TRANSPORT'] ?? 'console') === 'console') {
-    problems.push('OTP_TRANSPORT=console logs every one-time code; set a real gateway');
-  }
-
-  // Uploads on a container's own disk vanish at the next deploy. Online they
-  // go to Supabase Storage, and a store that cannot work stops the boot.
-  const storeProblem = mediaStoreProblem();
-  if (storeProblem !== null) problems.push(storeProblem);
-  if (isProduction && (process.env['MEDIA_STORE'] ?? 'local') !== 'supabase') {
-    problems.push('MEDIA_STORE must be supabase in production; the local disk is wiped on every deploy');
-  }
-
+  const problems = configProblems();
   if (problems.length > 0) {
     for (const problem of problems) logger.error('refusing to start', { problem });
     process.exit(1);

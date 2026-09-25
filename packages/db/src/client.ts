@@ -33,9 +33,28 @@ export function createDatabase(options: CreateDatabaseOptions = {}): {
   db: Database;
   close: () => Promise<void>;
 } {
-  const client = postgres(databaseUrl(options.url), {
-    max: options.singleConnection === true ? 1 : (options.max ?? 10),
-    prepare: options.singleConnection !== true,
+  const url = databaseUrl(options.url);
+  /*
+   * Supabase's transaction pooler (port 6543) hands each transaction to
+   * whichever server connection is free, so a statement prepared on one is
+   * missing on the next: prepared statements must be off there. It is the
+   * pooler a serverless host should use — many short-lived instances, each
+   * holding a few connections, would exhaust the session pooler's slots.
+   */
+  const transactionPooler = ((): boolean => {
+    try {
+      return new URL(url).port === '6543';
+    } catch {
+      // A password with characters URL parsing refuses; postgres-js copes.
+      return url.includes(':6543/');
+    }
+  })();
+  // One serverless instance serves one request at a time; a few connections
+  // cover a request's parallel queries without starving the other instances.
+  const defaultMax = process.env['VERCEL'] === '1' ? 3 : 10;
+  const client = postgres(url, {
+    max: options.singleConnection === true ? 1 : (options.max ?? defaultMax),
+    prepare: options.singleConnection !== true && !transactionPooler,
     /*
      * Let go of a connection before the pooler does.
      *

@@ -1,5 +1,7 @@
+import { randomUUID } from 'node:crypto';
+
 import { TRPCError } from '@trpc/server';
-import { and, count, desc, eq, gt, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gt, inArray, isNotNull, isNull, or, sql, sum } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { MIN_OPERATOR_PASSWORD_LENGTH, operatorPasswordSchema, usernameSchema } from '@dahab/api-contract';
@@ -7,7 +9,10 @@ import { schema } from '@dahab/db';
 import type { Database } from '@dahab/db';
 
 import { endSessions, takenLoginField } from '../auth/logins.ts';
-import { UPLOAD_TICKET_TTL_SECONDS, issueUploadTicket } from '../media/ticket.ts';
+import { VENDOR_QUOTA_BYTES } from '../media/routes.ts';
+import { PURPOSES, sniff } from '../media/sniff.ts';
+import { mediaStore } from '../media/store.ts';
+import { issueFinishToken, issueUploadTicket, verifyFinishToken } from '../media/ticket.ts';
 import { hashPassword, verifyPassword } from '../auth/password.ts';
 import { requireDatabase } from '../database.ts';
 import { requireVendorPermission } from '../trpc.ts';
@@ -524,27 +529,158 @@ export const vendorSelfRouter = {
     }),
 
   /**
-   * A ten-minute ticket to upload one kind of file straight to `POST /media`
-   * — how a phone sends a story video past the dashboard's host, which caps
-   * a request at 4.5 MB. A story needs `story.post`; the rest are for the
-   * person's own picture or, for the owner, the page's images, and the write
-   * that uses the upload checks that again.
+   * Step one of an upload: say what is coming, and get where to send it.
+   *
+   * On Supabase Storage the answer is a signed link — the phone uploads the
+   * file straight there, because the dashboard's host caps a request at
+   * 4.5 MB and a story video is far larger — plus a token to hand back to
+   * `finishUpload`. On the local disk it is a ten-minute ticket for
+   * `POST /media` on the standalone API. Either way the purpose, the size
+   * and the operator's storage quota are checked here, before a byte moves.
    */
-  uploadTicket: requireVendorPermission('vendor.readOwn')
-    .input(z.object({ purpose: z.enum(['logo', 'cover', 'avatar', 'story']) }))
-    .output(z.object({ ticket: z.string(), expiresInSeconds: z.number().int() }))
-    .mutation(({ ctx, input }) => {
+  startUpload: requireVendorPermission('vendor.readOwn')
+    .input(
+      z.object({
+        purpose: z.enum(['logo', 'cover', 'avatar', 'story']),
+        mimeType: z.string().max(100),
+        bytes: z.number().int().positive(),
+      }),
+    )
+    .output(
+      z.discriminatedUnion('mode', [
+        z.object({ mode: z.literal('direct'), ticket: z.string() }),
+        z.object({ mode: z.literal('signed'), uploadUrl: z.string(), finishToken: z.string() }),
+      ]),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const db = requireDatabase(ctx.db);
       const session = ctx.session;
       if (session === null || session.userId === null) {
         throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Sign in again.' });
       }
+      const rules = PURPOSES[input.purpose];
+      if (input.bytes > rules.maxBytes) {
+        throw new TRPCError({ code: 'PAYLOAD_TOO_LARGE', message: `That file is larger than ${rules.maxBytes} bytes.` });
+      }
+      const [{ used } = { used: null }] = await db
+        .select({ used: sum(schema.mediaUploads.bytes) })
+        .from(schema.mediaUploads)
+        .where(and(eq(schema.mediaUploads.vendorId, ctx.vendorId), isNull(schema.mediaUploads.deletedAt)));
+      if (Number(used ?? 0) + input.bytes > VENDOR_QUOTA_BYTES) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'This operator has used all of its storage.' });
+      }
+
+      const store = mediaStore();
+      if (store.signUpload === undefined) {
+        return {
+          mode: 'direct' as const,
+          ticket: issueUploadTicket(
+            { userId: session.userId, vendorId: ctx.vendorId, sessionId: session.id, purpose: input.purpose },
+            ctx.now,
+          ),
+        };
+      }
+
+      // The extension comes from the declared type; the bytes are checked
+      // against it in finishUpload, and a file that is not what it says is
+      // deleted there.
+      const EXTENSIONS: Record<string, string> = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp',
+        'video/mp4': 'mp4',
+        'video/quicktime': 'mov',
+        'video/webm': 'webm',
+      };
+      const ext = EXTENSIONS[input.mimeType];
+      const kind = input.mimeType.startsWith('video/') ? 'video' : 'image';
+      if (ext === undefined) {
+        throw new TRPCError({ code: 'UNSUPPORTED_MEDIA_TYPE', message: 'Send a JPG, PNG or WEBP photo, or an MP4, MOV or WEBM video.' });
+      }
+      if (!(rules.kinds as readonly string[]).includes(kind)) {
+        throw new TRPCError({ code: 'UNSUPPORTED_MEDIA_TYPE', message: `A ${input.purpose} has to be a photo.` });
+      }
+
+      const key = `${ctx.vendorId}/${randomUUID()}.${ext}`;
       return {
-        ticket: issueUploadTicket(
-          { userId: session.userId, vendorId: ctx.vendorId, sessionId: session.id, purpose: input.purpose },
+        mode: 'signed' as const,
+        uploadUrl: await store.signUpload(key),
+        finishToken: issueFinishToken(
+          { userId: session.userId, vendorId: ctx.vendorId, purpose: input.purpose, key, mimeType: input.mimeType },
           ctx.now,
         ),
-        expiresInSeconds: UPLOAD_TICKET_TTL_SECONDS,
       };
+    }),
+
+  /**
+   * Step two of a signed upload: the file is in Storage; check it and record
+   * it. The same rules as `POST /media` — what the bytes are, not what the
+   * label said; the size limit for the purpose — and anything that fails is
+   * deleted from Storage, not left behind unrecorded. Only the person who
+   * started the upload can finish it.
+   */
+  finishUpload: requireVendorPermission('vendor.readOwn')
+    .input(z.object({ finishToken: z.string().max(4000) }))
+    .output(
+      z.object({
+        id: z.string().uuid(),
+        url: z.string(),
+        kind: z.enum(['image', 'video']),
+        mimeType: z.string(),
+        bytes: z.number().int(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const db = requireDatabase(ctx.db);
+      const token = verifyFinishToken(input.finishToken, ctx.now);
+      if (token === null || token.userId !== ctx.session?.userId || token.vendorId !== ctx.vendorId) {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'That upload has expired. Choose the file again.' });
+      }
+      const store = mediaStore();
+      const rules = PURPOSES[token.purpose as keyof typeof PURPOSES];
+      if (rules === undefined || store.readStart === undefined) {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'That upload cannot be finished here.' });
+      }
+
+      const refuse = async (code: 'BAD_REQUEST' | 'PAYLOAD_TOO_LARGE' | 'UNSUPPORTED_MEDIA_TYPE', message: string) => {
+        await store.remove(token.key);
+        throw new TRPCError({ code, message });
+      };
+
+      const bytes = await store.sizeOf(token.key);
+      if (bytes === null || bytes === 0) {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'The file did not arrive. Try again.' });
+      }
+      if (bytes > rules.maxBytes) await refuse('PAYLOAD_TOO_LARGE', `That file is larger than ${rules.maxBytes} bytes.`);
+
+      const head = await store.readStart(token.key, 16);
+      const format = head === null ? null : sniff(head);
+      if (format === null || format.mime !== token.mimeType) {
+        await refuse('UNSUPPORTED_MEDIA_TYPE', 'Send a JPG, PNG or WEBP photo, or an MP4, MOV or WEBM video.');
+      }
+      const checked = format as NonNullable<typeof format>;
+
+      const [row] = await db
+        .insert(schema.mediaUploads)
+        .values({
+          vendorId: ctx.vendorId,
+          uploaderUserId: token.userId,
+          kind: checked.kind,
+          mimeType: checked.mime,
+          bytes: bytes as number,
+          storageKey: token.key,
+          url: store.urlFor(token.key),
+          createdAt: ctx.now,
+          updatedAt: ctx.now,
+        })
+        // A token finished twice records one file, not two.
+        .onConflictDoNothing()
+        .returning({ id: schema.mediaUploads.id, url: schema.mediaUploads.url });
+      if (row === undefined) {
+        throw new TRPCError({ code: 'CONFLICT', message: 'That upload was already recorded.' });
+      }
+      ctx.logger.info('media uploaded', { vendorId: ctx.vendorId, purpose: token.purpose, kind: checked.kind, bytes });
+      return { id: row.id, url: row.url, kind: checked.kind, mimeType: checked.mime, bytes: bytes as number };
     }),
 
   // ── Stories ──────────────────────────────────────────────────────────────

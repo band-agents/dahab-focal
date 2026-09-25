@@ -30,7 +30,7 @@ import { PURPOSES, isPurpose, sniff } from './sniff.ts';
  */
 
 /** A whole operator's library. Generous for a dive centre; a wall for abuse. */
-const VENDOR_QUOTA_BYTES = 500 * 1024 * 1024;
+export const VENDOR_QUOTA_BYTES = 500 * 1024 * 1024;
 
 const MIME_BY_EXT: Record<string, string> = {
   jpg: 'image/jpeg',

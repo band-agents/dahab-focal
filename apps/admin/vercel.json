@@ -5,7 +5,7 @@
   "buildCommand": "cd ../.. && pnpm --filter @dahab/tokens build && pnpm --filter @dahab/admin build",
   "outputDirectory": ".next",
   "regions": [
-    "fra1"
+    "dub1"
   ],
   "headers": [
     {

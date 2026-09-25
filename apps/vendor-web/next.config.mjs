@@ -15,7 +15,11 @@ try {
   // No root .env: every variable comes from the environment already.
 }
 
-const API_URL = process.env['DAHAB_API_URL'] ?? 'http://127.0.0.1:4000';
+// Same rule as lib/api-url.ts: on Vercel the API is this app's own /api/rpc.
+const onVercel = process.env['VERCEL_PROJECT_PRODUCTION_URL'];
+const API_URL =
+  process.env['DAHAB_API_URL'] ??
+  (onVercel === undefined || onVercel === '' ? 'http://127.0.0.1:4000' : `https://${onVercel}/api/rpc`);
 
 /** @type {import('next').NextConfig} */
 export default {
@@ -37,4 +41,7 @@ export default {
     return [{ source: '/media/:path*', destination: `${API_URL}/media/:path*` }];
   },
   typedRoutes: true,
+  // A monorepo: the API route pulls packages from the workspace root, and the
+  // files a function needs are traced from there, not from this folder.
+  outputFileTracingRoot: fileURLToPath(new URL('../../', import.meta.url)),
 };
