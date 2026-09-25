@@ -10,7 +10,7 @@ import {
   type Money,
 } from '@dahab/i18n';
 
-import type { IsoWeekday } from '../common';
+import type { IsoWeekday } from '../common.ts';
 import {
   PARTICIPANT_RULES,
   priceInputSchema,
@@ -23,7 +23,7 @@ import {
   type PricingModel,
   type PricingRule,
   type SelectedOption,
-} from './types';
+} from './types.ts';
 
 /**
  * computePrice

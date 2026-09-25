@@ -15,11 +15,11 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
-import { availabilitySlots } from './availability';
-import { services } from './catalog';
-import { certifications, users } from './identity';
-import { options } from './options';
-import { vendors } from './vendors';
+import { availabilitySlots } from './availability.ts';
+import { services } from './catalog.ts';
+import { certifications, users } from './identity.ts';
+import { options } from './options.ts';
+import { vendors } from './vendors.ts';
 import {
   currencyEnum,
   localeEnum,
@@ -28,7 +28,7 @@ import {
   participantKindEnum,
   primaryId,
   timestamps,
-} from './_shared';
+} from './_shared.ts';
 
 /** BOOKING — the obligation, its people, and every state it has been in. */
 

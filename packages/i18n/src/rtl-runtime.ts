@@ -20,7 +20,7 @@
  * `document.documentElement.dir` and needs no reload at all.
  */
 
-import { LOCALE_DESCRIPTORS, type Direction, type Locale } from './locales';
+import { LOCALE_DESCRIPTORS, type Direction, type Locale } from './locales.ts';
 
 export interface RtlPlatformAdapter {
   readonly name: 'react-native' | 'web' | 'test';

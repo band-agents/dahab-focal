@@ -13,3 +13,7 @@ Thumbs.db
 apps/gallery/screenshots/*.tmp.png
 packages/tokens/src/generated/
 apps/gallery/public/fonts/
+apps/vendor/public/fonts/
+# Copied from packages/tokens/fonts/native by copy-fonts.mjs; the source is
+# committed there and these are build output.
+apps/vendor/assets/fonts/

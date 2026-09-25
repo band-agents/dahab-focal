@@ -8,6 +8,7 @@
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,

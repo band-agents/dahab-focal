@@ -1,24 +1,45 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
+import { and, eq, isNull } from 'drizzle-orm';
+
 import {
   PERMISSIONS_BY_ROLE,
   emailStartSchema,
   guestSessionSchema,
   oauthCallbackSchema,
+  passwordSignInSchema,
   phoneStartSchema,
   phoneVerifySchema,
   roleSchema,
   sessionSchema,
 } from '@dahab/api-contract';
+import { schema } from '@dahab/db';
 import { LOCALE_DESCRIPTORS, resolveLocale } from '@dahab/i18n';
+
+import { requireDatabase } from '../database.ts';
+import {
+  DUMMY_HASH,
+  LOCKOUT_MINUTES,
+  MAX_FAILED_SIGN_INS,
+  hashPassword,
+  needsRehash,
+  verifyPassword,
+} from '../auth/password.ts';
+import {
+  createSession,
+  isSessionLive,
+  refreshSession,
+  revokeSession,
+  rolesFor,
+} from '../auth/sessions.ts';
 
 import {
   ACCESS_TOKEN_TTL_SECONDS,
   issueAccessToken,
   issueRefreshToken,
   newSessionId,
-} from '../auth/tokens';
+} from '../auth/tokens.ts';
 import {
   OTP_RESEND_COOLDOWN_SECONDS,
   OTP_TTL_SECONDS,
@@ -26,17 +47,24 @@ import {
   hashOtp,
   normalisePhone,
   resolveOtpTransport,
-} from '../auth/otp';
-import { publicProcedure, router, sessionProcedure } from '../trpc';
+} from '../auth/otp.ts';
+import { publicProcedure, router, sessionProcedure } from '../trpc.ts';
 
 /**
- * Auth scaffolding.
+ * Authentication.
  *
- * Phone OTP with Egypt as the default country code, email, Apple, Google, and
- * a guest session that can later be claimed. Persistence is deliberately not
- * wired yet — the procedures below are the contract and the flow, and every
- * place that will touch the database is marked. This session builds the
- * foundation, not the product.
+ * Two doors, on purpose, into two different surfaces:
+ *
+ *   - **Staff sign in with an email and a password** (`passwordSignIn`). The
+ *     console has no phone in the loop and faces the open internet, so this
+ *     one is fully persisted — sessions rows, rotation, revocation, lockout.
+ *   - **Travellers sign in with a one-time code** (`phoneStart` /
+ *     `phoneVerify`) and never hold a password to lose. That path still needs
+ *     its challenge table wired and an SMS gateway chosen; every place it
+ *     will touch the database is marked below.
+ *
+ * Plus a guest session that can later be claimed, so a cart survives an app
+ * restart without a second identity being created for the same person.
  */
 
 const credentialsSchema = z.object({
@@ -87,6 +115,123 @@ export const authRouter = router({
     .mutation(({ input, ctx }) => {
       ctx.logger.info('guest session issued', { deviceId: input.deviceId.slice(0, 8) });
       return issueGuestCredentials(input.locale ?? ctx.locale);
+    }),
+
+  /**
+   * The console's sign-in.
+   *
+   * Every failure — unknown address, wrong password, locked account — returns
+   * the same message and takes the same time. Distinguishing them turns the
+   * form into an oracle for which addresses have accounts, and the first
+   * thing anyone does with that is spray passwords at the ones that do.
+   */
+  passwordSignIn: publicProcedure
+    .input(passwordSignInSchema)
+    .output(credentialsSchema)
+    .mutation(async ({ input, ctx }) => {
+      const db = requireDatabase(ctx.db);
+      const email = input.email.trim().toLowerCase();
+
+      const [user] = await db
+        .select({
+          id: schema.users.id,
+          passwordHash: schema.users.passwordHash,
+          failedSignInCount: schema.users.failedSignInCount,
+          lockedUntil: schema.users.lockedUntil,
+        })
+        .from(schema.users)
+        .where(and(eq(schema.users.email, email), isNull(schema.users.deletedAt)))
+        .limit(1);
+
+      const locked =
+        user?.lockedUntil !== null &&
+        user?.lockedUntil !== undefined &&
+        user.lockedUntil.getTime() > ctx.now.getTime();
+
+      // Verified even when there is no user and even when the account is
+      // locked, so all three paths cost the same scrypt work. Returning early
+      // here is the timing leak this whole procedure is shaped around.
+      const matched = await verifyPassword(input.password, user?.passwordHash ?? DUMMY_HASH);
+
+      if (user === undefined || user.passwordHash === null || locked || !matched) {
+        if (user !== undefined && !locked && !matched) {
+          const failures = user.failedSignInCount + 1;
+          await db
+            .update(schema.users)
+            .set({
+              failedSignInCount: failures,
+              lockedUntil:
+                failures >= MAX_FAILED_SIGN_INS
+                  ? new Date(ctx.now.getTime() + LOCKOUT_MINUTES * 60_000)
+                  : null,
+              updatedAt: ctx.now,
+            })
+            .where(eq(schema.users.id, user.id));
+        }
+        // Logged with the address so a real lockout can be investigated, at
+        // warn rather than info because a run of these is the signal.
+        ctx.logger.warn('sign-in refused', { email, locked, known: user !== undefined });
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'That email and password do not match an account.',
+        });
+      }
+
+      const { roles, vendorId } = await rolesFor(db, user.id);
+
+      const [preferences] = await db
+        .select({ locale: schema.userPreferences.locale })
+        .from(schema.userPreferences)
+        .where(eq(schema.userPreferences.userId, user.id))
+        .limit(1);
+
+      await db
+        .update(schema.users)
+        .set({
+          failedSignInCount: 0,
+          lockedUntil: null,
+          // Raising the scrypt cost later must not lock anyone out, so a
+          // correct password is re-hashed at the current parameters on the
+          // way through rather than at some migration nobody runs.
+          ...(needsRehash(user.passwordHash)
+            ? { passwordHash: await hashPassword(input.password), passwordUpdatedAt: ctx.now }
+            : {}),
+          updatedAt: ctx.now,
+        })
+        .where(eq(schema.users.id, user.id));
+
+      ctx.logger.info('signed in', { userId: user.id, roles });
+
+      return createSession(
+        db,
+        {
+          userId: user.id,
+          roles,
+          vendorId,
+          locale: preferences?.locale ?? ctx.locale,
+        },
+        ctx.now,
+      );
+    }),
+
+  /**
+   * Trades a refresh token for a new pair, rotating the old one out. The
+   * console calls this rather than holding a long-lived credential.
+   */
+  refresh: publicProcedure
+    .input(z.object({ refreshToken: z.string().min(1) }).strict())
+    .output(credentialsSchema)
+    .mutation(async ({ input, ctx }) => {
+      const db = requireDatabase(ctx.db);
+      const outcome = await refreshSession(db, input.refreshToken, ctx.now);
+      if (!outcome.ok) {
+        ctx.logger.warn('refresh refused', { reason: outcome.reason });
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'That session has ended. Sign in again.',
+        });
+      }
+      return outcome.credentials;
     }),
 
   phoneStart: publicProcedure
@@ -169,22 +314,82 @@ export const authRouter = router({
         permissions: z.array(z.string()),
         locale: z.string(),
         direction: z.enum(['ltr', 'rtl']),
+        /**
+         * Who the console says is signed in. Null for a guest, and null when
+         * the row has no address — a phone-only account is the normal case
+         * for a traveller, and the caller has to render that rather than an
+         * empty string that looks like a bug.
+         */
+        email: z.string().nullable(),
+        /** Their own name, for a greeting. Null when the profile has none. */
+        displayName: z.string().nullable(),
+        /** The operator this session acts for, when it acts for exactly one. */
+        vendorName: z.string().nullable(),
       }),
     )
-    .query(({ ctx }) => {
+    .query(async ({ ctx }) => {
       const session = ctx.session;
       if (session === null) {
         throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No session.' });
       }
+      // An access token verifies on its signature alone, which is what makes
+      // it cheap — and what makes revocation invisible to it for up to its
+      // fifteen minutes. This is the one call that pays for a round trip to
+      // find out, and it is the call the console makes on every request, so
+      // signing a device out takes effect there immediately.
+      //
+      // The revocation check, the account row and the operator's name are
+      // three independent reads, and they were made one after another: about
+      // 300 ms on every single console page, because each is a round trip to
+      // eu-west-1. Fired together they cost one trip. The revocation check
+      // still decides the answer — a revoked session is refused even though
+      // the other two reads came back.
+      const db = ctx.db;
+      const [live, accountRows, vendorRows] = await Promise.all([
+        !session.isGuest && db !== null
+          ? isSessionLive(db, session.id, ctx.now)
+          : Promise.resolve(true),
+        session.userId !== null && db !== null
+          ? db
+              .select({
+                email: schema.users.email,
+                displayName: schema.userProfiles.displayName,
+              })
+              .from(schema.users)
+              .leftJoin(schema.userProfiles, eq(schema.userProfiles.userId, schema.users.id))
+              .where(eq(schema.users.id, session.userId))
+              .limit(1)
+          : Promise.resolve([]),
+        session.vendorId !== null && db !== null
+          ? db
+              .select({ displayName: schema.vendors.displayName })
+              .from(schema.vendors)
+              .where(eq(schema.vendors.id, session.vendorId))
+              .limit(1)
+          : Promise.resolve([]),
+      ]);
+
+      if (!live) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'That session has ended.' });
+      }
+
       const permissions = new Set<string>();
       for (const role of session.roles) {
         for (const permission of PERMISSIONS_BY_ROLE[role]) permissions.add(permission);
       }
+
+      const email = accountRows[0]?.email ?? null;
+      const displayName = accountRows[0]?.displayName ?? null;
+      const vendorName = vendorRows[0]?.displayName ?? null;
+
       return {
         session,
         permissions: [...permissions].sort(),
         locale: ctx.locale,
         direction: LOCALE_DESCRIPTORS[ctx.locale].direction,
+        email,
+        displayName,
+        vendorName,
       };
     }),
 
@@ -199,11 +404,16 @@ export const authRouter = router({
       ),
     ),
 
-  signOut: sessionProcedure.output(z.object({ ok: z.literal(true) })).mutation(({ ctx }) => {
-    // TODO(persistence): set sessions.revoked_at for this session id. The
-    // access token stays valid until it expires, which is why its TTL is 15
-    // minutes and not a day.
-    ctx.logger.info('sign out', { sessionId: ctx.session?.id });
-    return { ok: true as const };
-  }),
+  signOut: sessionProcedure
+    .output(z.object({ ok: z.literal(true) }))
+    .mutation(async ({ ctx }) => {
+      const sessionId = ctx.session?.id;
+      // A guest session has no row to revoke; it expires on its own and there
+      // is nothing to take away. Signing out of one is still a success.
+      if (sessionId !== undefined && ctx.db !== null) {
+        await revokeSession(ctx.db, sessionId, ctx.now);
+      }
+      ctx.logger.info('sign out', { sessionId });
+      return { ok: true as const };
+    }),
 });

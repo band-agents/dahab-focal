@@ -1,0 +1,61 @@
+# Render blueprint for the API.
+#
+# Render reads this from the repository root. Point a new Blueprint at the
+# repo and it creates the service; everything marked `sync: false` is a secret
+# you set once in the dashboard and Render never reads from here.
+#
+# Railway equivalent, if you prefer it: set the root directory to the repo
+# root, the build command to `corepack enable && pnpm install --frozen-lockfile
+# --filter @dahab/api...` and the start command to
+# `node --experimental-strip-types apps/api/src/index.ts`. The variables below
+# are the same either way.
+
+services:
+  - type: web
+    name: dahab-focal-api
+    runtime: node
+    plan: starter
+    region: frankfurt # Closest of Render's regions to both Egypt and Supabase.
+    branch: main
+
+    # corepack pins pnpm to the version in package.json, so the lockfile is
+    # resolved by the pnpm that wrote it. `...` pulls in the workspace
+    # packages the API depends on and nothing else.
+    buildCommand: corepack enable && pnpm install --frozen-lockfile --filter @dahab/api...
+
+    # No compile step: Node 22 strips the types, which is exactly what runs
+    # locally. What ships is the source in this repository rather than a build
+    # output that can drift from it.
+    startCommand: node --experimental-strip-types apps/api/src/index.ts
+
+    # The same procedure the console reads, so "healthy" means the database
+    # answered — not merely that node is running.
+    healthCheckPath: /health
+
+    envVars:
+      - key: NODE_VERSION
+        value: '22'
+      - key: NODE_ENV
+        value: production
+
+      # Supabase, session pooler. Set in the dashboard; the password must
+      # never enter this file or any commit.
+      - key: DATABASE_URL
+        sync: false
+
+      # openssl rand -base64 48. Rotating it signs every session out at once,
+      # which is the intended blast radius.
+      - key: AUTH_SECRET
+        sync: false
+
+      # The browser surfaces that may call this API, comma separated. The
+      # admin console renders on a server and needs no entry here. An origin
+      # not listed gets no CORS headers at all rather than a permissive one.
+      - key: CORS_ORIGINS
+        sync: false
+
+      # The console transport prints one-time codes into the log, and the API
+      # refuses to start in production while it is selected. Set this to a
+      # real gateway before the traveller app ships.
+      - key: OTP_TRANSPORT
+        sync: false

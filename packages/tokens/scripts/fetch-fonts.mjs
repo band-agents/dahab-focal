@@ -62,6 +62,42 @@ const FAMILIES = [
     role: 'arabicDisplay',
     subsets: ['arabic', 'latin'],
   },
+  /*
+   * The console superfamily. The admin console and the operator app are a
+   * separate visual system from the traveller app (tokens.json `c-*`), and
+   * they need a grotesque rather than Baloo's round terminals.
+   *
+   * Plex rather than the Public Sans in the mock-up: Public Sans publishes no
+   * cyrillic subset, and ru-RU is one of the seven locales — Russian would
+   * have fallen silently back to Rubik mid-sentence. Plex Sans carries latin,
+   * latin-ext and cyrillic, Plex Sans Arabic carries the Arabic, and Plex Mono
+   * the figures: one skeleton across all three.
+   */
+  {
+    family: 'IBM Plex Sans',
+    slug: 'plex-sans',
+    weights: [400, 600],
+    role: 'console',
+    subsets: ['latin', 'latin-ext', 'cyrillic'],
+  },
+  {
+    family: 'IBM Plex Sans Arabic',
+    slug: 'plex-sans-arabic',
+    weights: [400, 600],
+    variable: false,
+    role: 'consoleArabic',
+    subsets: ['arabic', 'latin'],
+  },
+  {
+    // One weight: nothing in the console needs a bold figure, and emphasis
+    // there is size and colour.
+    family: 'IBM Plex Mono',
+    slug: 'plex-mono',
+    weights: [400, 400],
+    variable: false,
+    role: 'figure',
+    subsets: ['latin'],
+  },
 ];
 
 /** Parse the `/* subset *\/ @font-face { … }` blocks Google returns. */
@@ -87,48 +123,76 @@ async function main() {
 
   for (const spec of FAMILIES) {
     const [min, max] = spec.weights;
-    const query = `family=${encodeURIComponent(spec.family)}:wght@${min}..${max}&display=swap`;
-    const cssUrl = `https://fonts.googleapis.com/css2?${query}`;
 
-    const css = await fetch(cssUrl, { headers: { 'User-Agent': USER_AGENT } }).then((r) => {
-      if (!r.ok) throw new Error(`${spec.family}: Google returned ${r.status}`);
-      return r.text();
-    });
+    /*
+     * One request per file to fetch. A variable family answers the whole range
+     * in a single file, so that is one request covering `min..max`. A family
+     * Google still publishes as separate statics rejects a range outright with
+     * a 400, so each weight is asked for on its own and lands in its own file —
+     * the weight goes in the filename, and the manifest records a range of one
+     * so the generated @font-face declares a single weight rather than lying
+     * about covering the span between them.
+     */
+    const cuts =
+      spec.variable === false
+        ? [...new Set([min, max])].map((weight) => ({
+            axis: `wght@${weight}`,
+            weightRange: [weight, weight],
+            suffix: `-${weight}`,
+          }))
+        : [{ axis: `wght@${min}..${max}`, weightRange: [min, max], suffix: '' }];
 
-    const blocks = parseCss(css);
-    const wanted = spec.subsets.map((subset) => {
-      const block = blocks.find((candidate) => candidate.subset === subset);
-      if (block === undefined) {
-        throw new Error(
-          `${spec.family}: Google does not publish a "${subset}" subset. Got: ` +
-            `${[...new Set(blocks.map((b) => b.subset))].join(', ')}`,
-        );
-      }
-      return block;
-    });
+    for (const cut of cuts) {
+      const query = `family=${encodeURIComponent(spec.family)}:${cut.axis}&display=swap`;
+      const cssUrl = `https://fonts.googleapis.com/css2?${query}`;
 
-    for (const block of wanted) {
-      const file = `${spec.slug}-${block.subset}.woff2`;
-      const bytes = Buffer.from(
-        await fetch(block.url, { headers: { 'User-Agent': USER_AGENT } }).then((r) => {
-          if (!r.ok) throw new Error(`${file}: ${r.status}`);
-          return r.arrayBuffer();
-        }),
-      );
-      await writeFile(join(fontsDir, file), bytes);
-
-      manifest.push({
-        family: spec.family,
-        role: spec.role,
-        subset: block.subset,
-        file,
-        bytes: bytes.length,
-        weightRange: [min, max],
-        style: block.style,
-        unicodeRange: block.unicodeRange,
+      const css = await fetch(cssUrl, { headers: { 'User-Agent': USER_AGENT } }).then((r) => {
+        if (!r.ok) {
+          throw new Error(
+            `${spec.family} (${cut.axis}): Google returned ${r.status}` +
+              (spec.variable === false ? '' : ' — is it a static family? Set variable: false.'),
+          );
+        }
+        return r.text();
       });
 
-      console.log(`  ${file.padEnd(30)} ${String(Math.round(bytes.length / 1024)).padStart(4)} kB  ${block.subset}`);
+      const blocks = parseCss(css);
+      const wanted = spec.subsets.map((subset) => {
+        const block = blocks.find((candidate) => candidate.subset === subset);
+        if (block === undefined) {
+          throw new Error(
+            `${spec.family}: Google does not publish a "${subset}" subset. Got: ` +
+              `${[...new Set(blocks.map((b) => b.subset))].join(', ')}`,
+          );
+        }
+        return block;
+      });
+
+      for (const block of wanted) {
+        const file = `${spec.slug}${cut.suffix}-${block.subset}.woff2`;
+        const bytes = Buffer.from(
+          await fetch(block.url, { headers: { 'User-Agent': USER_AGENT } }).then((r) => {
+            if (!r.ok) throw new Error(`${file}: ${r.status}`);
+            return r.arrayBuffer();
+          }),
+        );
+        await writeFile(join(fontsDir, file), bytes);
+
+        manifest.push({
+          family: spec.family,
+          role: spec.role,
+          subset: block.subset,
+          file,
+          bytes: bytes.length,
+          weightRange: cut.weightRange,
+          style: block.style,
+          unicodeRange: block.unicodeRange,
+        });
+
+        console.log(
+          `  ${file.padEnd(32)} ${String(Math.round(bytes.length / 1024)).padStart(4)} kB  ${block.subset}`,
+        );
+      }
     }
   }
 
@@ -139,7 +203,9 @@ async function main() {
       {
         $note:
           'Generated by scripts/fetch-fonts.mjs. The token build turns this into ' +
-          'src/generated/fonts.css. All three families are SIL OFL 1.1.',
+          'src/generated/fonts.css. Every family here is SIL OFL 1.1 — the ' +
+          'three Baloo/Rubik faces for the traveller app, the three IBM Plex ' +
+          'faces for the console.',
         $generated: new Date().toISOString().slice(0, 10),
         faces: manifest,
       },

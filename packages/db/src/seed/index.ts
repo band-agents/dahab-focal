@@ -1,16 +1,25 @@
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
-import { createDatabase, type Database } from '../client';
+import { createDatabase, type Database } from '../client.ts';
 import {
   attributeDefinitions,
   categories,
   diveSites,
   neighborhoods,
   users,
+  vendorDocuments,
   vendors,
-} from '../schema/index';
-import { CATEGORY_ATTRIBUTES } from './attributes';
-import { CATEGORIES, DIVE_SITES, NEIGHBORHOODS, VENDORS } from './dahab';
+} from '../schema/index.ts';
+import { CATEGORY_ATTRIBUTES } from './attributes.ts';
+import {
+  CATEGORIES,
+  DIVE_SITES,
+  NEIGHBORHOODS,
+  VENDORS,
+  VENDOR_DOCUMENTS,
+  documentExpiresOn,
+} from './dahab.ts';
+import { seedOperations } from './write-operations.ts';
 
 /**
  * `pnpm db:seed`.
@@ -171,24 +180,69 @@ async function seedVendors(db: Database): Promise<number> {
         slug: vendor.slug,
         legalName: vendor.legalName,
         displayName: vendor.displayName,
-        status: 'active',
+        status: vendor.status,
         ownerUserId: owner.id,
         neighborhood: vendor.neighborhood,
         location: { latitude: vendor.latitude, longitude: vendor.longitude },
-        verificationStatus: 'verified',
+        verificationStatus: vendor.verificationStatus,
       })
       .onConflictDoUpdate({
         target: vendors.slug,
         set: {
           legalName: vendor.legalName,
           displayName: vendor.displayName,
+          status: vendor.status,
           neighborhood: vendor.neighborhood,
           location: { latitude: vendor.latitude, longitude: vendor.longitude },
+          verificationStatus: vendor.verificationStatus,
           updatedAt: new Date(),
         },
       });
   }
   return VENDORS.length;
+}
+
+/**
+ * The documents, and the dates they run out on.
+ *
+ * There is no natural key on `vendor_documents` — an operator can hold two
+ * boat licences — so this replaces the seeded set per vendor rather than
+ * upserting row by row. Re-seeding therefore refreshes the expiry dates,
+ * which is the point: the board should always have something in every band.
+ */
+async function seedVendorDocuments(db: Database): Promise<number> {
+  const rows = await db
+    .select({ id: vendors.id, slug: vendors.slug })
+    .from(vendors);
+  const idBySlug = new Map(rows.map((row) => [row.slug, row.id]));
+
+  let count = 0;
+  for (const vendorSlug of new Set(VENDOR_DOCUMENTS.map((doc) => doc.vendorSlug))) {
+    const vendorId = idBySlug.get(vendorSlug);
+    if (vendorId === undefined) continue;
+    await db.delete(vendorDocuments).where(eq(vendorDocuments.vendorId, vendorId));
+  }
+
+  for (const document of VENDOR_DOCUMENTS) {
+    const vendorId = idBySlug.get(document.vendorSlug);
+    if (vendorId === undefined) continue;
+
+    await db.insert(vendorDocuments).values({
+      vendorId,
+      type: document.type,
+      // No document store yet: the row is the record of the paperwork, and
+      // the file it points at does not exist until uploads are built.
+      fileUrl: `seed://not-uploaded/${document.vendorSlug}/${document.type}`,
+      documentNumber: document.documentNumber,
+      issuer: document.issuer,
+      expiresOn: documentExpiresOn(document),
+      blocksPublishing: document.blocksPublishing,
+      verificationStatus: document.verificationStatus,
+      rejectionReason: document.rejectionReason ?? null,
+    });
+    count += 1;
+  }
+  return count;
 }
 
 async function main(): Promise<void> {
@@ -206,13 +260,35 @@ async function main(): Promise<void> {
     const diveSiteCount = await seedDiveSites(db);
     const taxonomy = await seedCategoriesAndAttributes(db);
     const vendorCount = await seedVendors(db);
+    const documentCount = await seedVendorDocuments(db);
+    const operations = await seedOperations(db);
 
-    console.log('Seeded:');
+    console.log('Register:');
     console.log(`  ${neighborhoodCount} neighborhoods`);
     console.log(`  ${diveSiteCount} dive sites`);
     console.log(`  ${taxonomy.categories} categories`);
     console.log(`  ${taxonomy.attributes} attribute definitions`);
     console.log(`  ${vendorCount} vendors`);
+    console.log(`  ${documentCount} vendor documents`);
+    console.log(`  ${operations.staff} staff`);
+    console.log(`  ${operations.resources} resources`);
+    console.log(`  ${operations.featureFlags} feature flags`);
+
+    console.log('\nOperating week:');
+    console.log(`  ${operations.services} services`);
+    console.log(`  ${operations.serviceTranslations} service translations`);
+    console.log(`  ${operations.attributeValues} attribute values`);
+    console.log(`  ${operations.pricingModels} pricing models, ${operations.pricingRules} pricing rules`);
+    console.log(`  ${operations.slots} departures`);
+    console.log(`  ${operations.bookings} bookings`);
+    console.log(`  ${operations.participants} participants`);
+    console.log(`  ${operations.payments} payments`);
+    console.log(`  ${operations.refunds} refunds`);
+    console.log(`  ${operations.payouts} payouts`);
+    console.log(`  ${operations.ledgerEntries} ledger entries (balanced)`);
+    console.log(`  ${operations.reviews} reviews`);
+    console.log(`  ${operations.incidents} incidents`);
+    console.log(`  ${operations.disputes} disputes`);
 
     // Prove the spatial index is usable, not just present: everything within
     // 3 km of the Masbat bridge.

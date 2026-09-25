@@ -1,5 +1,26 @@
 # Canvas fixes — the worklist
 
+> **Status, 2026-09-11.** Sections 1 and 3 are DONE, and not the way this file
+> proposed. The board answered them itself in its own **section 09**
+> (7 Sep 2026), and `packages/tokens/tokens.json` now carries those values:
+>
+> - `clay-700` → `#7D6D5E` — as proposed here. Converged.
+> - Danger text was **split in two**, not replaced: `danger-text` `#A82B2B` on
+>   the `#F5DCDC` tint (5.30), and a new `danger-text-on-cream` `#C13333`
+>   (5.26) for danger on the page ground. The interim `#B82D2D` this file
+>   proposed is superseded.
+> - Night `text-link` `#8FE0D8`, `focus-ring` `#7FD8D0`, `cta-edge` /
+>   `cta-fill-pressed` `#E8A99C`, and all four status strips
+>   (success `#143A2C`/`#6FD39C`, warning `#3A2E14`/`#F0C57A`,
+>   danger `#3E1E1E`/`#F5A099`, info `#0F3A3A`/`#7FD8D0`) are imported.
+>   Seven of the eight differ from section 4a's proposals — the board's are
+>   more hue-committed. `pnpm test:tokens` asserts each against both grounds.
+>
+> **Still open:** night `text-brand` (coral text at night) has no value in any
+> export; the section 4c category surfaces; and every §5/§6 sub-bar pairing.
+> Sections 2, 4a and 4c below are kept as the record of what was proposed, but
+> re-derive them against the board before acting.
+
 Everything outstanding against the Claude Design canvas, in one list, ordered
 so it can be worked through in a single pass.
 
@@ -201,6 +222,7 @@ since you are touching that token anyway.
 | JSON/CSS naming | The JSON `night` block omits the `raised` vs `surface-raised` naming the CSS uses. Cosmetic, but it is why an importer has to special-case one of them. |
 | Motion signatures | The six named motion signatures exist only as one prose `$note` in the JSON, not as structured tokens. Components cannot read them. Worth promoting to real entries. |
 | `noFlip` icon list | The per-mark list is not published on the board. `tokens.json` carries a conservative first pass in `icon.noFlip.names` (27 of 48 marks) that needs sign-off. |
+| Category marks vs the taxonomy | The board draws twelve category marks and the seeded taxonomy has twelve categories, but not the same twelve. The board includes `foodCooking`, which `CLAUDE.md` rules out ("experiences, not food"); the taxonomy includes `photography`, which the board never drew. `apps/admin/components/CategoryGlyph.tsx` maps the eleven that match and falls back to the generic `camera` mark for photography rather than redrawing one. The board owes a `photography` mark, and `foodCooking` should be retired from the set. |
 
 ---
 

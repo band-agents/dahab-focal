@@ -1,9 +1,26 @@
 import { describe, expect, it } from 'vitest';
 
-import { CATEGORY_SLUGS, attributeDefinitionSchema, pointSchema } from '@dahab/api-contract';
+import {
+  CATEGORY_SLUGS,
+  attributeDefinitionSchema,
+  computePrice,
+  pointSchema,
+  pricingModelSchema,
+  pricingRuleSchema,
+  type PricingRuleInput,
+} from '@dahab/api-contract';
 
 import { CATEGORY_ATTRIBUTES, DIVING_INCLUSIONS } from '../src/seed/attributes';
-import { CATEGORIES, DIVE_SITES, NEIGHBORHOODS, VENDORS } from '../src/seed/dahab';
+import {
+  CATEGORIES,
+  DIVE_SITES,
+  NEIGHBORHOODS,
+  SEED_TODAY,
+  VENDORS,
+  inDays,
+} from '../src/seed/dahab';
+import { BOOKINGS, SERVICES } from '../src/seed/operations';
+import { SEED_PRICING } from '../src/seed/pricing';
 
 /**
  * The seed is content, so it gets the same treatment as content: validated
@@ -239,4 +256,107 @@ describe('no lorem ipsum reaches a fixture', () => {
       expect(corpus.toLowerCase()).not.toContain(banned.toLowerCase());
     }
   });
+});
+
+describe('the seed dates its days in Cairo, not in UTC', () => {
+  /**
+   * `local_date` is a Cairo date and every console board filters it against
+   * one. Deriving it from `toISOString()` gives the UTC day, which between
+   * 22:00 UTC and midnight is the previous Cairo day — so a seed run late in
+   * the evening wrote the whole operating week a day early and the Today
+   * board showed yesterday's boats. Nothing failed; the numbers were simply
+   * wrong, which is why this is pinned rather than left to be noticed.
+   */
+  const cairoDay = (at: Date) =>
+    new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Cairo' }).format(at);
+
+  it('agrees with the formatter every board reads', () => {
+    expect(inDays(0)).toBe(cairoDay(SEED_TODAY));
+  });
+
+  it('steps one calendar day at a time, forwards and back', () => {
+    for (const offset of [-30, -7, -1, 0, 1, 7, 30]) {
+      const expected = cairoDay(new Date(SEED_TODAY.getTime() + offset * 86_400_000));
+      expect(inDays(offset)).toBe(expected);
+    }
+  });
+
+  it('returns a bare YYYY-MM-DD, which is what the column holds', () => {
+    expect(inDays(0)).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('is one day ahead of the UTC date during the Cairo evening', () => {
+    // 22:30 UTC is 00:30 the next morning in Cairo. This is the window the
+    // bug lived in, and the case a UTC-derived day gets wrong.
+    const evening = new Date('2026-09-14T22:30:00Z');
+    expect(evening.toISOString().slice(0, 10)).toBe('2026-09-14');
+    expect(cairoDay(evening)).toBe('2026-09-15');
+  });
+});
+
+describe('the seeded rate card is the one the seeded bookings were charged by', () => {
+  /*
+   * `pricing_models` and `pricing_rules` were empty while the module map called
+   * them seeded. Now they are written from the same constants the bookings
+   * were priced with — and this is what keeps them that way: every booking is
+   * run back through computePrice() against the seeded rows, and has to come
+   * out at exactly the total it was charged.
+   */
+  const SERVICE_ID = '018f3a4b-0000-7000-8000-0000000000c1';
+  const ruleId = (index: number) =>
+    `018f3a4b-0000-7000-8000-${String(index + 1).padStart(12, '0')}`;
+
+  function pricingFor(slug: string) {
+    const pricing = SEED_PRICING.find((entry) => entry.serviceSlug === slug);
+    if (pricing === undefined) throw new Error(`no seeded pricing for ${slug}`);
+    const model = {
+      kind: pricing.kind,
+      currency: pricing.currency,
+      basePrice: { amount: pricing.basePriceMinor, currency: pricing.currency },
+    };
+    const rules: PricingRuleInput[] = pricing.rules.map((rule, index) => ({
+      id: ruleId(index),
+      labelKey: rule.labelKey,
+      condition: rule.condition,
+      adjustment: rule.adjustment,
+      priority: rule.priority,
+      stackable: rule.stackable,
+    }));
+    return { model, rules };
+  }
+
+  it('prices every seeded service, once', () => {
+    expect(SEED_PRICING.map((entry) => entry.serviceSlug).sort()).toEqual(
+      SERVICES.map((service) => service.slug).sort(),
+    );
+  });
+
+  it('parses against the contract, so computePrice will accept what the table holds', () => {
+    for (const entry of SEED_PRICING) {
+      const { model, rules } = pricingFor(entry.serviceSlug);
+      expect(pricingModelSchema.safeParse(model).success, entry.serviceSlug).toBe(true);
+      for (const rule of rules) {
+        expect(pricingRuleSchema.safeParse(rule).success, `${entry.serviceSlug} ${rule.labelKey}`).toBe(
+          true,
+        );
+      }
+    }
+  });
+
+  it.each(BOOKINGS.map((booking) => [booking.reference, booking] as const))(
+    'reproduces %s to the piastre',
+    (_reference, booking) => {
+      const { model, rules } = pricingFor(booking.serviceSlug);
+      const breakdown = computePrice({
+        serviceId: SERVICE_ID,
+        model,
+        party: booking.party,
+        activityAt: new Date('2026-09-26T06:00:00Z'),
+        bookedAt: new Date('2026-09-20T06:00:00Z'),
+        rules,
+        quoteCurrency: 'EGP',
+      });
+      expect(breakdown.total).toEqual({ amount: booking.totalMinor, currency: 'EGP' });
+    },
+  );
 });

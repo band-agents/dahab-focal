@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "admin",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@dahab/admin", "dev"],
+      "port": 4310
+    },
+    {
+      "name": "traveler",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@dahab/traveler", "dev"],
+      "port": 4330
+    }
+  ]
+}

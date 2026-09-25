@@ -29,11 +29,17 @@ describe('health', () => {
     const caller = createCaller(createTestContext());
     const result = await caller.health();
 
-    expect(result.status).toBe('ok');
     expect(result.locales).toHaveLength(7);
     expect(result.requestId).toMatch(/[0-9a-f-]{36}/);
-    // Unchecked, not ok: nothing has touched Postgres or Redis on this path.
-    expect(result.checks['database']).toBe('unchecked');
+
+    // The database is really probed now, and this suite runs without a
+    // DATABASE_URL — so `unavailable` is the truthful answer and `degraded`
+    // follows from it. A green health check on a server that cannot reach its
+    // database is the failure this assertion exists to prevent.
+    expect(result.checks['database']).toBe('unavailable');
+    expect(result.status).toBe('degraded');
+
+    // Redis is still genuinely unchecked; nothing on this path touches it.
     expect(result.checks['redis']).toBe('unchecked');
   });
 });
@@ -163,5 +169,126 @@ describe('catalog reads are wired but empty', () => {
       // @ts-expect-error deliberately invalid: the enum is the contract
       caller.catalog.attributeDefinitions({ categorySlug: 'jet-ski', comparableOnly: false }),
     ).rejects.toThrow();
+  });
+});
+
+describe('the console sign-in', () => {
+  it('says the database is missing rather than throwing a connection error', async () => {
+    // A 500 here reads as "the sign-in is broken"; PRECONDITION_FAILED reads
+    // as "nothing is configured yet", and the console renders them as two
+    // different notices.
+    const caller = createCaller(createTestContext());
+    await expect(
+      caller.auth.passwordSignIn({ email: 'someone@example.com', password: 'whatever-it-is' }),
+    ).rejects.toMatchObject({ code: 'PRECONDITION_FAILED' });
+  });
+
+  it('refuses a refresh with no database the same way', async () => {
+    const caller = createCaller(createTestContext());
+    await expect(caller.auth.refresh({ refreshToken: 'anything' })).rejects.toMatchObject({
+      code: 'PRECONDITION_FAILED',
+    });
+  });
+
+  it('never returns a stack to the caller', async () => {
+    // A stack names file paths, package versions and the shape of the query
+    // that failed. tRPC strips it outside development on its own; this pins
+    // it, because the one place it leaks is a misconfigured NODE_ENV on a
+    // live deploy and nothing else would notice.
+    const caller = createCaller(createTestContext());
+    try {
+      await caller.auth.session();
+      expect.unreachable('auth.session with no session must throw');
+    } catch (error) {
+      const shape = appRouter._def._config.errorFormatter({
+        error: error as never,
+        shape: { message: '', code: -32001, data: { stack: 'leaked' } } as never,
+        ctx: createTestContext(),
+        type: 'query',
+        path: 'auth.session',
+        input: undefined,
+      } as never) as { data: Record<string, unknown> };
+      expect(shape.data).not.toHaveProperty('stack');
+    }
+  });
+
+  it('signs out cleanly when there is no session row to revoke', async () => {
+    // A guest session is never persisted, so there is nothing to revoke —
+    // and signing out of one is still a success, not an error.
+    const caller = createCaller(
+      createTestContext({ session: session({ isGuest: true, roles: ['guest'] }) }),
+    );
+    await expect(caller.auth.signOut()).resolves.toEqual({ ok: true });
+  });
+});
+
+describe('the console writes are scoped to the platform, not to a vendor', () => {
+  /**
+   * The bug this pins: `catalog.publish` and `booking.manageVendor` are held
+   * by vendor owners over their own catalogue and their own boats. Gating the
+   * console's review queue and its weather cancellation on those would have
+   * let any owner publish any operator's listing and cancel any operator's
+   * departure. The `*Any` forms exist for exactly that distinction.
+   */
+  const vendorOwner = () =>
+    createCaller(
+      createTestContext({
+        session: session({ roles: ['vendorOwner'], vendorId: '018f3a4b-0000-7000-8000-00000000000a' as never }),
+      }),
+    );
+
+  it('refuses a vendor owner the review queue', async () => {
+    await expect(
+      vendorOwner().admin.reviewService({
+        serviceId: '018f3a4b-0000-7000-8000-0000000000ff',
+        decision: 'published',
+        reason: 'Looks fine to me.',
+      }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+  });
+
+  it('refuses a vendor owner the cancellation cascade', async () => {
+    await expect(
+      vendorOwner().admin.cancelDeparture({
+        slotId: '018f3a4b-0000-7000-8000-0000000000fe',
+        reason: 'Wind is up this morning.',
+      }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+  });
+
+  it('refuses a vendor owner the verification queue', async () => {
+    await expect(
+      vendorOwner().admin.reviewDocument({
+        documentId: '018f3a4b-0000-7000-8000-0000000000fd',
+        decision: 'verified',
+        reason: 'Checked the register.',
+      }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+  });
+
+  it('requires a reason long enough to be a sentence', async () => {
+    // An admin holds every permission; recording why is the counterweight.
+    // A one-word reason in an audit log is the same as no audit log.
+    const admin = createCaller(createTestContext({ session: session({ roles: ['admin'] }) }));
+    await expect(
+      admin.admin.reviewDocument({
+        documentId: '018f3a4b-0000-7000-8000-0000000000fd',
+        decision: 'rejected',
+        reason: 'no',
+      }),
+    ).rejects.toMatchObject({ code: 'BAD_REQUEST' });
+  });
+
+  it('reaches the database check only once the permission and the reason pass', async () => {
+    // Which is also how we know the order is right: authorisation and
+    // validation before anything touches a row.
+    const admin = createCaller(createTestContext({ session: session({ roles: ['admin'] }) }));
+    await expect(
+      admin.admin.reviewDocument({
+        documentId: '018f3a4b-0000-7000-8000-0000000000fd',
+        decision: 'rejected',
+        reason: 'The scan is unreadable below the fold.',
+      }),
+    ).rejects.toMatchObject({ code: 'PRECONDITION_FAILED' });
   });
 });

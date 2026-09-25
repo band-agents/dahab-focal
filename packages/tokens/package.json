@@ -10,9 +10,10 @@
     "./tokens.json": "./tokens.json",
     "./theme": "./src/generated/theme.ts",
     "./tokens.css": "./src/generated/tokens.css",
-    "./tailwind-preset": "./src/generated/tailwind-preset.js",
+    "./tailwind-preset": "./src/generated/tailwind-preset.cjs",
     "./fonts.css": "./src/generated/fonts.css",
-    "./fonts/*": "./fonts/*"
+    "./fonts/*": "./fonts/*",
+    "./marks": "./src/marks.ts"
   },
   "files": [
     "tokens.json",
@@ -23,7 +24,8 @@
     "build": "node scripts/build-tokens.mjs",
     "typecheck": "tsc --noEmit",
     "test": "node scripts/build-tokens.mjs --check && vitest run",
-    "fonts": "node scripts/fetch-fonts.mjs && node scripts/build-tokens.mjs"
+    "fonts": "node scripts/fetch-fonts.mjs && node scripts/build-tokens.mjs",
+    "marks": "node scripts/generate-marks.mjs"
   },
   "devDependencies": {
     "@dahab/config": "workspace:*",

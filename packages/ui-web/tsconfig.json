@@ -1,0 +1,11 @@
+{
+  "extends": "@dahab/config/tsconfig/base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["react", "node"],
+    "jsx": "react-jsx",
+    "noEmit": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

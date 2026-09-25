@@ -7,7 +7,7 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./motion": "./src/motion.ts"
+    "./marks": "./src/marks/Mark.tsx"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -16,7 +16,8 @@
   "peerDependencies": {
     "nativewind": ">=4.1.0",
     "react": ">=19.0.0",
-    "react-native": ">=0.79.0"
+    "react-native": ">=0.79.0",
+    "react-native-svg": ">=15.0.0"
   },
   "dependencies": {
     "@dahab/tokens": "workspace:*"
@@ -28,6 +29,7 @@
     "react": "19.0.0",
     "react-native": "0.79.5",
     "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "react-native-svg": "15.11.2"
   }
 }
