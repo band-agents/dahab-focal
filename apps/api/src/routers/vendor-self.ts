@@ -602,9 +602,17 @@ export const vendorSelfRouter = {
       }
 
       const key = `${ctx.vendorId}/${randomUUID()}.${ext}`;
+      let uploadUrl: string;
+      try {
+        uploadUrl = await store.signUpload(key);
+      } catch (error) {
+        // Storage's own words stay in the log; the phone gets a sentence.
+        ctx.logger.error('storage refused to sign an upload', { message: String(error) });
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Uploads are not available right now.' });
+      }
       return {
         mode: 'signed' as const,
-        uploadUrl: await store.signUpload(key),
+        uploadUrl,
         finishToken: issueFinishToken(
           { userId: session.userId, vendorId: ctx.vendorId, purpose: input.purpose, key, mimeType: input.mimeType },
           ctx.now,

@@ -1,5 +1,44 @@
 # Deploying
 
+## Now: everything on Vercel, free, no card
+
+No always-on host is available without a card, so the API runs inside the
+operator dashboard's Vercel project, at `/api/rpc` (`apps/vendor-web/app/api/rpc`,
+using `@dahab/api/fetch`). Two Vercel projects from the same repo and branch
+(`feat/vendor-dashboard` until merged), both region `dub1`, next to the
+database:
+
+**1. `apps/vendor-web`: the operator dashboard *and* the API**
+
+| Variable | Value |
+| --- | --- |
+| `DATABASE_URL` | Supabase **transaction** pooler, port **6543** (the session string with `:5432/` changed to `:6543/`). Prepared statements switch off by themselves on that port. |
+| `AUTH_SECRET` | `openssl rand -base64 48`, or any 48+ random characters. |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project settings → API keys → `service_role`. |
+| `SUPABASE_URL` | `https://oggsssfydturfqjynwli.supabase.co` |
+| `MEDIA_STORE` | `supabase` |
+| `OTP_TRANSPORT` | `disabled` |
+| `DAHAB_PHONE_SIGN_IN` | `off` |
+
+`DAHAB_API_URL` is not needed here: on Vercel it defaults to the project's
+own production domain plus `/api/rpc`. A missing or wrong variable makes the
+API answer 503 and log why; check `/api/rpc/health`.
+
+**2. `apps/admin`: Sky Eye**
+
+| Variable | Value |
+| --- | --- |
+| `DAHAB_API_URL` | `https://<the dashboard's production domain>/api/rpc` |
+
+Uploads online go straight from the phone to Supabase Storage with a signed
+link (`vendor.startUpload`), then the API checks the bytes and records the file
+(`vendor.finishUpload`). No file passes through Vercel, which caps a request
+at 4.5 MB.
+
+The sections below describe the always-on setup (API on Render). They still
+work, but Render now asks for a card even on its free plan.
+
+
 Two pieces, two hosts:
 
 | Piece | Where | Why there |
