@@ -22,6 +22,15 @@ import { resolveLocale } from '@/lib/page';
  * phone is proven, the account exists, it just is not part of a centre. That
  * is not an error to show them; it is a sentence telling them what to do.
  */
+/*
+ * Rendered per request, always. Every screen under here is one person's
+ * data, read with the session in their cookie. Left to itself Next
+ * prerenders these at build time — the API call fails there, the page bakes
+ * in "could not reach the server", and every visitor is served that frozen
+ * page. Same rule as the admin console's layout.
+ */
+export const dynamic = 'force-dynamic';
+
 export default async function AppLayout({
   children,
   params,

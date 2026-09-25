@@ -30,6 +30,9 @@ const ERRORS = new Set(['badPhone', 'wait', 'unreachable', 'failed', 'expired', 
  */
 const PHONE_SIGN_IN = process.env['DAHAB_PHONE_SIGN_IN'] !== 'off';
 
+// Per request: it reads the query (which step, which error) every time.
+export const dynamic = 'force-dynamic';
+
 export default async function SignInPage({
   params,
   searchParams,
