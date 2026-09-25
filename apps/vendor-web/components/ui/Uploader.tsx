@@ -2,6 +2,8 @@
 
 import { useId, useRef, useState } from 'react';
 
+import { uploadTarget } from '@/app/[locale]/(app)/actions';
+
 import { Icon } from './Icon';
 
 /**
@@ -69,16 +71,23 @@ async function shrink(file: File, purpose: Purpose): Promise<Blob> {
   });
 }
 
-function send(
+/**
+ * Sends the file straight to the API, with a short-lived ticket this app
+ * fetches for it on the server. Not through this app: its host caps a
+ * request at 4.5 MB, and a story video is far larger.
+ */
+async function send(
   body: Blob,
   purpose: Purpose,
   onProgress: (fraction: number) => void,
 ): Promise<{ id: string; url: string; kind: 'image' | 'video' }> {
+  const target = await uploadTarget(purpose);
+  if (target === null) throw new Error('signedOut');
   return new Promise((resolve, reject) => {
     // XHR rather than fetch: fetch still cannot report upload progress, and
     // progress is the whole point on a slow connection.
     const request = new XMLHttpRequest();
-    request.open('POST', `/api/upload?purpose=${purpose}`);
+    request.open('POST', target);
     request.upload.onprogress = (event) => {
       if (event.lengthComputable) onProgress(event.loaded / event.total);
     };

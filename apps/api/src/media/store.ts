@@ -1,7 +1,8 @@
 import { createReadStream, createWriteStream } from 'node:fs';
 import { mkdir, rename, rm, stat } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
-import type { Readable } from 'node:stream';
+import { Readable } from 'node:stream';
+import type { ReadableStream as WebReadableStream } from 'node:stream/web';
 import { fileURLToPath } from 'node:url';
 
 /**
@@ -107,23 +108,158 @@ class LocalDiskStore implements MediaStore {
   }
 }
 
+/**
+ * Supabase Storage, over its plain HTTP API — no client library on the path
+ * a file takes. One public bucket: every file in it is a logo, a cover, an
+ * avatar or a story, all of which exist to be seen by travellers, and keys
+ * are unguessable uuids. The bucket is made on first use if it is missing,
+ * with the same 50 MB ceiling and the same types the upload route accepts, so
+ * the store itself refuses anything the route would.
+ *
+ * The service-role key is the credential, so it lives only in the API's
+ * environment. Browsers never talk to the store directly: uploads come
+ * through the API, which sniffs them first, and reads go to the public URL.
+ */
+export class SupabaseStore implements MediaStore {
+  private bucketReady: Promise<void> | null = null;
+  // Plain fields, not constructor parameter properties: the API runs under
+  // Node's type stripping, which refuses syntax that emits code.
+  private readonly baseUrl: string;
+  private readonly serviceKey: string;
+  private readonly bucket: string;
+  private readonly http: typeof fetch;
+
+  constructor(baseUrl: string, serviceKey: string, bucket: string, http: typeof fetch = fetch) {
+    this.baseUrl = baseUrl;
+    this.serviceKey = serviceKey;
+    this.bucket = bucket;
+    this.http = http;
+  }
+
+  private headers(extra: Record<string, string> = {}): Record<string, string> {
+    return { authorization: `Bearer ${this.serviceKey}`, apikey: this.serviceKey, ...extra };
+  }
+
+  private objectUrl(key: string): string {
+    if (!KEY_PATTERN.test(key)) throw new Error(`Refusing a malformed media key: ${key}`);
+    return `${this.baseUrl}/storage/v1/object/${this.bucket}/${key}`;
+  }
+
+  private ensureBucket(): Promise<void> {
+    this.bucketReady ??= (async () => {
+      const found = await this.http(`${this.baseUrl}/storage/v1/bucket/${this.bucket}`, { headers: this.headers() });
+      if (found.ok) return;
+      const made = await this.http(`${this.baseUrl}/storage/v1/bucket`, {
+        method: 'POST',
+        headers: this.headers({ 'content-type': 'application/json' }),
+        body: JSON.stringify({
+          id: this.bucket,
+          name: this.bucket,
+          public: true,
+          file_size_limit: 50 * 1024 * 1024,
+          allowed_mime_types: ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm', 'video/quicktime'],
+        }),
+      });
+      // Two instances starting together may both try; the second being told
+      // it already exists is the outcome wanted.
+      if (!made.ok && made.status !== 409) {
+        this.bucketReady = null;
+        throw new Error(`Could not create the media bucket: ${made.status} ${await made.text()}`);
+      }
+    })();
+    return this.bucketReady;
+  }
+
+  async commit(tempPath: string, key: string, mimeType: string): Promise<void> {
+    await this.ensureBucket();
+    const size = (await stat(tempPath)).size;
+    try {
+      const response = await this.http(this.objectUrl(key), {
+        method: 'POST',
+        headers: this.headers({
+          'content-type': mimeType,
+          'content-length': String(size),
+          // Keys are never reused, so a file never changes under its URL.
+          'cache-control': 'max-age=31536000',
+          'x-upsert': 'false',
+        }),
+        body: Readable.toWeb(createReadStream(tempPath)) as unknown as RequestInit['body'],
+        duplex: 'half',
+      } as RequestInit);
+      if (!response.ok) {
+        throw new Error(`Supabase refused the upload: ${response.status} ${await response.text()}`);
+      }
+    } finally {
+      await rm(tempPath, { force: true });
+    }
+  }
+
+  urlFor(key: string): string {
+    if (!KEY_PATTERN.test(key)) throw new Error(`Refusing a malformed media key: ${key}`);
+    return `${this.baseUrl}/storage/v1/object/public/${this.bucket}/${key}`;
+  }
+
+  async sizeOf(key: string): Promise<number | null> {
+    const response = await this.http(this.urlFor(key), { method: 'HEAD' });
+    if (!response.ok) return null;
+    const length = Number(response.headers.get('content-length'));
+    return Number.isFinite(length) ? length : null;
+  }
+
+  async open(
+    key: string,
+    range?: { readonly start: number; readonly end: number },
+  ): Promise<{ stream: Readable; size: number } | null> {
+    const size = await this.sizeOf(key);
+    if (size === null) return null;
+    const response = await this.http(this.urlFor(key), {
+      headers: range === undefined ? {} : { range: `bytes=${range.start}-${range.end}` },
+    });
+    if (!response.ok || response.body === null) return null;
+    return { stream: Readable.fromWeb(response.body as unknown as WebReadableStream), size };
+  }
+
+  async remove(key: string): Promise<void> {
+    await this.http(`${this.baseUrl}/storage/v1/object/${this.bucket}`, {
+      method: 'DELETE',
+      headers: this.headers({ 'content-type': 'application/json' }),
+      body: JSON.stringify({ prefixes: [key] }),
+    });
+  }
+}
+
+/** Why the configured store cannot be used, or null when it can. */
+export function mediaStoreProblem(env: NodeJS.ProcessEnv = process.env): string | null {
+  const kind = env['MEDIA_STORE'] ?? 'local';
+  if (kind === 'local') return null;
+  if (kind !== 'supabase') return `MEDIA_STORE=${kind} is not a store; use "local" or "supabase"`;
+  if ((env['SUPABASE_URL'] ?? '') === '') return 'MEDIA_STORE=supabase needs SUPABASE_URL';
+  if ((env['SUPABASE_SERVICE_ROLE_KEY'] ?? '') === '') return 'MEDIA_STORE=supabase needs SUPABASE_SERVICE_ROLE_KEY';
+  return null;
+}
+
 let store: MediaStore | null = null;
 
 /**
- * The configured store. Only the local one exists yet; `MEDIA_STORE=supabase`
- * is refused loudly rather than quietly falling back, because a production
- * deploy that silently writes uploads to a container's ephemeral disk loses
- * every logo on the next restart.
+ * The configured store: `local` (the default, for this machine) or
+ * `supabase`. A misconfigured one is refused loudly rather than quietly
+ * falling back to the disk, because a production deploy that silently writes
+ * uploads to a container's ephemeral disk loses every logo on the next
+ * restart. The API also refuses to boot in production on the local store.
  */
 export function mediaStore(): MediaStore {
   if (store !== null) return store;
-  const kind = process.env['MEDIA_STORE'] ?? 'local';
-  if (kind !== 'local') {
-    throw new Error(
-      `MEDIA_STORE=${kind} is not implemented yet. Only "local" exists; Supabase Storage is the next step before any deploy.`,
+  const problem = mediaStoreProblem();
+  if (problem !== null) throw new Error(problem);
+  if ((process.env['MEDIA_STORE'] ?? 'local') === 'supabase') {
+    store = new SupabaseStore(
+      (process.env['SUPABASE_URL'] ?? '').replace(/\/+$/, ''),
+      process.env['SUPABASE_SERVICE_ROLE_KEY'] ?? '',
+      process.env['MEDIA_BUCKET'] ?? 'operator-media',
     );
+  } else {
+    store = new LocalDiskStore();
   }
-  store = new LocalDiskStore();
   return store;
 }
 

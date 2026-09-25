@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 
 import { isLocale } from '@dahab/i18n/server';
 
-import { api } from '@/lib/api';
+import { API_URL, api } from '@/lib/api';
 import { MIN_PASSWORD_LENGTH, USERNAME } from '@/lib/password';
 import { normalisePhone } from '@/lib/phone';
 
@@ -274,4 +274,22 @@ export async function replyToReview(form: FormData): Promise<void> {
 
   const failure = await attempt(() => api.vendor.replyToReview.mutate({ reviewId, reply }));
   back(locale, 'reviews', failure === null ? { done: 'sent' } : { error: failure }, `#review-${reviewId}`);
+}
+
+// ——— Uploads ———————————————————————————————————————————————————————————
+
+/**
+ * Where the browser should send a file: the API's `/media` with a ten-minute
+ * ticket for this one purpose. Straight to the API, not through this app,
+ * because the host this app runs on caps a request at 4.5 MB and a story
+ * video is ten times that. Null when there is no session or no API.
+ */
+export async function uploadTarget(purpose: 'logo' | 'cover' | 'avatar' | 'story'): Promise<string | null> {
+  try {
+    const { ticket } = await api.vendor.uploadTicket.mutate({ purpose });
+    const query = new URLSearchParams({ purpose, ticket });
+    return `${API_URL}/media?${query.toString()}`;
+  } catch {
+    return null;
+  }
 }

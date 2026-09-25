@@ -14,9 +14,13 @@ services:
   - type: web
     name: dahab-focal-api
     runtime: node
-    plan: starter
+    # Free while it is people testing: it sleeps after 15 idle minutes and the
+    # first request after that takes about a minute. `starter` never sleeps.
+    plan: free
     region: frankfurt # Closest of Render's regions to both Egypt and Supabase.
-    branch: main
+    # The operator dashboard and Sky Eye's logins live here until they are
+    # merged into the main line.
+    branch: feat/vendor-dashboard
 
     # corepack pins pnpm to the version in package.json, so the lockfile is
     # resolved by the pnpm that wrote it. `...` pulls in the workspace
@@ -49,13 +53,28 @@ services:
         sync: false
 
       # The browser surfaces that may call this API, comma separated. The
-      # admin console renders on a server and needs no entry here. An origin
+      # admin console renders on a server and needs no entry here. The
+      # operator dashboard does: phones upload photos and story videos
+      # straight to /media (see apps/api/src/media/ticket.ts), so its Vercel
+      # address goes here, e.g. https://dahab-partner.vercel.app. An origin
       # not listed gets no CORS headers at all rather than a permissive one.
       - key: CORS_ORIGINS
         sync: false
 
-      # The console transport prints one-time codes into the log, and the API
-      # refuses to start in production while it is selected. Set this to a
-      # real gateway before the traveller app ships.
-      - key: OTP_TRANSPORT
+      # Uploads go to Supabase Storage in the database's own project; the
+      # API refuses to boot in production on the local disk, which Render
+      # wipes on every deploy. The bucket is created on first upload.
+      - key: MEDIA_STORE
+        value: supabase
+      - key: SUPABASE_URL
+        value: https://oggsssfydturfqjynwli.supabase.co
+      # Supabase → Project settings → API keys → service_role (secret).
+      - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
+
+      # No SMS gateway yet, so signing in by phone is switched off; operators
+      # use a username or an email. The console transport, which prints codes
+      # into the log, is refused in production. Change this to a real gateway
+      # before the traveller app ships.
+      - key: OTP_TRANSPORT
+        value: disabled

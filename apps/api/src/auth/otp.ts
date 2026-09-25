@@ -93,6 +93,16 @@ export function createUnconfiguredOtpTransport(name: string): OtpTransport {
   };
 }
 
+/**
+ * `OTP_TRANSPORT=disabled`: signing in by phone is switched off. For a deploy
+ * with no SMS gateway yet — operators sign in with a username or an email —
+ * and it is the one setting besides a real gateway that production accepts,
+ * because it sends nothing and logs nothing.
+ */
+export function phoneSignInDisabled(kind = process.env['OTP_TRANSPORT'] ?? 'console'): boolean {
+  return kind === 'disabled';
+}
+
 export function resolveOtpTransport(
   kind = process.env['OTP_TRANSPORT'] ?? 'console',
 ): OtpTransport {

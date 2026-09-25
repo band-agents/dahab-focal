@@ -70,7 +70,13 @@ export async function sendCode(formData: FormData): Promise<void> {
     to(locale, {
       method: 'phone',
       error:
-        result.code === 'TOO_MANY_REQUESTS' ? 'wait' : result.code === 'UNREACHABLE' ? 'unreachable' : 'failed',
+        result.code === 'TOO_MANY_REQUESTS'
+          ? 'wait'
+          : result.code === 'UNREACHABLE'
+            ? 'unreachable'
+            : result.code === 'PRECONDITION_FAILED'
+              ? 'phoneOff'
+              : 'failed',
     });
   }
 

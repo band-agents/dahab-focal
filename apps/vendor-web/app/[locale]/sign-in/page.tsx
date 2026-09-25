@@ -22,7 +22,13 @@ import { changeNumber, passwordSignIn, sendCode, verifyCode } from './actions';
  * two chances to fill in the wrong one.
  */
 
-const ERRORS = new Set(['badPhone', 'wait', 'unreachable', 'failed', 'expired', 'badCode', 'suspended', 'badPassword']);
+const ERRORS = new Set(['badPhone', 'wait', 'unreachable', 'failed', 'expired', 'badCode', 'suspended', 'badPassword', 'phoneOff']);
+
+/**
+ * `DAHAB_PHONE_SIGN_IN=off` hides the phone door, for a deploy with no SMS
+ * gateway yet (the API is then on OTP_TRANSPORT=disabled and would refuse).
+ */
+const PHONE_SIGN_IN = process.env['DAHAB_PHONE_SIGN_IN'] !== 'off';
 
 export default async function SignInPage({
   params,
@@ -36,7 +42,7 @@ export default async function SignInPage({
   const query = await searchParams;
   const t = translator(locale);
 
-  const method = query.method === 'phone' ? 'phone' : 'email';
+  const method = PHONE_SIGN_IN && query.method === 'phone' ? 'phone' : 'email';
   const step = method === 'phone' && query.step === 'code' ? 'code' : 'number';
   const error = query.error !== undefined && ERRORS.has(query.error) ? query.error : null;
 
@@ -114,13 +120,15 @@ export default async function SignInPage({
                   {t('partner.signIn.verify')}
                 </Button>
               </form>
-              <Link
-                href={`/${locale}/sign-in?method=phone` as Route}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md text-body font-semibold text-c-link hover:bg-c-raised"
-              >
-                <Icon name="phone" size={18} />
-                {t('partner.signIn.usePhone')}
-              </Link>
+              {PHONE_SIGN_IN ? (
+                <Link
+                  href={`/${locale}/sign-in?method=phone` as Route}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-md text-body font-semibold text-c-link hover:bg-c-raised"
+                >
+                  <Icon name="phone" size={18} />
+                  {t('partner.signIn.usePhone')}
+                </Link>
+              ) : null}
               <p className="text-center text-small text-c-muted">{t('partner.signIn.forgot')}</p>
             </>
           ) : step === 'code' ? (

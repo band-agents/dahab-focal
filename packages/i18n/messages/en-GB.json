@@ -1318,7 +1318,8 @@
         "expired": "That took too long. Start again with your number.",
         "badCode": "That code is not right. Check the message and try again.",
         "suspended": "This account is stopped. Contact Dahab Focal.",
-        "badPassword": "The username, email or password is wrong."
+        "badPassword": "The username, email or password is wrong.",
+        "phoneOff": "Signing in by phone is not available yet. Use your username or email."
       },
       "notMember": "This number is not part of a centre yet. Ask the owner to add you to the team.",
       "show": "Show",

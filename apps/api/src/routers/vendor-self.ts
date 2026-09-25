@@ -7,6 +7,7 @@ import { schema } from '@dahab/db';
 import type { Database } from '@dahab/db';
 
 import { endSessions, takenLoginField } from '../auth/logins.ts';
+import { UPLOAD_TICKET_TTL_SECONDS, issueUploadTicket } from '../media/ticket.ts';
 import { hashPassword, verifyPassword } from '../auth/password.ts';
 import { requireDatabase } from '../database.ts';
 import { requireVendorPermission } from '../trpc.ts';
@@ -520,6 +521,30 @@ export const vendorSelfRouter = {
         });
       });
       return { ok: true as const };
+    }),
+
+  /**
+   * A ten-minute ticket to upload one kind of file straight to `POST /media`
+   * — how a phone sends a story video past the dashboard's host, which caps
+   * a request at 4.5 MB. A story needs `story.post`; the rest are for the
+   * person's own picture or, for the owner, the page's images, and the write
+   * that uses the upload checks that again.
+   */
+  uploadTicket: requireVendorPermission('vendor.readOwn')
+    .input(z.object({ purpose: z.enum(['logo', 'cover', 'avatar', 'story']) }))
+    .output(z.object({ ticket: z.string(), expiresInSeconds: z.number().int() }))
+    .mutation(({ ctx, input }) => {
+      const session = ctx.session;
+      if (session === null || session.userId === null) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Sign in again.' });
+      }
+      return {
+        ticket: issueUploadTicket(
+          { userId: session.userId, vendorId: ctx.vendorId, sessionId: session.id, purpose: input.purpose },
+          ctx.now,
+        ),
+        expiresInSeconds: UPLOAD_TICKET_TTL_SECONDS,
+      };
     }),
 
   // ── Stories ──────────────────────────────────────────────────────────────

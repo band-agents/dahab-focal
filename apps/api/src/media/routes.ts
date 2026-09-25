@@ -7,7 +7,9 @@ import { and, eq, isNull, sum } from 'drizzle-orm';
 
 import { schema } from '@dahab/db';
 
+import { isSessionLive } from '../auth/sessions.ts';
 import { createContext } from '../context.ts';
+import { verifyUploadTicket } from './ticket.ts';
 import { KEY_PATTERN, ensureTempDir, mediaStore, tempWriter } from './store.ts';
 import { PURPOSES, isPurpose, sniff } from './sniff.ts';
 
@@ -57,25 +59,49 @@ export async function handleUpload(req: IncomingMessage, res: ServerResponse): P
   const url = new URL(req.url ?? '/', 'http://localhost');
   const purpose = url.searchParams.get('purpose') ?? '';
 
-  const session = ctx.session;
-  const vendorId = session?.vendorId ?? null;
-  const isVendorMember =
-    session?.roles.some((role) => role === 'vendorOwner' || role === 'vendorStaff') === true;
-
-  if (session === null || session.userId === null) {
-    refuse(res, 401, 'signedOut', 'Sign in again to upload.');
-    return;
-  }
-  if (!isVendorMember || vendorId === null) {
-    refuse(res, 403, 'notAMember', 'Only people who work at an operator can upload here.');
-    return;
-  }
-  if (!isPurpose(purpose)) {
-    refuse(res, 400, 'badPurpose', 'Say what the file is for: logo, cover, avatar or story.');
-    return;
-  }
   if (ctx.db === null) {
     refuse(res, 503, 'noDatabase', 'The database is not reachable. Try again in a moment.');
+    return;
+  }
+
+  /*
+   * Who is uploading, for which operator: from an upload ticket (a phone
+   * sending straight here — see ./ticket.ts) or from the session on the
+   * request (a server calling on somebody's behalf). A ticket carries its
+   * own purpose and is refused for any other, and for a session revoked
+   * since it was issued.
+   */
+  let uploader: { userId: string; vendorId: string };
+  const ticketText = url.searchParams.get('ticket');
+  if (ticketText !== null) {
+    const ticket = verifyUploadTicket(ticketText, ctx.now);
+    if (ticket === null || !(await isSessionLive(ctx.db, ticket.sessionId, ctx.now))) {
+      refuse(res, 401, 'signedOut', 'That upload link has run out. Choose the file again.');
+      return;
+    }
+    if (ticket.purpose !== purpose) {
+      refuse(res, 400, 'badPurpose', 'This upload link is for a different kind of file.');
+      return;
+    }
+    uploader = { userId: ticket.userId, vendorId: ticket.vendorId };
+  } else {
+    const session = ctx.session;
+    const isVendorMember =
+      session?.roles.some((role) => role === 'vendorOwner' || role === 'vendorStaff') === true;
+    if (session === null || session.userId === null) {
+      refuse(res, 401, 'signedOut', 'Sign in again to upload.');
+      return;
+    }
+    if (!isVendorMember || session.vendorId === null) {
+      refuse(res, 403, 'notAMember', 'Only people who work at an operator can upload here.');
+      return;
+    }
+    uploader = { userId: session.userId, vendorId: session.vendorId };
+  }
+  const vendorId = uploader.vendorId;
+
+  if (!isPurpose(purpose)) {
+    refuse(res, 400, 'badPurpose', 'Say what the file is for: logo, cover, avatar or story.');
     return;
   }
 
@@ -171,7 +197,7 @@ export async function handleUpload(req: IncomingMessage, res: ServerResponse): P
     .insert(schema.mediaUploads)
     .values({
       vendorId,
-      uploaderUserId: session.userId,
+      uploaderUserId: uploader.userId,
       kind: format.kind,
       mimeType: format.mime,
       bytes: received,

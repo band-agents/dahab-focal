@@ -47,6 +47,7 @@ import {
   OTP_TTL_SECONDS,
   generateOtp,
   normalisePhone,
+  phoneSignInDisabled,
   resolveOtpTransport,
 } from '../auth/otp.ts';
 import { startChallenge, verifyChallenge } from '../auth/otp-challenges.ts';
@@ -285,6 +286,11 @@ export const authRouter = router({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      // Refused before a challenge is stored: with no way to send the code,
+      // storing one would only count against the number's hourly limit.
+      if (phoneSignInDisabled()) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'Signing in by phone is not available yet.' });
+      }
       const db = requireDatabase(ctx.db);
       const phone = normalisePhone(input.phone);
       const code = generateOtp();

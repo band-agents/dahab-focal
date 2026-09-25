@@ -7,6 +7,7 @@ import { isAllowedOrigin, parseOrigins } from './cors.ts';
 import { createContext } from './context.ts';
 import { logger } from './logger.ts';
 import { handleServe, handleUpload } from './media/routes.ts';
+import { mediaStoreProblem } from './media/store.ts';
 import { appRouter } from './routers/index.ts';
 
 /**
@@ -44,9 +45,17 @@ function requireEnvironment(): void {
   }
   // The console transport prints one-time codes into the log. It refuses to
   // construct in production on its own; this says so at boot instead of at
-  // the first sign-in attempt.
+  // the first sign-in attempt. `disabled` is allowed: it sends nothing.
   if (isProduction && (process.env['OTP_TRANSPORT'] ?? 'console') === 'console') {
     problems.push('OTP_TRANSPORT=console logs every one-time code; set a real gateway');
+  }
+
+  // Uploads on a container's own disk vanish at the next deploy. Online they
+  // go to Supabase Storage, and a store that cannot work stops the boot.
+  const storeProblem = mediaStoreProblem();
+  if (storeProblem !== null) problems.push(storeProblem);
+  if (isProduction && (process.env['MEDIA_STORE'] ?? 'local') !== 'supabase') {
+    problems.push('MEDIA_STORE must be supabase in production; the local disk is wiped on every deploy');
   }
 
   if (problems.length > 0) {
