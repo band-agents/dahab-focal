@@ -98,9 +98,25 @@ export function ReviewPanel({
 }
 
 /** What happened last time, said once, above the board. */
+/**
+ * The outcomes a write can land with. The first four are every write's; the
+ * rest are the operator form's, which can say which field clashed rather than
+ * the generic "someone got there first".
+ */
+const OUTCOME_KEYS: Readonly<Record<string, string>> = {
+  done: 'admin.review.outcome.done',
+  conflict: 'admin.review.outcome.conflict',
+  refused: 'admin.review.outcome.refused',
+  failed: 'admin.review.outcome.failed',
+  invalid: 'admin.onboard.outcome.invalid',
+  takenName: 'admin.onboard.outcome.takenName',
+  takenEmail: 'admin.onboard.outcome.takenEmail',
+  takenPhone: 'admin.onboard.outcome.takenPhone',
+};
+
 export function OutcomeNotice({ outcome, t }: { outcome: string; t: Translate }) {
-  const known = ['done', 'conflict', 'refused', 'failed'].includes(outcome);
-  if (!known) return null;
+  const key = OUTCOME_KEYS[outcome];
+  if (key === undefined) return null;
 
   const good = outcome === 'done';
   return (
@@ -109,7 +125,7 @@ export function OutcomeNotice({ outcome, t }: { outcome: string; t: Translate })
     <div role="status">
       <Banner
         tone={good ? 'success' : 'warning'}
-        title={t(`admin.review.outcome.${outcome}`)}
+        title={t(key)}
       />
     </div>
   );

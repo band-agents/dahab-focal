@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { formatCurrency, formatDate, formatNumber, money } from '@dahab/i18n/server';
+import { formatCurrency, formatDate, formatNumber, isolate, money } from '@dahab/i18n/server';
 
 import { ConsolePage, Stack, resolveLocale } from '@/components/ConsoleShell';
 import {
@@ -94,6 +94,8 @@ export default async function VendorPage({
   );
   const staffExpiring = v.staff.reduce((total, row) => total + row.certificationsExpiring, 0);
   const here = (query = ''): Route => path(locale, `vendors/${id}${query}`);
+  // A name if the owner has one; otherwise how to reach them.
+  const ownerLabel = v.owner.displayName ?? v.owner.email ?? v.owner.phone;
 
   const documentColumns: readonly RecordColumn<Document>[] = [
     {
@@ -352,6 +354,22 @@ export default async function VendorPage({
             <KeyValue
               label={t('admin.vendor.legalName')}
               value={v.legalName ?? t('admin.vendor.noLegalName')}
+            />
+            {/*
+              The person behind the centre, one tap from their own page. An
+              owner made from the roster has no password yet, and the note
+              says so rather than letting somebody hand over a login that
+              does not exist.
+            */}
+            <KeyValue
+              label={t('admin.onboard.owner')}
+              value={ownerLabel === null ? t('admin.people.unnamed') : isolate(ownerLabel)}
+              note={
+                v.owner.canSignIn
+                  ? t('admin.onboard.ownerCanSignIn')
+                  : t('admin.onboard.ownerCannotSignIn')
+              }
+              href={path(locale, `people/${v.owner.userId}`)}
             />
             <KeyValue
               label={t('admin.vendor.joined')}

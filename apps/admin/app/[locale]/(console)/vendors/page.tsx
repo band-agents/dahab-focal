@@ -4,17 +4,21 @@ import type { Route } from 'next';
 import { formatDate, formatNumber, isolate } from '@dahab/i18n/server';
 
 import {
+  Action,
+  ActionPanel,
+  ActionRow,
   Icon,
   Panel,
   Pill,
   RecordList,
+  type ActionField,
   type RecordColumn,
   type Tone,
 } from '@/components/console';
 import { ConsolePage, resolveLocale } from '@/components/ConsoleShell';
 import { DataProblemNotice } from '@/components/DataProblemNotice';
 import { OutcomeNotice, ReviewPanel } from '@/components/ReviewPanel';
-import { reviewDocument } from '@/lib/actions';
+import { createVendor, reviewDocument } from '@/lib/actions';
 import { api, load } from '@/lib/api';
 import { translator } from '@/lib/i18n';
 import { neighborhoodKey, path } from '@/lib/nav';
@@ -60,17 +64,22 @@ export default async function VendorsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ review?: string; outcome?: string }>;
+  searchParams: Promise<{ review?: string; outcome?: string; act?: string }>;
 }) {
   const { locale: raw } = await params;
-  const { review, outcome } = await searchParams;
+  const { review, outcome, act } = await searchParams;
   const locale = resolveLocale(raw);
   const t = translator(locale);
   const context = { locale } as const;
 
-  const [roster, queue] = await Promise.all([
+  const adding = act === 'new';
+
+  // The areas are only needed while the form is open, and are fetched in the
+  // same round trip as the roster rather than after it.
+  const [roster, queue, areas] = await Promise.all([
     load(() => api.admin.vendors.query()),
     load(() => api.admin.verificationQueue.query()),
+    adding ? load(() => api.admin.neighborhoods.query()) : Promise.resolve(null),
   ]);
 
   const vendorColumns: readonly RecordColumn<Vendor>[] = [
@@ -220,6 +229,83 @@ export default async function VendorsPage({
     >
       <div className="flex flex-col gap-8">
         {outcome === undefined ? null : <OutcomeNotice outcome={outcome} t={t} />}
+
+        <ActionRow>
+          <Action intent="primary" icon="plus" href={`/${locale}/vendors?act=new` as Route}>
+            {t('admin.onboard.add')}
+          </Action>
+        </ActionRow>
+
+        {!adding ? null : areas !== null && !areas.ok ? (
+          <DataProblemNotice problem={areas.problem} t={t} title={t('admin.onboard.add')} />
+        ) : (
+          <ActionPanel
+            title={t('admin.onboard.add')}
+            summary={t('admin.onboard.summary')}
+            action={createVendor}
+            hidden={{ locale }}
+            fields={
+              [
+                {
+                  name: 'displayName',
+                  label: t('admin.onboard.field.name'),
+                  hint: t('admin.onboard.field.nameHint'),
+                  type: 'text',
+                  required: true,
+                },
+                {
+                  name: 'legalName',
+                  label: t('admin.onboard.field.legalName'),
+                  hint: t('admin.onboard.field.legalNameHint'),
+                  type: 'text',
+                  required: true,
+                },
+                {
+                  name: 'neighborhood',
+                  label: t('admin.onboard.field.area'),
+                  type: 'select',
+                  required: true,
+                  options: (areas?.ok === true ? areas.data : []).map((area) => ({
+                    value: area.slug,
+                    label: t(area.nameKey),
+                  })),
+                },
+                {
+                  name: 'phone',
+                  label: t('admin.onboard.field.phone'),
+                  hint: t('admin.onboard.field.phoneHint'),
+                  type: 'tel',
+                  ltr: true,
+                },
+                { name: 'email', label: t('admin.onboard.field.email'), type: 'email', ltr: true },
+                {
+                  name: 'ownerName',
+                  label: t('admin.onboard.field.ownerName'),
+                  type: 'text',
+                  required: true,
+                },
+                {
+                  name: 'ownerPhone',
+                  label: t('admin.onboard.field.ownerPhone'),
+                  hint: t('admin.onboard.field.ownerContactHint'),
+                  type: 'tel',
+                  ltr: true,
+                },
+                {
+                  name: 'ownerEmail',
+                  label: t('admin.onboard.field.ownerEmail'),
+                  type: 'email',
+                  ltr: true,
+                },
+              ] satisfies ActionField[]
+            }
+            confirm={{ value: 'create', label: t('admin.onboard.create'), icon: 'plus' }}
+            reasonLabel={t('admin.act.reasonLabel')}
+            reasonHint={t('admin.onboard.reasonHint')}
+            closeHref={`/${locale}/vendors` as Route}
+            closeLabel={t('admin.review.close')}
+          />
+        )}
 
         {reviewing === undefined ? null : (
           <ReviewPanel

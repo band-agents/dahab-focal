@@ -10,6 +10,7 @@ import { LOCALES, SOURCE_LOCALE } from '@dahab/i18n';
 
 import { requirePermission, router } from '../trpc.ts';
 import { asCurrency, cairoDay, requireDb } from './_shared.ts';
+import { adminOnboardingRouter } from './admin-onboarding.ts';
 import { adminPeopleRouter } from './admin-people.ts';
 import { adminPricingRouter } from './admin-pricing.ts';
 import { adminUserWritesRouter } from './admin-user-writes.ts';
@@ -1580,6 +1581,9 @@ export const adminRouter = router({
   // Every operator's rate card. Reads only; the console prices with
   // computePrice() from the contract, never with arithmetic of its own.
   ...adminPricingRouter,
+
+  // A new operator and its owner, from the roster.
+  ...adminOnboardingRouter,
 });
 
 // --- Shared shapes and small helpers -------------------------------------

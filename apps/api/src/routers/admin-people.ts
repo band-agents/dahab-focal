@@ -528,6 +528,18 @@ export const adminPeopleRouter = {
         joined: z.string(),
         ratingHundredths: z.number().int().nullable(),
         reviews: z.number().int(),
+        /**
+         * The account `vendors.owner_user_id` points at. `canSignIn` is whether
+         * it has a password at all — an owner created from the roster has
+         * none until a login is made for them, and the page says so.
+         */
+        owner: z.object({
+          userId: z.string().uuid(),
+          displayName: z.string().nullable(),
+          email: z.string().nullable(),
+          phone: z.string().nullable(),
+          canSignIn: z.boolean(),
+        }),
         documents: z.array(
           z.object({
             id: z.string().uuid(),
@@ -576,8 +588,17 @@ export const adminPeopleRouter = {
           neighborhood: schema.vendors.neighborhood,
           status: schema.vendors.status,
           joined: schema.vendors.createdAt,
+          ownerUserId: schema.vendors.ownerUserId,
+          ownerName: schema.userProfiles.displayName,
+          ownerEmail: schema.users.email,
+          ownerPhone: schema.users.phone,
+          ownerHasPassword: sql<boolean>`${schema.users.passwordHash} IS NOT NULL`,
         })
         .from(schema.vendors)
+        // In the same round trip as the operator itself: the owner is one
+        // row away, and a second query for it would cost another ~75 ms.
+        .innerJoin(schema.users, eq(schema.users.id, schema.vendors.ownerUserId))
+        .leftJoin(schema.userProfiles, eq(schema.userProfiles.userId, schema.vendors.ownerUserId))
         .where(eq(schema.vendors.id, input.id))
         .limit(1);
 
@@ -695,6 +716,13 @@ export const adminPeopleRouter = {
         neighborhood: vendor.neighborhood,
         status: vendor.status,
         joined: vendor.joined.toISOString(),
+        owner: {
+          userId: vendor.ownerUserId,
+          displayName: vendor.ownerName,
+          email: vendor.ownerEmail,
+          phone: vendor.ownerPhone,
+          canSignIn: vendor.ownerHasPassword === true,
+        },
         // Hundredths, so the average never touches the float path on the way
         // to the screen. No reviews reads as null, never as a zero: an
         // operator nobody has rated is not an operator rated nought.

@@ -1303,6 +1303,35 @@
       "ruleStarts": "Desde el {date}",
       "ruleEnded": "Terminó el {date}",
       "ruleBroken": "No válida"
+    },
+    "onboard": {
+      "add": "Añadir un operador",
+      "summary": "Un centro nuevo empieza como solicitud y no puede publicar nada hasta que se verifiquen sus documentos. Su propietario recibe una cuenta ahora, sin contraseña: el acceso es un paso aparte.",
+      "create": "Crear el operador",
+      "reasonHint": "Quiénes son y cómo llegaron a nosotros: un acuerdo firmado, una visita, una recomendación.",
+      "owner": "Propietario",
+      "ownerCanSignIn": "Tiene acceso",
+      "ownerCannotSignIn": "Aún no puede entrar: no se ha creado ningún acceso",
+      "field": {
+        "name": "Nombre del operador",
+        "nameHint": "Tal como lo verán los viajeros.",
+        "legalName": "Razón social",
+        "legalNameHint": "Como en el registro mercantil.",
+        "area": "Zona",
+        "phone": "Teléfono del centro",
+        "phoneHint": "Con el prefijo del país y sin espacios: +201001234567.",
+        "email": "Correo del centro",
+        "ownerName": "Nombre del propietario",
+        "ownerPhone": "Teléfono del propietario",
+        "ownerEmail": "Correo del propietario",
+        "ownerContactHint": "El teléfono o el correo del propietario: al menos uno."
+      },
+      "outcome": {
+        "invalid": "Algo del formulario no se ha aceptado: comprueba que los teléfonos empiecen por + y que no falte ningún campo obligatorio. No se ha cambiado nada.",
+        "takenName": "Ya existe un operador con ese nombre. No se ha cambiado nada.",
+        "takenEmail": "Ese correo ya pertenece a una cuenta. No se ha cambiado nada.",
+        "takenPhone": "Ese teléfono ya pertenece a una cuenta. No se ha cambiado nada."
+      }
     }
   },
   "vendor": {

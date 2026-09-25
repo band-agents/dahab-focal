@@ -260,3 +260,48 @@ export async function setVendorStatus(formData: FormData): Promise<void> {
   }
   backTo(locale, returnTo(formData, `vendors/${vendorId}`), outcome);
 }
+
+/**
+ * A new operator and its owner, from the roster.
+ *
+ * On success, straight to the new operator's page — its papers and its
+ * owner's login are the next two things anybody does. On a clash or a
+ * refused field, back to the roster with the form still open and the reason
+ * in the URL. The values typed are not carried back: they are names and phone
+ * numbers, and a query string ends up in logs and in browser history.
+ */
+export async function createVendor(formData: FormData): Promise<void> {
+  const locale = localeOf(formData);
+  const field = (name: string) => String(formData.get(name) ?? '').trim();
+  const optional = (name: string) => (field(name) === '' ? {} : { [name]: field(name) });
+
+  let landing = 'vendors?act=new&outcome=failed';
+  try {
+    const result = await api.admin.createVendor.mutate({
+      displayName: field('displayName'),
+      legalName: field('legalName'),
+      neighborhood: field('neighborhood'),
+      ...optional('phone'),
+      ...optional('email'),
+      owner: {
+        displayName: field('ownerName'),
+        ...(field('ownerPhone') === '' ? {} : { phone: field('ownerPhone') }),
+        ...(field('ownerEmail') === '' ? {} : { email: field('ownerEmail') }),
+      },
+      reason: field('reason'),
+    });
+    landing = result.ok
+      ? `vendors/${result.vendorId}?outcome=done`
+      : `vendors?act=new&outcome=${
+          result.taken === 'name' ? 'takenName' : result.taken === 'ownerEmail' ? 'takenEmail' : 'takenPhone'
+        }`;
+  } catch (error) {
+    const code = (error as { data?: { code?: string } } | null)?.data?.code;
+    landing = `vendors?act=new&outcome=${code === 'BAD_REQUEST' ? 'invalid' : classify(error)}`;
+  }
+
+  // After the try, never inside it: redirect() throws, and a catch would
+  // swallow its own navigation (a bug this console has already had once).
+  revalidatePath(`/${locale}`, 'layout');
+  redirect(`/${locale}/${landing}` as Route);
+}

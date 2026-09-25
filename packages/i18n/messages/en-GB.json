@@ -1030,6 +1030,35 @@
       "ruleStarts": "Starts {date}",
       "ruleEnded": "Ended {date}",
       "ruleBroken": "Broken"
+    },
+    "onboard": {
+      "add": "Add an operator",
+      "summary": "A new centre starts as applied, and cannot publish anything until its papers are verified. Its owner gets an account now, without a password — the login is a separate step.",
+      "create": "Create the operator",
+      "reasonHint": "Who they are and how they came to us — an agreement signed, a visit, a referral.",
+      "owner": "Owner",
+      "ownerCanSignIn": "Has a login",
+      "ownerCannotSignIn": "Cannot sign in yet: no login has been made",
+      "field": {
+        "name": "Operator name",
+        "nameHint": "As travellers will see it.",
+        "legalName": "Legal name",
+        "legalNameHint": "As on the commercial register.",
+        "area": "Area",
+        "phone": "Centre phone",
+        "phoneHint": "With the country code and no spaces: +201001234567.",
+        "email": "Centre email",
+        "ownerName": "Owner's name",
+        "ownerPhone": "Owner's phone",
+        "ownerEmail": "Owner's email",
+        "ownerContactHint": "The owner's phone or email — at least one."
+      },
+      "outcome": {
+        "invalid": "Something in the form was not accepted — check that phone numbers start with + and that nothing required is empty. Nothing was changed.",
+        "takenName": "An operator with that name already exists. Nothing was changed.",
+        "takenEmail": "That email already belongs to an account. Nothing was changed.",
+        "takenPhone": "That phone number already belongs to an account. Nothing was changed."
+      }
     }
   },
   "vendor": {

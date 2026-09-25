@@ -94,6 +94,12 @@ export function path(locale: Locale, rest: string): Route {
  * area the list does not know about.
  */
 export function neighborhoodKey(slug: string): string {
-  const camel = slug.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase());
+  // Two areas are filed as `eel-garden-quarter` and `lighthouse-quarter` so
+  // their slugs cannot collide with the dive sites of the same name; the
+  // catalogue names the area without the suffix. Without this, an operator
+  // placed in either rendered as the raw key `neighborhood.eelGardenQuarter`.
+  const camel = slug
+    .replace(/-quarter$/, '')
+    .replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase());
   return `neighborhood.${camel}`;
 }

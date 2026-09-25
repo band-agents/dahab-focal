@@ -1314,6 +1314,35 @@
       "ruleStarts": "Dès le {date}",
       "ruleEnded": "Terminée le {date}",
       "ruleBroken": "Invalide"
+    },
+    "onboard": {
+      "add": "Ajouter un opérateur",
+      "summary": "Un nouveau centre commence au statut de candidature et ne peut rien publier tant que ses documents ne sont pas vérifiés. Son propriétaire reçoit un compte dès maintenant, sans mot de passe : l'accès est une étape à part.",
+      "create": "Créer l'opérateur",
+      "reasonHint": "Qui ils sont et comment ils sont arrivés chez nous : un accord signé, une visite, une recommandation.",
+      "owner": "Propriétaire",
+      "ownerCanSignIn": "A un accès",
+      "ownerCannotSignIn": "Ne peut pas encore se connecter : aucun accès créé",
+      "field": {
+        "name": "Nom de l'opérateur",
+        "nameHint": "Tel que les voyageurs le verront.",
+        "legalName": "Raison sociale",
+        "legalNameHint": "Comme au registre du commerce.",
+        "area": "Quartier",
+        "phone": "Téléphone du centre",
+        "phoneHint": "Avec l'indicatif du pays et sans espaces : +201001234567.",
+        "email": "E-mail du centre",
+        "ownerName": "Nom du propriétaire",
+        "ownerPhone": "Téléphone du propriétaire",
+        "ownerEmail": "E-mail du propriétaire",
+        "ownerContactHint": "Le téléphone ou l'e-mail du propriétaire : au moins l'un des deux."
+      },
+      "outcome": {
+        "invalid": "Un élément du formulaire n'a pas été accepté : vérifiez que les numéros commencent par + et qu'aucun champ obligatoire n'est vide. Rien n'a été modifié.",
+        "takenName": "Un opérateur porte déjà ce nom. Rien n'a été modifié.",
+        "takenEmail": "Cet e-mail appartient déjà à un compte. Rien n'a été modifié.",
+        "takenPhone": "Ce numéro appartient déjà à un compte. Rien n'a été modifié."
+      }
     }
   },
   "vendor": {

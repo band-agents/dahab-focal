@@ -1304,6 +1304,35 @@
       "ruleStarts": "Dal {date}",
       "ruleEnded": "Finita il {date}",
       "ruleBroken": "Non valida"
+    },
+    "onboard": {
+      "add": "Aggiungi un operatore",
+      "summary": "Un nuovo centro parte come candidatura e non può pubblicare nulla finché i suoi documenti non sono verificati. Il titolare riceve subito un account, senza password: l'accesso è un passaggio a parte.",
+      "create": "Crea l'operatore",
+      "reasonHint": "Chi sono e come sono arrivati da noi: un accordo firmato, una visita, una segnalazione.",
+      "owner": "Titolare",
+      "ownerCanSignIn": "Ha un accesso",
+      "ownerCannotSignIn": "Non può ancora accedere: nessun accesso creato",
+      "field": {
+        "name": "Nome dell'operatore",
+        "nameHint": "Come lo vedranno i viaggiatori.",
+        "legalName": "Ragione sociale",
+        "legalNameHint": "Come nel registro delle imprese.",
+        "area": "Zona",
+        "phone": "Telefono del centro",
+        "phoneHint": "Con il prefisso internazionale e senza spazi: +201001234567.",
+        "email": "Email del centro",
+        "ownerName": "Nome del titolare",
+        "ownerPhone": "Telefono del titolare",
+        "ownerEmail": "Email del titolare",
+        "ownerContactHint": "Telefono o email del titolare: almeno uno."
+      },
+      "outcome": {
+        "invalid": "Qualcosa nel modulo non è stato accettato: controlla che i numeri inizino con + e che i campi obbligatori non siano vuoti. Non è cambiato nulla.",
+        "takenName": "Esiste già un operatore con questo nome. Non è cambiato nulla.",
+        "takenEmail": "Questa email appartiene già a un account. Non è cambiato nulla.",
+        "takenPhone": "Questo numero appartiene già a un account. Non è cambiato nulla."
+      }
     }
   },
   "vendor": {

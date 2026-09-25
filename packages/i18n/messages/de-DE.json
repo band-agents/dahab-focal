@@ -1305,6 +1305,35 @@
       "ruleStarts": "Ab {date}",
       "ruleEnded": "Beendet am {date}",
       "ruleBroken": "Fehlerhaft"
+    },
+    "onboard": {
+      "add": "Anbieter hinzufügen",
+      "summary": "Ein neues Zentrum startet als Bewerbung und kann nichts veröffentlichen, bis seine Unterlagen geprüft sind. Der Inhaber bekommt jetzt ein Konto, ohne Passwort – der Zugang ist ein eigener Schritt.",
+      "create": "Anbieter anlegen",
+      "reasonHint": "Wer sie sind und wie sie zu uns kamen – ein unterschriebener Vertrag, ein Besuch, eine Empfehlung.",
+      "owner": "Inhaber",
+      "ownerCanSignIn": "Hat einen Zugang",
+      "ownerCannotSignIn": "Kann sich noch nicht anmelden: kein Zugang angelegt",
+      "field": {
+        "name": "Name des Anbieters",
+        "nameHint": "So, wie Reisende ihn sehen.",
+        "legalName": "Firmenname",
+        "legalNameHint": "Wie im Handelsregister.",
+        "area": "Viertel",
+        "phone": "Telefon des Zentrums",
+        "phoneHint": "Mit Ländervorwahl und ohne Leerzeichen: +201001234567.",
+        "email": "E-Mail des Zentrums",
+        "ownerName": "Name des Inhabers",
+        "ownerPhone": "Telefon des Inhabers",
+        "ownerEmail": "E-Mail des Inhabers",
+        "ownerContactHint": "Telefon oder E-Mail des Inhabers – mindestens eins."
+      },
+      "outcome": {
+        "invalid": "Etwas im Formular wurde nicht angenommen – prüfe, dass Telefonnummern mit + beginnen und kein Pflichtfeld leer ist. Nichts wurde geändert.",
+        "takenName": "Es gibt schon einen Anbieter mit diesem Namen. Nichts wurde geändert.",
+        "takenEmail": "Diese E-Mail gehört schon zu einem Konto. Nichts wurde geändert.",
+        "takenPhone": "Diese Telefonnummer gehört schon zu einem Konto. Nichts wurde geändert."
+      }
     }
   },
   "vendor": {

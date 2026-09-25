@@ -59,6 +59,12 @@ export const permissionSchema = z.enum([
   'vendor.writeOwn',
   'vendor.readAny',
   'vendor.verify',
+  /**
+   * Bring a new operator onto the platform from the console: the centre and
+   * the account of the person who owns it. Admin only — an owner adding a
+   * second centre is a different act and does not exist yet.
+   */
+  'vendor.create',
   'staff.manage',
   'resource.manage',
   'pricing.manage',
