@@ -32,6 +32,12 @@ const PHONE_SIGN_IN = process.env['DAHAB_PHONE_SIGN_IN'] !== 'off';
 
 // Per request: it reads the query (which step, which error) every time.
 export const dynamic = 'force-dynamic';
+/*
+ * Up to a minute per request. The API's free host sleeps when idle and takes
+ * most of a minute to wake; the first visit after that should load slowly,
+ * not fail with "could not reach the server" at Vercel's 10-second default.
+ */
+export const maxDuration = 60;
 
 export default async function SignInPage({
   params,

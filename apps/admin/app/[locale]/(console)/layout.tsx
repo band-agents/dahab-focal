@@ -35,6 +35,8 @@ import { viewer } from '@/lib/viewer';
  * just to print an address in the rail's footer.
  */
 export const dynamic = 'force-dynamic';
+// Up to a minute: the API's free host takes most of one to wake from idle.
+export const maxDuration = 60;
 
 export default async function ConsoleLayout({
   children,

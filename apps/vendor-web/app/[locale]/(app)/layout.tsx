@@ -30,6 +30,12 @@ import { resolveLocale } from '@/lib/page';
  * page. Same rule as the admin console's layout.
  */
 export const dynamic = 'force-dynamic';
+/*
+ * Up to a minute per request. The API's free host sleeps when idle and takes
+ * most of a minute to wake; the first visit after that should load slowly,
+ * not fail with "could not reach the server" at Vercel's 10-second default.
+ */
+export const maxDuration = 60;
 
 export default async function AppLayout({
   children,

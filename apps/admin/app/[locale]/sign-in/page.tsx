@@ -16,6 +16,8 @@ export const metadata: Metadata = {
  * failed attempt.
  */
 export const dynamic = 'force-dynamic';
+// Up to a minute: the API's free host takes most of one to wake from idle.
+export const maxDuration = 60;
 
 /**
  * The console's sign-in.
