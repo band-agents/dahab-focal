@@ -1,6 +1,6 @@
 import { createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 
-import { LOCALES, resolveLocale, type Locale } from '@dahab/i18n';
+import { LOCALES, resolveLocale, type Locale } from '@dahab/i18n/server';
 import type { Role } from '@dahab/api-contract';
 
 /**

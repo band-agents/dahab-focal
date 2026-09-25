@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import { currencySchema } from '@dahab/api-contract';
 import { schema } from '@dahab/db';
-import { LOCALES, SOURCE_LOCALE } from '@dahab/i18n';
+import { LOCALES, SOURCE_LOCALE } from '@dahab/i18n/server';
 
 
 import { requirePermission, router } from '../trpc.ts';

@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import type { Role, Session } from '@dahab/api-contract';
-import type { Locale } from '@dahab/i18n';
+import type { Locale } from '@dahab/i18n/server';
 
 import type { Database } from '@dahab/db';
 

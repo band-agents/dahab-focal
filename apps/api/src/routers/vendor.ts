@@ -3,9 +3,9 @@ import { alias } from 'drizzle-orm/pg-core';
 import { z } from 'zod';
 
 import { commissionMinor, currencySchema, paymentFeeMinor } from '@dahab/api-contract';
-import type { CurrencyCode } from '@dahab/i18n';
+import type { CurrencyCode } from '@dahab/i18n/server';
 import { schema } from '@dahab/db';
-import { LOCALES, SOURCE_LOCALE } from '@dahab/i18n';
+import { LOCALES, SOURCE_LOCALE } from '@dahab/i18n/server';
 
 import { commitCancellation, previewCancellation } from '../operations/cancel-departure.ts';
 import { requireDatabase } from '../database.ts';

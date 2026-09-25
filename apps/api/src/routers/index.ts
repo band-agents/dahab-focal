@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { LOCALES } from '@dahab/i18n';
+import { LOCALES } from '@dahab/i18n/server';
 
 import { probeDatabase } from '../database.ts';
 import { publicProcedure, router } from '../trpc.ts';

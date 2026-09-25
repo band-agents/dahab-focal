@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server';
 
 import { currencySchema } from '@dahab/api-contract';
-import type { CurrencyCode } from '@dahab/i18n';
+import type { CurrencyCode } from '@dahab/i18n/server';
 
 import type { Context } from '../context.ts';
 

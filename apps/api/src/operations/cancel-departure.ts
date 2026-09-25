@@ -5,7 +5,7 @@ import { alias } from 'drizzle-orm/pg-core';
 import { commissionMinor } from '@dahab/api-contract';
 import type { Database } from '@dahab/db';
 import { schema } from '@dahab/db';
-import { SOURCE_LOCALE, type Locale } from '@dahab/i18n';
+import { SOURCE_LOCALE, type Locale } from '@dahab/i18n/server';
 
 import type { Context } from '../context.ts';
 

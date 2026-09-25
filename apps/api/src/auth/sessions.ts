@@ -3,7 +3,7 @@ import { and, eq, gt, isNull } from 'drizzle-orm';
 import type { Role } from '@dahab/api-contract';
 import type { Database } from '@dahab/db';
 import { schema } from '@dahab/db';
-import type { Locale } from '@dahab/i18n';
+import type { Locale } from '@dahab/i18n/server';
 
 import {
   ACCESS_TOKEN_TTL_SECONDS,

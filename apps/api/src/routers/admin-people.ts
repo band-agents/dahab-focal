@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import { currencySchema } from '@dahab/api-contract';
 import { schema } from '@dahab/db';
-import { SOURCE_LOCALE } from '@dahab/i18n';
+import { SOURCE_LOCALE } from '@dahab/i18n/server';
 
 import { requirePermission } from '../trpc.ts';
 import { asCurrency, cairoDay, requireDb } from './_shared.ts';

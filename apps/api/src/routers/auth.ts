@@ -17,7 +17,7 @@ import {
 } from '@dahab/api-contract';
 import { schema } from '@dahab/db';
 import type { Database } from '@dahab/db';
-import { LOCALE_DESCRIPTORS, resolveLocale } from '@dahab/i18n';
+import { LOCALE_DESCRIPTORS, resolveLocale } from '@dahab/i18n/server';
 
 import { requireDatabase } from '../database.ts';
 import {

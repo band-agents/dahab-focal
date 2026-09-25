@@ -8,7 +8,7 @@ import {
   zero,
   type CurrencyCode,
   type Money,
-} from '@dahab/i18n';
+} from '@dahab/i18n/server';
 
 import type { IsoWeekday } from '../common.ts';
 import {

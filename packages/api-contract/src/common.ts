@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { CURRENCIES, LOCALES, NUMBERING_SYSTEMS } from '@dahab/i18n';
+import { CURRENCIES, LOCALES, NUMBERING_SYSTEMS } from '@dahab/i18n/server';
 
 /**
  * Shared primitives. Every boundary in the system — tRPC input, tRPC output,
